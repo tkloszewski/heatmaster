@@ -686,7 +686,7 @@
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
                                skin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')"
                                overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon_over.png')"
-                               buttonMode="true" visible="false">
+                               buttonMode="true" visible="true">
                         <mx:click><![CDATA[this.openManualPdf()]]></mx:click>
                     </mx:Button>
 
@@ -695,7 +695,7 @@
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
                                skin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')"
                                overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon_over.png')"
-                               buttonMode="true" visible="false">
+                               buttonMode="true" visible="true">
                         <mx:click><![CDATA[this.openTechPdf()]]></mx:click>
                     </mx:Button>
 
@@ -705,7 +705,7 @@
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
                                skin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')"
                                overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon_over.png')"
-                               buttonMode="true" visible="false">
+                               buttonMode="true" visible="true">
                         <mx:click><![CDATA[this.openAboutPdfFile()]]></mx:click>
                     </mx:Button>
                 </s:Group>
