@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<balloon:BaseBaloon xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*" xmlns:mx="library://ns.adobe.com/flex/mx"
+        >
+    <!-- To change this template use File | Settings | File Templates. -->
+    <fx:Script><![CDATA[
+        import mx.formatters.NumberBaseRoundType;
+        import mx.formatters.NumberFormatter;
+
+        import pl.znr.heatmaster.HeatMaster;
+
+        import pl.znr.heatmaster.ui.components.tooltip.BaseToolTip;
+
+        [Bindable]
+        private var _undercoutImgSource:String;
+
+        [Bindable]
+        private var _valueText:String;
+
+        [Bindable]
+        private var _headerLabelY:int = 19;
+
+        [Bindable]
+        private var _headerLabelX:int = 17;
+
+        [Bindable]
+        private var _infoIconVisible:Boolean = true;
+
+        private var _hmToolTip:BaseToolTip;
+        private var toolTipAdded:Boolean = false;
+
+        protected function openInfoPanel(evt:MouseEvent):void {
+            if (_hmToolTip != null) {
+                if (!toolTipAdded) {
+                    _hmToolTip.x = evt.stageX;
+                    _hmToolTip.y = evt.stageY - 20;
+                    toolTipAdded = true;
+                }
+                var heatMaster:HeatMaster = HeatMaster.getInstance();
+                heatMaster.addElement(_hmToolTip);
+            }
+        }
+
+        public function set hmToolTip(value:BaseToolTip):void {
+            _hmToolTip = value;
+        }
+
+        public function set headerLabelY(value:int):void {
+            _headerLabelY = value;
+        }
+
+        public function set headerLabelX(value:int):void {
+            _headerLabelX = value;
+        }
+
+        protected function setLabelValue(value:Number, unit:String):void {
+            var formattedValue:String = formatValue(value);
+            _valueText = formattedValue + " " + unit;
+        }
+
+        protected function formatValue(value:Number):String {
+            var format:NumberFormatter = new NumberFormatter();
+            format.precision = 0;
+            format.rounding = NumberBaseRoundType.NEAREST;
+            return format.format(value);
+        }
+
+        public function get valueText():String {
+            return _valueText;
+        }
+
+        public function set valueText(value:String):void {
+            _valueText = value;
+        }
+
+        public function get undercoutImgSource():String {
+            return _undercoutImgSource;
+        }
+
+        public function set undercoutImgSource(value:String):void {
+            _undercoutImgSource = value;
+        }
+        ]]></fx:Script>
+
+
+
+    <mx:Image id="undercoutImg" x="0" y="0" height="100%" width="100%" source="{_undercoutImgSource}" />
+
+    <s:Label x="{_headerLabelX}" y="{_headerLabelY}" width="140" height="18" styleName="{headerLabelStyleName}"
+             text="{_headerText}" />
+    <s:RichText x="17" y="41" width="130" height="17" styleName="{grayFontStyleName}" text="{_valueText}"
+                verticalAlign="middle"/>
+
+    <mx:Button right="{_infoIconRight}" top="{_infoIconTop}" buttonMode="true"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+               visible="{_infoIconVisible}" click="openInfoPanel(event)"/>
+
+
+</balloon:BaseBaloon>

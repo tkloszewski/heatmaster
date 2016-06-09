@@ -1,0 +1,703 @@
+<?xml version="1.0"?>
+<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+                        xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:hm="pl.znr.heatmaster.ui.components.*"
+                        creationComplete="housePopupCreated()"
+        >
+    <!-- To change this template use File | Settings | File Templates. -->
+
+
+    <fx:Declarations>
+        <s:ArrayCollection id="ageBuildingList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_84')}" data="{BuildingAge.UP_TO_1984}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_1984_1993')}" data="{BuildingAge.BETWEEN_1984_1993}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_1993_2004')}" data="{BuildingAge.BETWEEN_1993_2004}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_2005_2010')}" data="{BuildingAge.BETWEEN_2004_2010}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_after_2010')}" data="{BuildingAge.BETWEEN_2010_2013}"/>
+        </s:ArrayCollection>
+        <s:ArrayList id="doorTypeList">
+            <fx:Object name="Stare" data="{DoorType.NON_ENERGY_SAVING}"/>
+            <fx:Object name="Standardowe" data="{DoorType.STANDARD}"/>
+            <fx:Object name="Nowe" data="{DoorType.ENERGY_SAVING}"/>
+        </s:ArrayList>
+        <s:ArrayCollection id="houseStandardTypeList">
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.old_non_insulated')}" data="{HouseStandardType.OLD_NON_INSULATED}"/>
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.old_insulated')}" data="{HouseStandardType.OLD_INSULATED}"/>
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.typical')}" data="{HouseStandardType.NEW_NORM_WT_2014}"/>
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.energy_saving')}" data="{HouseStandardType.ENERGY_SAVING_NF40}"/>
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.passive')}" data="{HouseStandardType.PASSIVE_NF15}"/>
+            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.add')}" data="{HouseStandardType.ADD}"/>
+        </s:ArrayCollection>
+    </fx:Declarations>
+
+
+    <fx:Script><![CDATA[
+        import pl.znr.heatmaster.constants.combo.HouseStandardType;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
+
+        import spark.utils.TextFlowUtil;
+
+        import mx.controls.Alert;
+        import mx.core.FlexGlobals;
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.CountryItem;
+        import pl.znr.heatmaster.config.CountryItemHelper;
+        import pl.znr.heatmaster.config.RegionItem;
+        import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.constants.combo.BuildingAge;
+        import pl.znr.heatmaster.constants.combo.DoorType;
+        import pl.znr.heatmaster.constants.combo.HouseType;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.model.HouseData;
+        import pl.znr.heatmaster.core.model.SurfaceData;
+        import pl.znr.heatmaster.ui.builder.prepare.surface.SurfaceCalculator;
+        import pl.znr.heatmaster.ui.components.HouseSurfaceDataChangeListener;
+        import pl.znr.heatmaster.ui.form.HouseModel;
+        import pl.znr.heatmaster.util.HouseTypeHelper;
+
+        private var surfaceCalculator:SurfaceCalculator = new SurfaceCalculator();
+        private var houseDataChangeListener:HouseSurfaceDataChangeListener = new HouseSurfaceDataChangeListener();
+        private var surfaceData:SurfaceData;
+
+        [Bindable]
+        private var rolledUp:Boolean = true;
+
+        private var detailsVisible:Boolean = false;
+
+        private var currentImg:mx.controls.Image;
+
+        private var countryList:ArrayCollection;
+        private var regionList:ArrayCollection;
+        private var selectedCountry:CountryItem;
+
+        private var defaultItemCode:String;
+
+        public function populateCountryRegionDropDownList(configItems:ArrayCollection, regionItem:RegionItem, countryItem:CountryItem, defaultItemCode:String):void {
+            countryList = configItems;
+            countryDropDownList.dataProvider = configItems;
+            this.defaultItemCode = defaultItemCode;
+
+            selectedCountry = countryItem;
+
+            if (regionItem != null) {
+                regionDropDownList.visible = true;
+                regionLabel.visible = true;
+                regionList = countryItem.regions;
+                regionDropDownList.dataProvider = regionList;
+                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
+            }
+            else {
+                regionDropDownList.visible = false;
+                regionLabel.visible = false;
+            }
+            countryDropDownList.selectedIndex = getSelectedCountryIndex(configItems, countryItem.code);
+        }
+
+        private function getSelectedCountryIndex(configItems:ArrayCollection, code:String):int {
+            var selectedIdx:int = 0;
+            for (var i:int = 0; i < configItems.length; i++) {
+                var configItem:CountryItem = configItems.getItemAt(i) as CountryItem;
+                if (configItem.code == code) {
+                    selectedIdx = i;
+                    break;
+                }
+            }
+            return selectedIdx;
+        }
+
+        private function getSelectedRegionIndex(configItems:ArrayCollection, code:String):int {
+            var selectedIdx:int = 0;
+            for (var i:int = 0; i < configItems.length; i++) {
+                var regionItem:RegionItem = configItems.getItemAt(i) as RegionItem;
+                if (regionItem.code == code) {
+                    selectedIdx = i;
+                    break;
+                }
+            }
+            return selectedIdx;
+        }
+
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = initHouseData(dataContext.houseData, createHouseModel());
+                this.surfaceData = houseData.surfaceData;
+                applySecondarySurfaceDataToControls(houseData.surfaceData);
+                dataContext.houseData = houseData;
+                dataContext.countryCode = countryDropDownList.selectedItem.code;
+
+                dataContext.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(selectedCountry,CountryItemHelper.isInitialLocalCurrencySet());
+
+            } catch (e:Error) {
+                trace("Error init housePopup: " + e.getStackTrace());
+                Alert.show("Error init housePopup", e.message);
+            }
+            return dataContext;
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            var houseData:HouseData = dataContext.houseData;
+            this.surfaceData = houseData.surfaceData;
+
+            var code:String = dataContext.selectedCountryRegion != null ? dataContext.selectedCountryRegion : defaultItemCode;
+
+            var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(countryList, code);
+            var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(countryList, code);
+
+            selectedCountry = countryItem;
+
+            countryDropDownList.selectedIndex = getSelectedCountryIndex(countryList, countryItem.code);
+
+            if (regionItem == null) {
+                regionDropDownList.visible = false;
+                regionLabel.visible = false;
+            }
+            else {
+                regionDropDownList.visible = true;
+                regionLabel.visible = true;
+                regionList = countryItem.regions;
+                regionDropDownList.dataProvider = regionList;
+                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
+            }
+
+            applyHouseDataToAllControls(houseData);
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+
+            var surfaceData:SurfaceData = surfaceCalculator.calcSurface(createPrimarySurfaceData(), dataContext.houseData.houseType);
+            if (!isNaN(context.model.northWindowSurface)) {
+                surfaceData.windowsSurfaceN = context.model.northWindowSurface;
+            }
+            surfaceData.windowsSurfaceS = surfaceData.windowsSurfaceS * context.model.southWindowSurfaceFactor;
+
+            applySecondarySurfaceDataToControls(surfaceData);
+            surfaceData = houseDataChangeListener.windowSurfaceChanged(surfaceData, createHouseModel());
+
+            dataContext.houseData.surfaceData = surfaceData;
+        }
+
+        public function getOrder():int {
+            return 0;
+        }
+
+        private function comboStandardChanged():void {
+            try {
+                var selectedStandard:HouseStandardType = houseStandardDropDownList.selectedItem.data as HouseStandardType;
+                heatMasterListener.houseStandardChanged(selectedStandard);
+            } catch (e:Error) {
+                trace("Error while changing standard type: " + e.getStackTrace());
+            }
+        }
+
+        public function rollDownStartupPopup():void {
+            housePopupMainSmallImg.visible = true;
+            housePopupUpperGroup.visible = true;
+
+            /*
+             housePopupLowerGroup.visible = true;
+             housePopupLowerLeftGroup.visible = true;
+             */
+            housePopupOkBtn.visible = true;
+        }
+
+        public function setRolledBackState():void {
+            housePopupOkBtn.visible = false;
+            detailsCheckBox.visible = true;
+            tabClickGroup.visible = true;
+            //countryDropDownList.enabled = false;
+            rolledUp = false;
+            setComponentsVisibility(false);
+            housePopupMainSmallImg.visible = false;
+            housePopupMainImg.visible = false;
+        }
+
+
+        private function setDetailsVisibility():void {
+            detailsVisible = detailsCheckBox.selected;
+            housePopupMainImg.visible = detailsVisible;
+            housePopupMainSmallImg.visible = !detailsVisible;
+            currentImg = detailsVisible ? housePopupMainImg : housePopupMainSmallImg;
+            setEnableFloorHeightAndCountNS(detailsVisible);
+            doSetDetailsVisibility(detailsVisible);
+        }
+
+        private function setEnableFloorHeightAndCountNS(enable:Boolean):void {
+            /*
+             floorHeightNS.enabled = enable;
+             floorsCountNS.enabled = enable;
+             floorHeightNS.skin.setCurrentState(enable ? "normal" : "disabled");
+             floorHeightNS.skin.invalidateDisplayList();
+             floorsCountNS.skin.setCurrentState(enable ? "normal" : "disabled");
+             floorsCountNS.skin.invalidateDisplayList();
+             */
+        }
+
+        private function doSetDetailsVisibility(visible:Boolean):void {
+            lowerBorderContainer.visible = visible;
+        }
+
+        private function houseTypeChanged():void {
+            var houseType:int = getHouseType();
+
+            this.surfaceData = createPrimarySurfaceData();
+            surfaceData = surfaceCalculator.calcSurface(surfaceData, houseType);
+            applySecondarySurfaceDataToControls(surfaceData);
+
+
+            roofSurfaceNS.enabled = !HouseTypeHelper.hasNeighboursUp(houseType);
+            floorSurfaceNS.enabled = !HouseTypeHelper.hasNeighboursDown(houseType);
+
+            roofSurfaceNS.skin.setCurrentState(roofSurfaceNS.enabled ? "normal" : "disabled");
+            roofSurfaceNS.skin.invalidateDisplayList();
+            floorSurfaceNS.skin.setCurrentState(floorSurfaceNS.enabled ? "normal" : "disabled");
+            floorSurfaceNS.skin.invalidateDisplayList();
+
+            heatMasterListener.houseTypeChanged(houseType, surfaceData);
+        }
+
+        private function primaryDataChanged():void {
+            var houseType:int = getHouseType();
+            this.surfaceData = createPrimarySurfaceData();
+            surfaceData = surfaceCalculator.calcSurface(surfaceData, houseType);
+            applySecondarySurfaceDataToControls(surfaceData);
+            heatMasterListener.mainHouseDataChanged(surfaceData);
+        }
+
+        private function windowsSurfaceChanged():void {
+            this.surfaceData = houseDataChangeListener.windowSurfaceChanged(this.surfaceData, createHouseModel());
+            heatMasterListener.mainHouseDataChanged(this.surfaceData);
+        }
+
+        private function wallSurfaceChanged():void {
+            this.surfaceData = houseDataChangeListener.wallSurfaceChanged(this.surfaceData, createHouseModel());
+            heatMasterListener.mainHouseDataChanged(this.surfaceData);
+        }
+
+        private function floorAreaChanged():void {
+            var houseType:int = getHouseType();
+            if (HouseTypeHelper.isDetachedType(houseType) || HouseTypeHelper.isTerraceType(houseType)) {
+                this.surfaceData = houseDataChangeListener.floorSurfaceChanged(this.surfaceData, createHouseModel());
+                heatMasterListener.mainHouseDataChanged(this.surfaceData);
+            }
+        }
+
+        private function roofSurfaceChanged():void {
+            var houseType:int = getHouseType();
+            if (HouseTypeHelper.isDetachedType(houseType) || HouseTypeHelper.isTerraceType(houseType)) {
+                this.surfaceData = houseDataChangeListener.roofSurfaceChanged(this.surfaceData, createHouseModel());
+                heatMasterListener.mainHouseDataChanged(this.surfaceData);
+            }
+        }
+
+        private function countryChanged():void {
+            var countryItem:CountryItem = countryDropDownList.selectedItem;
+            var regionItem:RegionItem = null;
+            if (countryItem.regions.length > 0) {
+                regionDropDownList.visible = true;
+                regionLabel.visible = true;
+                regionList = countryItem.regions;
+                regionDropDownList.dataProvider = regionList;
+                regionDropDownList.selectedIndex = 0;
+                regionItem = countryItem.regions.getItemAt(0) as RegionItem;
+            }
+            else {
+                regionDropDownList.visible = false;
+                regionLabel.visible = false;
+            }
+            heatMasterListener.countryChanged(countryItem, regionItem);
+        }
+
+        private function regionChanged():void {
+            var regionItem:RegionItem = regionDropDownList.selectedItem;
+            heatMasterListener.regionChanged(regionItem);
+        }
+
+        private function inHouseTempChanged():void {
+            heatMasterListener.inHouseTempChanged(inHouseTempNS.value);
+        }
+
+        private function getHouseType():int {
+            return houseDropDownList.selectedItem.data;
+        }
+
+        private function initHouseData(houseData:HouseData, houseModel:HouseModel):HouseData {
+            houseData.houseType = houseModel.houseType;
+            houseData.buildingAge = BuildingAge.BETWEEN_1984_1993;
+            houseData.tIn = houseModel.houseTemp;
+            houseData.surfaceData = surfaceCalculator.calcSurface(createPrimarySurfaceData(), houseModel.houseType);
+            houseData.standardType = houseStandardDropDownList.selectedItem.data;
+            return houseData;
+        }
+
+        private function createHouseModel():HouseModel {
+            var houseModel:HouseModel = new HouseModel(getHouseType(),
+                    floorsCountNS.value, floorHeightNS.value, totalSurfaceNS.value,
+                    floorSurfaceNS.value, roofSurfaceNS.value, wallsSurfaceNS.value,
+                    southWinSurfaceNS.value, westEastWinSurfaceNS.value,
+                    northWinSurfaceNS.value, inHouseTempNS.value);
+
+            return houseModel;
+        }
+
+        private function createPrimarySurfaceData():SurfaceData {
+            return new SurfaceData(floorsCountNS.value, floorHeightNS.value,
+                    totalSurfaceNS.value);
+        }
+
+        private function applyHouseDataToAllControls(houseData:HouseData):void {
+            var buildingAge:BuildingAge = houseData.buildingAge;
+            var houseType:int = houseData.houseType;
+
+            var houseTypeIdx:int = getComboItemIndexForCollection(houseType, houseList);
+            var houseStandardTypeIdx = getComboItemIndexForCollection(houseData.standardType, houseStandardTypeList);
+
+            houseDropDownList.selectedIndex = houseTypeIdx;
+            if (houseStandardTypeIdx != -1) {
+                houseStandardDropDownList.selectedIndex = houseStandardTypeIdx;
+            }
+
+            applyHouseDataToNumericSteppers(houseData);
+        }
+
+        private function applyHouseDataToNumericSteppers(houseData:HouseData):void {
+            var surfaceData:SurfaceData = houseData.surfaceData;
+            inHouseTempNS.value = houseData.tIn;
+            applyPrimarySurfaceDataToControls(surfaceData);
+            applySecondarySurfaceDataToControls(surfaceData);
+        }
+
+
+        private function applyPrimarySurfaceDataToControls(surfaceData:SurfaceData):void {
+            totalSurfaceNS.value = surfaceData.totalSurface;
+            floorsCountNS.value = surfaceData.floorCount;
+            floorHeightNS.value = surfaceData.floorHeight;
+        }
+
+        private function applySecondarySurfaceDataToControls(surfaceData:SurfaceData):void {
+            wallsSurfaceNS.value = surfaceData.wallSurface;
+            roofSurfaceNS.value = surfaceData.roofSurface;
+            floorSurfaceNS.value = surfaceData.floorSurface;
+            northWinSurfaceNS.value = surfaceData.windowsSurfaceN;
+            southWinSurfaceNS.value = surfaceData.windowsSurfaceS;
+            westEastWinSurfaceNS.value = surfaceData.windowsSurfaceWE;
+        }
+
+        private function housePopupCreated():void {
+            currentImg = housePopupMainSmallImg;
+            setEnableFloorHeightAndCountNS(false);
+            hideRolledIcons();
+        }
+
+        private function hideOrShowComponents():void {
+            rolledUp = !rolledUp;
+            setComponentsVisibility(rolledUp);
+            housePopupRollUpImg.visible = false;
+            housePopupRollDownImg.visible = false;
+            housePopupRollUpOverImg.visible = rolledUp;
+            housePopupRollDownOverImg.visible = !rolledUp;
+        }
+
+        private function hideOrShowComponents1():void {
+
+        }
+
+        private function setComponentsVisibility(visible:Boolean):void {
+            currentImg.visible = visible;
+            housePopupUpperGroup.visible = visible;
+            if (!detailsVisible) {
+                doSetDetailsVisibility(false);
+            }
+            else {
+                doSetDetailsVisibility(visible);
+            }
+            housePopupRollUpImg.visible = visible;
+            housePopupRollDownImg.visible = !visible;
+        }
+
+        private function hideStartState():void {
+            setRolledBackState();
+            var heatMaster:HeatMaster = FlexGlobals.topLevelApplication as HeatMaster;
+            heatMaster.goToHeatingPopupState();
+        }
+
+        private function hideRolledIcons():void {
+            housePopupRollDownImg.visible = false;
+            housePopupRollUpImg.visible = false;
+        }
+
+        private function clickGroupMouseOver():void {
+            if (!housePopupOkBtn.visible) {
+                if (housePopupRollUpImg.visible) {
+                    housePopupRollUpImg.visible = false;
+                    housePopupRollUpOverImg.visible = true;
+                }
+                else if (housePopupRollDownImg.visible) {
+                    housePopupRollDownImg.visible = false;
+                    housePopupRollDownOverImg.visible = true;
+                }
+            }
+        }
+
+        private function clickGroupMouseOut():void {
+            if (!housePopupOkBtn.visible) {
+                if (housePopupRollUpOverImg.visible) {
+                    housePopupRollUpImg.visible = true;
+                    housePopupRollUpOverImg.visible = false;
+                }
+                else if (housePopupRollDownOverImg.visible) {
+                    housePopupRollDownImg.visible = true;
+                    housePopupRollDownOverImg.visible = false;
+                }
+            }
+        }
+
+        override public function langChanged(lang:String):void {
+            var oldIdx:int = houseDropDownList.selectedIndex;
+            houseList.refresh();
+            houseDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = countryDropDownList.selectedIndex;
+
+            for (var i:int = 0; i < countryList.length; i++) {
+                var configItem:CountryItem = countryList.getItemAt(i) as CountryItem;
+                configItem.name = resourceManager.getString('hm', configItem.localeCode);
+
+                if (configItem.regions.length > 0) {
+                    for (var j:int = 0; j < configItem.regions.length; j++) {
+                        var regionItem:RegionItem = configItem.regions.getItemAt(j) as RegionItem;
+                        regionItem.name = resourceManager.getString('hm', regionItem.localeCode);
+                    }
+                }
+            }
+
+            countryList.refresh();
+            countryDropDownList.selectedIndex = oldIdx;
+
+            if (regionList != null) {
+                if (regionDropDownList.visible) {
+                    oldIdx = regionDropDownList.selectedIndex;
+                }
+
+                regionList.refresh();
+                if (regionDropDownList.visible) {
+                    regionDropDownList.selectedIndex = oldIdx;
+                }
+            }
+
+            oldIdx = houseStandardDropDownList.selectedIndex;
+            houseStandardTypeList.refresh();
+            houseStandardDropDownList.selectedIndex = oldIdx;
+        }
+
+        public function getSelectedCountry():CountryItem {
+            return countryDropDownList.selectedItem;
+        }
+        ]]></fx:Script>
+
+
+    <!--<mx:Image x="5" y="4"  maintainAspectRatio="false" visible="false" id="housePopupMainImg" source="pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_house_panel.png" />-->
+    <mx:Image x="3"  y="2" scaleY="1.12"   id="housePopupMainImg"      visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
+    <mx:Image x="4"  y="2" scaleY="1.12"  id="housePopupMainSmallImg"      visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_house_small.png')" />
+
+
+    <s:Image x="9"  y="6"   id="housePopupHeaderImg"                   source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
+    <s:Image x="23" y="15"  id="housePopupIconImg"                     source="@Embed('/pl/znr/heatmaster/assets/images/icons/house_icon.png')"/>
+
+
+
+    <s:Label x="66" y="17" width="200" height="23" styleName="popupPanelHeader"
+             paddingBottom="10"  paddingTop="5"
+             text="{resourceManager.getString('hm','hm.label.title.house_type')}" id="housePopupHouseTypeLbl" fontSize="14"/>
+
+    <s:Group id="tabClickGroup" visible="false" x="10" y="10" height="35" width="280"
+             click="hideOrShowComponents()"
+             mouseOver="clickGroupMouseOver()" mouseOut="clickGroupMouseOut()">
+        <mx:Button x="254" y="12" id="housePopupRollUpImg"    visible="false"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up.png')"
+                   click="hideOrShowComponents1()"
+                >
+        </mx:Button>
+
+        <mx:Button x="253" y="9" id="housePopupRollUpOverImg"    visible="false"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rollup_over.png')"
+                   click="hideOrShowComponents1()"
+                >
+        </mx:Button>
+
+        <mx:Button x="254" y="12" id="housePopupRollDownImg"  visible="false" click="hideOrShowComponents1()"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down.png')"
+                />
+
+        <mx:Button x="253" y="11" id="housePopupRollDownOverImg"  visible="false" click="hideOrShowComponents1()"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rolldown_over.png')"
+                />
+
+    </s:Group>
+
+    <mx:Button id="housePopupOkBtn" x="30" y="220" visible="false" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_house.png')"/>
+
+    <s:Group x="-3" y="48" width="100%" id="housePopupUpperGroup" visible="false">
+
+
+        <s:Label y="6" right="202"  styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.country')}" />
+        <s:DropDownList id="countryDropDownList" x="116" y="0" width="169" change="countryChanged()"
+                        selectedIndex="0" labelField="name">
+        </s:DropDownList>
+
+        <s:Label y="35" right="202" id="regionLabel" styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.region')}" />
+        <s:DropDownList id="regionDropDownList" x="116" y="30" width="169" change="regionChanged()"
+                        selectedIndex="0" labelField="name">
+        </s:DropDownList>
+
+        <s:Label y="65" right="202"    styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.type')}" />
+        <s:DropDownList selectedIndex="0" id="houseDropDownList" x="116" y="60" width="169" dataProvider="{houseList}" rollOverColor="0xd3d3d3"
+                        selectionColor="0xf0fbff" requireSelection="true"  labelField="name"
+                        skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterHouseTypeDropDownSkin"
+                        minWidth="{houseDropDownList.width}"
+                        change="houseTypeChanged()">
+        </s:DropDownList>
+
+        <s:Label y="95" right="202"  styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.standard')}" />
+        <s:DropDownList id="houseStandardDropDownList" x="116" y="90" width="169" dataProvider="{houseStandardTypeList}"
+                        selectedIndex="2" labelField="name" change="comboStandardChanged()">
+        </s:DropDownList>
+
+
+        <s:Label  y="120" right="202" text="{resourceManager.getString('hm','hm.label.in_house_temp')}" styleName="popupPanelLabelOrangeStyle"/>
+        <s:NumericStepper value="20"  id="inHouseTempNS" x="116" y="117" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="50" change="inHouseTempChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:RichText x="167" y="120" styleName="pupupPanelGrayFontStyle">
+            <s:span baselineShift="superscript">0</s:span><s:span>C</s:span>
+        </s:RichText>
+
+        <s:Label y="120" right="83"  styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.area')}"/>
+        <s:NumericStepper value="120"  id="totalSurfaceNS" x="233" y="115" width="36" height="20" minimum="10" maximum="999"  valueParseFunction="{GlobalValues.parseIntValue}" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:RichText x="274" y="120" styleName="pupupPanelGrayFontStyle">
+            <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
+        </s:RichText>
+
+        <s:RichText  y="{resourceManager.getInt('hm','hm.label.floors.y')}" right="202" text="Pietra" styleName="popupPanelLabelOrangeStyle">
+            <s:textFlow>
+                {TextFlowUtil.importFromString(resourceManager.getString('hm','hm.label.panel.floors'))}
+            </s:textFlow>
+        </s:RichText>
+        <s:NumericStepper value="1"   id="floorsCountNS" x="116" y="144"  width="44" height="20"  minimum="1" maximum="100"   valueParseFunction="{GlobalValues.parseIntValue}" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+
+        <s:Label  y="149" right="83"  text="{resourceManager.getString('hm','hm.label.floor_height')}"     styleName="popupPanelLabelOrangeStyle"/>
+        <s:NumericStepper value="2.7" stepSize="0.1" minimum="2" maximum="10" valueParseFunction="{GlobalValues.parseFloatValue}"  id="floorHeightNS" x="233" y="144"  height="20" width="36" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:RichText x="274" y="144"  text="m" styleName="pupupPanelGrayFontStyle"/>
+
+        <s:CheckBox id="detailsCheckBox" x="30" y="174" visible="false"  label="{resourceManager.getString('hm','hm.label.edit_details')}" click="setDetailsVisibility()" />
+
+
+    </s:Group>
+
+    <s:BorderContainer x="15" y="240" width="270" height="88" id="lowerBorderContainer" visible="false" borderVisible="false" borderColor="red" borderWeight="1" backgroundAlpha="0.0">
+
+        <s:Group x="-17" y="3" id="housePopupLowerLeftGroup" >
+            <s:RichText x="20" y="14" styleName="pupupPanelGrayFontStyle" fontSize="11">
+                <s:textFlow>
+                    <s:TextFlow>
+                        <s:p digitWidth="tabular">{resourceManager.getString('hm','hm.label.heat_loss_surface1')}</s:p>
+                        <s:p digitWidth="tabular">{resourceManager.getString('hm','hm.label.heat_loss_surface2')}</s:p>
+                    </s:TextFlow>
+                </s:textFlow>
+            </s:RichText>
+            <s:RichText x="20" y="64" text="{resourceManager.getString('hm','hm.label.windows')}"  styleName="pupupPanelGrayFontStyle" fontSize="11"/>
+        </s:Group>
+
+        <s:Group x="70" y="3" width="195" height="85" id="housePopupLowerGroup" >
+            <s:Group x="10" width="100%" height="44">
+                <s:RichText x="8"   y="4"  text="{resourceManager.getString('hm','hm.label.walls')}"  styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="65"  y="4"  text="{resourceManager.getString('hm','hm.label.roof')}"    styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="127" y="4"  text="{resourceManager.getString('hm','hm.label.floor')}" styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="175" y="23" styleName="pupupPanelGrayFontStyle">
+                    <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
+                </s:RichText>
+
+                <s:NumericStepper x="10" y="18"  id="wallsSurfaceNS" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="wallSurfaceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:NumericStepper x="66" y="18"  id="roofSurfaceNS"  width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="roofSurfaceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:NumericStepper x="127" y="18" id="floorSurfaceNS" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="floorAreaChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            </s:Group>
+
+            <s:Group x="10" y="42" width="100%" height="44">
+                <s:RichText x="24"  y="4"  text="{resourceManager.getString('hm','hm.label.south')}"          styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="65"  y="4"  text="{resourceManager.getString('hm','hm.label.east_west')}"   styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="145" y="4"  text="{resourceManager.getString('hm','hm.label.north')}"           styleName="smallPupupPanelGrayFontStyle"/>
+                <s:RichText x="175" y="23" styleName="pupupPanelGrayFontStyle">
+                    <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
+                </s:RichText>
+
+                <s:NumericStepper id="southWinSurfaceNS" x="10" y="18" width="44"  height="20"  valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="windowsSurfaceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:NumericStepper id="westEastWinSurfaceNS" x="66" y="18"  width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="windowsSurfaceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:NumericStepper id="northWinSurfaceNS" x="127" y="18" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="1000" change="windowsSurfaceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            </s:Group>
+        </s:Group>
+    </s:BorderContainer>
+
+    <fx:Declarations>
+        <s:ArrayCollection id="houseList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.detached')}" data="{HouseType.DETACHED}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon1.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon1.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.multifamily')}" data="{HouseType.MULTI_FAMILY_UPPER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon2.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon2.png"/>
+            <fx:Object  name="{resourceManager.getString('hm','hm.dropdown.house.type.multifamily')}" data="{HouseType.MULTI_FAMILY_FIRST_FLOOR}"
+                        imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon3.png"
+                        previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon3.png"/>
+            <fx:Object  name="{resourceManager.getString('hm','hm.dropdown.house.type.terraced')}" data="{HouseType.TERRACED_RIGHT}"
+                        imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon4.png"
+                        previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon4.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.terraced')}"  data="{HouseType.TERRACED_CENTER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon5.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon5.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.multifamily')}"  data="{HouseType.MULTI_FAMILY_CENTER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon6.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon6.png"/>
+
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_LOWER_LEFT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon7.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon7.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_CENTER_LOWER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon8.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon8.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_EDGE_RIGHT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon9.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon9.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_CENTER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon10.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon10.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_UPPER_RIGHT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon11.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon11.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_CENTER_UPPER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon12.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon12.png"/>
+
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_LOWER_RIGHT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon13.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon13.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_CENTER_LOWER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon14.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon14.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_EDGE_RIGHT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon15.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon15.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_CENTER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon16.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon16.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_UPPER_RIGHT}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon17.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon17.png"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.type.block')}" data="{HouseType.BLOCK_DOUBLE_CENTER_UPPER}"
+                       imageFile="pl/znr/heatmaster/assets/images/combo_house_icons/icon18.png"
+                       previewImage="pl/znr/heatmaster/assets/images/combo_house_icons/preview/s_icon18.png"/>
+        </s:ArrayCollection>
+    </fx:Declarations>
+
+
+</hm:HeatMasterComponent>

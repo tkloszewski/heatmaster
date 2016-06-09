@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.ArrowOrientation;
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        [Bindable]
+        private var componentsVisible:Boolean = false;
+
+        override protected function getArrowOrientation():int {
+            return ArrowOrientation.VERTICAL;
+        }
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            var result:Number = monthlyData.enCollectorSolarGain;
+            componentsVisible = result > 0;
+
+            return result;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            var result:Number = resultData.yearlyAggregatedConvertedData.enCollectorSolarGain;
+            componentsVisible = result > 0;
+            return result;
+        }
+
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+            try {
+                var value:Number = getMonthValue(resultData, month);
+                var yearValue:Number = getYearValue(resultData, month);
+
+                var conversionData:ConversionData = resultData.conversionData;
+
+                var valueChosen:Number = chooseNewValue(value, yearValue, conversionData.selectedUnit);
+
+                this.unitName = conversionData.shortUnitName;
+                this.calculatedUnit = conversionData.selectedUnit;
+                this.calculatedValue = valueChosen;
+
+                this.scaleArrow(collectorSolarImg, value, yearValue, resultData.conversionData);
+                this.displayNewValue(valueChosen,conversionData.selectedUnit,conversionData.shortUnitName);
+            } catch (e:Error) {
+                Alert.show("Collector gain error " + e.message);
+            }
+        }
+
+        override protected function getValueLabel():Label {
+            return collectorSolarLabel;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            return collectorSolarImg;
+        }
+        ]]></fx:Script>
+
+
+    <mx:Image id="collectorSolarImg" visible="{componentsVisible}" maintainAspectRatio="false" x="40" y="10" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_down.png')"/>
+    <s:Label id="collectorSolarLabel" visible="{componentsVisible}" x="0" y="110" width="136" height="27" styleName="arrowLabelStyle" color="{LABEL_VALUE_GAIN_COLOR}"/>
+
+
+
+</arrows:HeatMasterArrow>

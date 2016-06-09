@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.ArrowOrientation;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.core.BalanceValueHelper;
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        private var originalValueLabelY:int = 5;
+        private var unitsInlineValueLabelY:int = 15;
+
+        override protected function getMaxScaleRatio():Number {
+            return 1.5;
+        }
+
+        override protected function getArrowOrientation():int {
+            return ArrowOrientation.HORIZONTAL;
+        }
+
+
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+            try {
+                var value:Number = BalanceValueHelper.calcBalanceEnSolGainForMonth(resultData, month);
+                var yearValue:Number = BalanceValueHelper.calcBalanceEnSolGain(resultData);
+
+                var converterResult:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+
+                var conversionData:ConversionData = resultData.conversionData;
+
+                var valueChosen:Number = chooseNewValue(value, yearValue, conversionData.selectedUnit);
+
+                this.unitName = conversionData.shortUnitName;
+                this.calculatedUnit = conversionData.selectedUnit;
+                this.calculatedValue = valueChosen;
+
+                this.scaleArrow(sunGainImage, value, yearValue, resultData.conversionData);
+                this.displayNewValue(valueChosen,conversionData.selectedUnit,conversionData.shortUnitName);
+            } catch (e:Error) {
+                Alert.show("SunGainArrow error" + e.message);
+            }
+        }
+
+
+        override protected function getWidthCoefficient():Number {
+            return 0.1;
+        }
+
+        override protected function getValueLabel():Label {
+            return sunGainValueLabel;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return sunGainArrowUnitLabel;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            return sunGainImage;
+        }
+
+        override protected function arrowInitialized():void {
+            super.arrowInitialized();
+            sunGainValueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelOriginalYPosition():void {
+            sunGainValueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelWithUnitsInlinePosition():void {
+            sunGainValueLabel.y = unitsInlineValueLabelY;
+        }
+
+        ]]></fx:Script>
+
+
+    <mx:Image x="0" y="0" maintainAspectRatio="false" id="sunGainImage" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_right.png')"/>
+
+    <s:Label x="100" y="5" id="sunGainValueLabel" width="60" height="22" styleName="arrowLabelStyle" color="{LABEL_VALUE_GAIN_COLOR}"/>
+    <s:Label x="102" y="23" id="sunGainArrowUnitLabel" width="60" height="22" styleName="arrowLabelStyle" color="{LABEL_VALUE_GAIN_COLOR}"/>
+
+</arrows:HeatMasterArrow>

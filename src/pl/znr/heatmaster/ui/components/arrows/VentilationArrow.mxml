@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+
+        private var gravitationalVentArrowX:Number = 130;
+        private var mechanicalVentArrowX:Number = 70;
+        private var gravitationalVentArrowY:Number = 0;
+        private var mechanicalVentArrowY:Number = -15;
+
+        private var gravitationalGroupX:Number = 25;
+        private var mechanicalGroupX:Number = -15;
+        private var gravitationalGroupY:Number = 10;
+        private var mechanicalGroupY:Number = -5;
+
+        private var mechanicalVent:Boolean = false;
+
+        private var originalValueLabelY:int = 5;
+        private var unitsInlineValueLabelY:int = 8;
+
+        [Bindable]
+        private var ventArrowX:Number = gravitationalVentArrowX;
+
+        [Bindable]
+        private var ventArrowY:Number = gravitationalVentArrowY;
+
+        [Bindable]
+        private var labelGroupX:Number = gravitationalGroupX;
+
+        [Bindable]
+        private var labelGroupY:Number = gravitationalGroupY;
+
+        private var currentImgArrow:Image;
+
+
+        override protected function arrowInitialized():void {
+            super.arrowInitialized();
+            this.currentImgArrow = ventilationImgArrow;
+            ventilationArrowLabel.y = originalValueLabelY;
+        }
+
+        public function ventTypeChange(mechanical:Boolean):void {
+            mechanicalVent = mechanical;
+            /*ventArrowX = mechanical ? mechanicalVentArrowX : gravitationalVentArrowX;
+            labelGroupX = mechanical ? mechanicalGroupX : gravitationalGroupX;
+            ventArrowY = mechanical ? mechanicalVentArrowY : gravitationalVentArrowY;
+            labelGroupY = mechanical ? mechanicalGroupY : gravitationalGroupY;*/
+        }
+
+        override protected function getValueLabel():Label {
+            return ventilationArrowLabel;
+        }
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            var value:Number = monthlyData.enVent + monthlyData.enTightness + monthlyData.enRecuperator;
+            return value;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            var yearValue:Number = resultData.yearlyAggregatedConvertedData.enVent;
+            yearValue += resultData.yearlyAggregatedConvertedData.enTightness;
+            yearValue += resultData.yearlyAggregatedConvertedData.enRecuperator;
+            return yearValue;
+        }
+
+        override protected function getMaxScaleRatio():Number {
+            return 2;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return ventUnitLabel;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            ventilationImgArrow.visible = regularArrowVisible;
+            ventilationGainImgArrow.visible = !regularArrowVisible;
+            currentImgArrow = regularArrowVisible ? ventilationImgArrow : ventilationGainImgArrow;
+            return currentImgArrow;
+        }
+
+        override protected function adjustExistingPercentageLabel(label:Label):void {
+            label.x = currentImgArrow.x + currentImgArrow.width / 4;
+        }
+
+        override protected function setValueLabelOriginalYPosition():void {
+            ventilationArrowLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelWithUnitsInlinePosition():void {
+            ventilationArrowLabel.y = unitsInlineValueLabelY;
+        }
+
+        ]]></fx:Script>
+
+
+    <mx:Image id="ventilationImgArrow" x="{ventArrowX}" y="{ventArrowY}" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_left.png')"/>
+    <mx:Image id="ventilationGainImgArrow" visible="false" x="{ventArrowY}" y="0" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_right.png')"/>
+
+    <s:Group x="{labelGroupX}" y="{labelGroupY}">
+        <s:Label id="ventilationArrowLabel" x="0" y="5" width="74" height="22" styleName="arrowLabelStyle"/>
+        <s:Label x="2" y="23" id="ventUnitLabel" width="74" height="22" styleName="arrowLabelStyle"/>
+    </s:Group>
+
+</arrows:HeatMasterArrow>

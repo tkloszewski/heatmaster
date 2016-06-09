@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<balloon:LabelBaloon xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        private var _showValue:Boolean = false;
+
+        public function get showValue():Boolean {
+            return _showValue;
+        }
+
+        public function set showValue(value:Boolean):void {
+            _showValue = value;
+        }
+
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+            try {
+                var conversionData:ConversionData = resultData.conversionData;
+                var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+                var value:Number = monthlyData.enSolGain;
+                var yearlyValue:Number = resultData.yearlyAggregatedConvertedData.enSolGain;
+
+                if (ConversionUnits.isYearUnit(conversionData.selectedUnit)) {
+                    value = yearlyValue;
+                }
+
+                if (showValue) {
+                    setLabelValue(value, conversionData.unitName);
+                }
+            } catch (e:Error) {
+                Alert.show("error setting insulation value for month: " + month);
+            }
+        }
+
+        override public function unitChanged(resultData:ProcessingResult, month:int, unit:int):void {
+            super.unitChanged(resultData, month, unit);
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            return super.initData(dataContext);
+        }
+        ]]></fx:Script>
+
+</balloon:LabelBaloon>

@@ -1,0 +1,407 @@
+<?xml version="1.0"?>
+<components:HeatMasterResultComponent xmlns:fx="http://ns.adobe.com/mxml/2009"
+                                      xmlns:s="library://ns.adobe.com/flex/spark"
+                                      xmlns:components="pl.znr.heatmaster.ui.components.*">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Declarations>
+        <s:ArrayList id="monthList">
+            <fx:String>hm.dropdown.month_1</fx:String>
+            <fx:String>hm.dropdown.month_2</fx:String>
+            <fx:String>hm.dropdown.month_3</fx:String>
+            <fx:String>hm.dropdown.month_4</fx:String>
+            <fx:String>hm.dropdown.month_5</fx:String>
+            <fx:String>hm.dropdown.month_6</fx:String>
+            <fx:String>hm.dropdown.month_7</fx:String>
+            <fx:String>hm.dropdown.month_8</fx:String>
+            <fx:String>hm.dropdown.month_9</fx:String>
+            <fx:String>hm.dropdown.month_10</fx:String>
+            <fx:String>hm.dropdown.month_11</fx:String>
+            <fx:String>hm.dropdown.month_12</fx:String>
+        </s:ArrayList>
+
+    </fx:Declarations>
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+
+        import mx.core.IVisualElement;
+        import mx.core.IVisualElementContainer;
+        import mx.formatters.Formatter;
+        import mx.formatters.NumberBaseRoundType;
+        import mx.formatters.NumberFormatter;
+        import mx.graphics.SolidColor;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.core.BalanceValueHelper;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        import spark.components.Group;
+
+        import spark.components.Label;
+        import spark.layouts.HorizontalLayout;
+        import spark.layouts.VerticalLayout;
+        import spark.primitives.Rect;
+
+        private var _positiveColorLabel:String = "red";
+
+        private var _negativeColorLabel:String = "green";
+
+        private var _balanceYearLabelColor:String = "blue";
+
+        private var _heatingYearLabelColor:String = "red";
+
+        private static const NET_LABEL_COST_TEXT:String = "Koszty";
+        private static const NET_LABEL_HEATING_TEXT:String = "Ogrzewanie";
+        private static const NET_LABEL_EMISSIONS_TEXT:String = "Emisje CO2";
+        private static const MONTH_LEGEND_LABEL_STYLE_NAME:String = "monthLegendStyle";
+        private static const MONTH_LEGEND_VALUE_LABEL_STYLE_NAME:String = "monthLegendValueStyle";
+
+
+        private var showBalance:Boolean = false;
+        private var legendRect:Rect;
+
+        private var monthLabels:ArrayCollection = new ArrayCollection();
+        private var yearlyLabel:Label;
+        private var heatingLabel:Label;
+
+        private var myChildComponents:ArrayCollection = new ArrayCollection();
+        private var myChildrenCreated:Boolean = false;
+
+        override public function langChanged(lang:String):void {
+            for (var i:int = 0; i < monthLabels.length; i++) {
+                var monthLabel:Label = monthLabels.getItemAt(i) as Label;
+                monthLabel.text = resourceManager.getString('hm', monthList.getItemAt(i).toString());
+            }
+            heatingLabel.text = resourceManager.getString('hm', 'hm.label.heating');
+            yearlyLabel.text = resourceManager.getString('hm', 'hm.label.yearly');
+        }
+
+        override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+            super.updateDisplayList(unscaledWidth, unscaledHeight);
+            var newWidth = this.width/14;
+            var x:Number = 0;
+            for each(var childGroup:Group in myChildComponents){
+                childGroup.setActualSize(newWidth,childGroup.height);
+                childGroup.move(x,childGroup.y);
+                x += newWidth;
+            }
+        }
+
+        override protected function createChildren():void {
+            super.createChildren();
+            if (!myChildrenCreated) {
+                prepareComponent();
+                myChildrenCreated = true;
+            }
+        }
+
+        public function set balanceYearLabelColor(value:String):void {
+            _balanceYearLabelColor = value;
+        }
+
+        public function set positiveColorLabel(value:String):void {
+            _positiveColorLabel = value;
+        }
+
+        public function set negativeColorLabel(value:String):void {
+            _negativeColorLabel = value;
+        }
+
+
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+
+            try {
+                var formatter:Formatter = createFormat();
+                var conversionData:ConversionData = resultData.conversionData;
+
+                for (var i:int = 0; i < resultData.monthlyConvertedData.length; i++) {
+                    var convertedResult:ConvertedResult = resultData.monthlyConvertedData[i] as ConvertedResult;
+                    var value:int = convertedResult.getBalanceValue() - convertedResult.enRecuperator;
+                    if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
+                        value = convertedResult.getEfficiencyAwareBalanceValue();
+                    }
+                    var id:String = buildBalanceLabelId(i);
+                    var label:Label = getLabel(id, this);
+                    if (label != null) {
+                        var color:String = value > 0 ? _positiveColorLabel : _negativeColorLabel;
+                        label.setStyle("color", color);
+                        label.text = value.toString();
+                    }
+                    id = buildHeatingLabelId(i);
+                    label = getLabel(id, this);
+                    if (label != null) {
+                        label.text = formatter.format(Math.max(0, value));
+                    }
+                }
+
+                label = getLabel(getBalanceYeaLabelId(), this);
+                if (label != null) {
+                    var valueYear:Number = BalanceValueHelper.calcYearBalanceValueWithoutRec(resultData);
+                    if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
+                        valueYear = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
+                    }
+                    label.text = formatter.format(valueYear);
+                }
+                label = getLabel(getHeatingYeaLabelId(), this);
+                if (label != null) {
+                    var requiredHeating:Number = BalanceValueHelper.calcYearBalanceValueWithoutRec(resultData);
+                    if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
+                        requiredHeating = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
+                    }
+                    label.text = formatter.format(requiredHeating);
+                }
+                label = getLabel(getNetLabelId(), this);
+                if (label != null) {
+                    if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
+                        //label.text = NET_LABEL_COST_TEXT;
+                        label.visible = false;
+                        if (legendRect != null) {
+                            legendRect.visible = false;
+                        }
+                    }
+                    else {
+                        label.visible = true;
+                        if (legendRect != null) {
+                            legendRect.visible = true;
+                        }
+                        if (ConversionUnits.isEnergyUnit(conversionData.selectedUnit)) {
+                            label.text = resourceManager.getString('hm', 'hm.label.heating');
+                        }
+
+                    }
+                }
+
+            } catch (e:Error) {
+                Alert.show("Error creating horizontal labels:  " + e.message);
+            }
+
+        }
+
+
+        private function getLabel(id:String, container:IVisualElementContainer):Label {
+            for (var i:int = 0; i < container.numElements; i++) {
+                var visualElement:IVisualElement = container.getElementAt(i);
+                if (visualElement is Label) {
+                    var label:Label = visualElement as Label;
+                    if (label.id == id) {
+                        return label;
+                    }
+                }
+                else if (visualElement is IVisualElementContainer) {
+                    var result:Label = getLabel(id, visualElement as IVisualElementContainer);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+
+            }
+            return null;
+        }
+
+        private function prepareComponent():void {
+            //Alert.show("this width: " + this.width);
+            var x:Number = 0;
+
+            var width:Number = this.width / 14;
+            for (var i:int = 0; i < 12; i++) {
+                var group:Group = createLabelGroup(width, i);
+                group.x = x;
+                group.width = width;
+
+                this.addElement(group);
+                myChildComponents.addItem(group);
+
+                x = group.x + group.width;
+            }
+            var yearlyGroup:Group = createYearlyGroup(width);
+            yearlyGroup.x = x;
+            this.addElement(yearlyGroup);
+
+            myChildComponents.addItem(yearlyGroup);
+
+            x = yearlyGroup.x + yearlyGroup.width;
+
+            var legendGroup:Group = new Group();
+            legendGroup.layout = new VerticalLayout();
+            legendGroup.x = x;
+            legendGroup.width = width;
+
+            var emptyLabel:Label = new Label();
+            emptyLabel.text = "";
+            emptyLabel.width = width;
+            legendGroup.addElement(emptyLabel);
+
+            var subLegendGroup2:Group = createSubLegendGroup(0x0000FF, resourceManager.getString('hm', 'hm.label.heating'), width, true, true);
+
+
+            legendGroup.addElement(subLegendGroup2);
+
+            this.addElement(legendGroup);
+            myChildComponents.addItem(legendGroup)
+
+        }
+
+        private function createSubLegendGroup(color:int, text:String, width:Number, netLabel:Boolean, isHeatingLabel:Boolean):Group {
+
+            var subLegendGroup:Group = new Group();
+            // subLegendGroup.layout = new HorizontalLayout();
+            subLegendGroup.width = width;
+            var rect:Rect = new Rect();
+            rect.width = 0.2 * width;
+            rect.x = 0;
+
+            rect.height = 4;
+            rect.fill = createFill(color);
+            rect.top = 2;
+
+            if (netLabel) {
+                legendRect = rect;
+            }
+
+            subLegendGroup.addElement(rect);
+
+            var balanceLabel:Label = new Label();
+            balanceLabel.width = 0.85 * width;
+            balanceLabel.x = rect.x + rect.width * 1.1;
+            balanceLabel.text = text;
+
+            if (isHeatingLabel) {
+                heatingLabel = balanceLabel;
+            }
+
+            // balanceLabel.setStyle("fontSize", "11");
+            balanceLabel.styleName = MONTH_LEGEND_LABEL_STYLE_NAME;
+            subLegendGroup.addElement(balanceLabel);
+            if (netLabel) {
+                balanceLabel.id = getNetLabelId();
+            }
+            else {
+                balanceLabel.id = getHeatingEmissionLabelId();
+            }
+
+            return subLegendGroup;
+        }
+
+        private function getHeatingEmissionLabelId():String {
+            return "heatingEmissionLabelId";
+        }
+
+        private function createYearlyGroup(width:Number):Group {
+            var group:Group = new Group();
+            group.layout = new VerticalLayout();
+            group.width = width;
+            group.y = 0;
+
+            var yearLabel:Label = createLabel(null, width);
+            yearLabel.text = resourceManager.getString('hm', 'hm.label.yearly');
+            yearLabel.setStyle("fontWeight", "bold");
+            yearLabel.width = width;
+            group.addElement(yearLabel);
+
+            yearlyLabel = yearLabel;
+
+            var labelBalanceYear:Label = createLabel(getBalanceYeaLabelId(), width);
+            labelBalanceYear.setStyle("color", _balanceYearLabelColor);
+            labelBalanceYear.setStyle("fontWeight", "bold");
+
+            if (showBalance) {
+                group.addElement(labelBalanceYear);
+            }
+
+            var labelHeatingYear:Label = createLabel(getHeatingYeaLabelId(), width);
+            labelHeatingYear.setStyle("color", _heatingYearLabelColor);
+            labelHeatingYear.setStyle("fontWeight", "bold");
+            group.addElement(labelHeatingYear);
+
+            return group;
+        }
+
+        private function createLabelGroup(width:Number, monthIdx:int):Group {
+            var group:Group = new Group();
+            group.layout = new VerticalLayout();
+            group.width = width;
+            group.y = 0;
+
+            var monthLabel:Label = createLabel(null, width);
+            monthLabel.styleName = MONTH_LEGEND_LABEL_STYLE_NAME;
+            monthLabel.text = resourceManager.getString('hm', monthList.getItemAt(monthIdx).toString());
+            monthLabel.width = group.width;
+
+            monthLabels.addItem(monthLabel);
+
+            group.addElement(monthLabel);
+
+            if (showBalance) {
+                group.addElement(createLabel(buildBalanceLabelId(monthIdx), width));
+            }
+
+            var heatingLabel:Label = createLabel(buildHeatingLabelId(monthIdx), width);
+            heatingLabel.styleName = MONTH_LEGEND_VALUE_LABEL_STYLE_NAME;
+            heatingLabel.setStyle("color", _positiveColorLabel);
+            heatingLabel.width = group.width;
+            group.addElement(heatingLabel);
+
+            return group;
+        }
+
+        private function createLabel(id:String, width:Number):Label {
+            var label:Label = new Label();
+            label.setStyle("textAlign", "center");
+            label.width = width;
+            label.x = 0;
+            if (id != null) {
+                label.id = id;
+            }
+            return label;
+        }
+
+        private function buildBalanceLabelId(id:int):String {
+            return "balanceLabel" + id.toString();
+        }
+
+        private function buildHeatingLabelId(id:int):String {
+            return "heatingLabel" + id.toString();
+        }
+
+        private function getBalanceYeaLabelId():String {
+            return "balanceYearLabel";
+        }
+
+        private function getHeatingYeaLabelId():String {
+            return "heatingYearLabel";
+        }
+
+        private function getNetLabelId():String {
+            return "netLabelId"
+        }
+
+
+        private function createFormat():NumberFormatter {
+            var format:NumberFormatter = new NumberFormatter();
+            format.precision = 0;
+            format.rounding = NumberBaseRoundType.NEAREST;
+            return format;
+        }
+
+        private function createFill(color:int):SolidColor {
+            var solidColor:SolidColor = new SolidColor();
+            solidColor.color = color;
+            return solidColor;
+        }
+        ]]></fx:Script>
+
+
+
+
+
+
+
+
+
+</components:HeatMasterResultComponent>

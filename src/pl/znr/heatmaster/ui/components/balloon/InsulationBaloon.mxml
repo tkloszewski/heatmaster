@@ -1,0 +1,575 @@
+<?xml version="1.0"?>
+<balloon:BaseDropdownBaloon implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+                            xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                            xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
+                            xmlns:mx="library://ns.adobe.com/flex/mx"
+                            creationComplete="initializedIsolationBalloon()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Declarations>
+        <s:ArrayCollection id="insulationList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.insulation.average')}" data="{InsulationMaterialType.STANDARD}" idx="0"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.insulation.good')}" data="{InsulationMaterialType.GOOD}" idx="1"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.insulation.very_good')}" data="{InsulationMaterialType.VERY_GOOD}" idx="2"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="doorTypeList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.door.energy_intensive')}" data="{DoorType.NON_ENERGY_SAVING}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.door.standard')}" data="{DoorType.STANDARD}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.door.energy_saving')}" data="{DoorType.ENERGY_SAVING}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.door.super_energy_saving')}" data="{DoorType.SUPER_ENERGY_SAVING}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="foundationsList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.foundations.traditional')}" data="{FoundationsType.TRADITIONAL}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.foundations.traditional_insulated')}" data="{FoundationsType.TRADITIONAL_INSULATED}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.foundations.slab')}" data="{FoundationsType.SLAB}"/>
+        </s:ArrayCollection>
+
+    </fx:Declarations>
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.core.FlexGlobals;
+        import mx.core.UIComponent;
+        import mx.formatters.NumberFormatter;
+
+        import pl.znr.heatmaster.HeatMaster;
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.constants.GlobalValues;
+
+        import pl.znr.heatmaster.constants.combo.BuildingAge;
+        import pl.znr.heatmaster.constants.combo.DoorType;
+        import pl.znr.heatmaster.constants.combo.FoundationsType;
+        import pl.znr.heatmaster.constants.combo.FoundationsType;
+
+        import pl.znr.heatmaster.constants.combo.InsulationElementType;
+        import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
+        import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
+        import pl.znr.heatmaster.constants.combo.InsulationQuality;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.core.model.FloorElement;
+        import pl.znr.heatmaster.core.model.HouseData;
+        import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
+        import pl.znr.heatmaster.core.model.InsulationElement;
+        import pl.znr.heatmaster.core.model.RoofElement;
+        import pl.znr.heatmaster.core.model.WallElement;
+        import pl.znr.heatmaster.ui.builder.prepare.element.RegularElementPreparer;
+        import pl.znr.heatmaster.ui.builder.prepare.element.UValueBasedElementPreparer;
+        import pl.znr.heatmaster.ui.components.HousePanel;
+        import pl.znr.heatmaster.ui.components.tooltip.FloorToolTip;
+        import pl.znr.heatmaster.ui.components.tooltip.RoofToolTip;
+        import pl.znr.heatmaster.ui.components.tooltip.WallsToolTip;
+        import pl.znr.heatmaster.util.HouseStandardModelContainer;
+
+
+        [Bindable]
+        private var _richCmTextVisible:Boolean = true;
+
+        [Bindable]
+        private var _infoIconVisible:Boolean = true;
+
+        [Bindable]
+        private var _controlsSubGroupX:Number = 0;
+
+        [Bindable]
+        private var _controlsSubGroupY:Number = 35;
+
+        [Bindable]
+        private var _labelsSubgroupX:Number = 0;
+
+        [Bindable]
+        private var _labelsSubgroupY:Number = 14;
+
+        [Bindable]
+        private var _maximumWidth:Number = 40;
+
+        [Bindable]
+        private var _comboLabelsY:Number = 8;
+
+        [Bindable]
+        private var _comboLabelsX:Number = 0;
+
+        [Bindable]
+        private var _headerLabelX:Number = 0;
+
+        [Bindable]
+        private var _initialIndex:int = 1;
+
+
+        private var heatMaster:HeatMaster = FlexGlobals.topLevelApplication as HeatMaster;
+
+        private var _insulationElementType:int;
+        private var uValueElementPreparer:UValueBasedElementPreparer = new UValueBasedElementPreparer();
+        private var insulationElement:InsulationElement = new InsulationElement();
+
+        private var housePanel:HousePanel;
+
+
+        override public function langChanged(lang:String):void {
+            doLangChanged();
+        }
+
+        override public function initialLangChanged(lang:String):void {
+            doLangChanged();
+        }
+
+        private function doLangChanged():void {
+            var oldIdx:int = dropDownList.selectedIndex;
+            insulationList.refresh();
+            dropDownList.selectedIndex = oldIdx;
+
+            oldIdx = doorTypeDropDownList.selectedIndex;
+            doorTypeList.refresh();
+            doorTypeDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = foundationsTypeDropDownList.selectedIndex;
+            foundationsList.refresh();
+            foundationsTypeDropDownList.selectedIndex = oldIdx;
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                insulationElement = initInsulationElement(_insulationElementType);
+                widthNumericStepper.value = insulationElement.width;
+                uValueNumericStepper.value = insulationElement.uValue;
+                if (_insulationElementType == InsulationElementType.WALL) {
+                    dataContext.houseData.wallElement = insulationElement;
+                    var doorType:DoorType = doorTypeDropDownList.selectedItem.data as DoorType;
+                    dataContext.houseData.doorType = doorType;
+                }
+                else if (_insulationElementType == InsulationElementType.FLOOR) {
+                    dataContext.houseData.floorElement = insulationElement;
+                    var fType:int = foundationsTypeDropDownList.selectedItem.data;
+                    var fEnabled:Boolean = fType == FoundationsType.TRADITIONAL || fType == FoundationsType.TRADITIONAL_INSULATED;
+                    dataContext.houseData.foundationsEnabled = fEnabled;
+                    dataContext.houseData.foundationsUValue = FoundationsType.getUValueForTraditionalType(fType);
+                }
+                else if (_insulationElementType == InsulationElementType.ROOF) {
+                    dataContext.houseData.roofElement = insulationElement;
+                }
+                heatMasterListener.initInsulationElementChanged(insulationElement, _insulationElementType, FoundationsType.TRADITIONAL_INSULATED);
+            } catch (e:Error) {
+                Alert.show("Insulation element error: " + e.message);
+            }
+
+            return dataContext;
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            try {
+                var doorType:DoorType = dataContext.houseData.doorType;
+                var foundationsEnabled:Boolean = dataContext.houseData.foundationsEnabled;
+                if (_insulationElementType == InsulationElementType.WALL) {
+                    insulationElement = dataContext.houseData.wallElement;
+                }
+                else if (_insulationElementType == InsulationElementType.FLOOR) {
+                    insulationElement = dataContext.houseData.floorElement;
+                }
+                else if (_insulationElementType == InsulationElementType.ROOF) {
+                    insulationElement = dataContext.houseData.roofElement;
+                }
+
+                if (insulationElement != null) {
+                    widthNumericStepper.value = insulationElement.width;
+                    uValueNumericStepper.value = insulationElement.uValue;
+
+                    dropDownList.selectedIndex = getSelectedIndexForInsulationMaterialType(InsulationMaterialType.getMaterialInsulationTypeForHeatTransferValue(insulationElement.materialHeatTransfer));
+
+                    if (_insulationElementType == InsulationElementType.WALL) {
+                        var doorIdx:int = getComboItemIndexForCollection(doorType, doorTypeList);
+                        if (doorIdx != -1) {
+                            doorTypeDropDownList.selectedIndex = doorIdx;
+                        }
+                    }
+                    var foundationType:int = FoundationsType.TRADITIONAL_INSULATED;
+                    if (_insulationElementType == InsulationElementType.FLOOR) {
+                        if (!foundationsEnabled) {
+                            foundationsTypeDropDownList.selectedIndex = 2;
+                            foundationType = FoundationsType.SLAB;
+                        }
+                        else {
+                            if (isNaN(dataContext.houseData.foundationsUValue)) {
+                                foundationsTypeDropDownList.selectedIndex = 1;
+                            }
+                            else {
+                                foundationType = FoundationsType.getTypeForUValue(dataContext.houseData.foundationsUValue);
+                                foundationsTypeDropDownList.selectedIndex = foundationType == FoundationsType.TRADITIONAL_INSULATED ? 1 : 0;
+                            }
+                        }
+
+                    }
+
+                    heatMasterListener.initInsulationElementChanged(insulationElement, _insulationElementType, foundationType);
+                }
+            } catch (e:Error) {
+                Alert.show("Error in insulationElement setupView: " + e.message);
+            }
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            insulationElement = createInsulationElement();
+            var insulationMaterialType:InsulationMaterialType = HouseStandardModelContainer.getMaterialInsulationForElementType(insulationElement.getElementType(), context.model);
+            insulationElement.materialHeatTransfer = insulationMaterialType.heatTransferCoefficient;
+            insulationElement.uValue = HouseStandardModelContainer.getUValueForElementType(insulationElement.getElementType(), context.model);
+            insulationElement = uValueElementPreparer.prepare(insulationElement);
+
+            widthNumericStepper.value = insulationElement.width;
+            uValueNumericStepper.value = insulationElement.uValue;
+            dropDownList.selectedIndex = getSelectedIndexForInsulationMaterialType(insulationMaterialType);
+
+            if (insulationElement.getElementType() == InsulationElementType.ROOF) {
+                dataContext.houseData.roofElement = insulationElement;
+                context.roofInsulationElement = insulationElement;
+            }
+            else if (insulationElement.getElementType() == InsulationElementType.WALL) {
+                var doorIdx:int = getComboItemIndexForCollection(context.model.doorType, doorTypeList);
+                if (doorIdx != -1) {
+                    doorTypeDropDownList.selectedIndex = doorIdx;
+                }
+
+                context.wallInsulationElement = insulationElement;
+
+                dataContext.houseData.wallElement = insulationElement;
+                dataContext.houseData.doorType = context.model.doorType;
+            }
+            else if (insulationElement.getElementType() == InsulationElementType.FLOOR) {
+                var foundationsIdx:int = getComboItemIndexForCollection(context.model.foundationsType, foundationsList);
+                if (foundationsIdx != -1) {
+                    foundationsTypeDropDownList.selectedIndex = foundationsIdx;
+                }
+
+                context.floorInsulationElement = insulationElement;
+
+                dataContext.houseData.floorElement = insulationElement;
+                dataContext.houseData.foundationsUValue = FoundationsType.getUValueForTraditionalType(context.model.foundationsType);
+                dataContext.houseData.foundationsEnabled = FoundationsType.isFoundationsEnabledForType(context.model.foundationsType);
+
+            }
+        }
+
+        public function getOrder():int {
+            return 1;
+        }
+
+        public function get labelsSubgroupX():Number {
+            return _labelsSubgroupX;
+        }
+
+        public function set labelsSubgroupX(value:Number):void {
+            _labelsSubgroupX = value;
+        }
+
+        public function set headerLabelX(value:Number):void {
+            _headerLabelX = value;
+        }
+
+        public function set comboLabelsX(value:Number):void {
+            _comboLabelsX = value;
+        }
+
+        public function set comboLabelsY(value:Number):void {
+            _comboLabelsY = value;
+        }
+
+        public function get labelsSubgroupY():Number {
+            return _labelsSubgroupY;
+        }
+
+        public function set labelsSubgroupY(value:Number):void {
+            _labelsSubgroupY = value;
+        }
+
+        public function get controlsSubGroupX():Number {
+            return _controlsSubGroupX;
+        }
+
+        public function set controlsSubGroupX(value:Number):void {
+            _controlsSubGroupX = value;
+        }
+
+        public function get controlsSubGroupY():Number {
+            return _controlsSubGroupY;
+        }
+
+        public function set initialIndex(value:int):void {
+            _initialIndex = value;
+        }
+
+        public function set controlsSubGroupY(value:Number):void {
+            _controlsSubGroupY = value;
+        }
+
+        private function initializedIsolationBalloon():void {
+            //housePanel = heatMaster.getHousePanel();
+        }
+
+        public function get infoIconVisible():Boolean {
+            return _infoIconVisible;
+        }
+
+        public function set infoIconVisible(value:Boolean):void {
+            _infoIconVisible = value;
+        }
+
+        public function get richCmTextVisible():Boolean {
+            return _richCmTextVisible;
+        }
+
+        public function set richCmTextVisible(value:Boolean):void {
+            _richCmTextVisible = value;
+        }
+
+        public function set maximumWidth(value:Number):void {
+            _maximumWidth = value;
+        }
+
+        public function buildingAgeChanged(buildingAge:BuildingAge, calculationRequired:Boolean = true):void {
+            try {
+                insulationElement = prepareElementForBuildingAge(buildingAge);
+                widthNumericStepper.value = insulationElement.width;
+                uValueNumericStepper.value = insulationElement.uValue;
+                dropDownList.selectedIndex = getSelectedIndexForInsulationQuality(insulationElement.insulationQuality);
+                heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType, calculationRequired);
+            } catch (e:Error) {
+                Alert.show("error in building age changed " + e.message);
+            }
+        }
+
+        private function insulationTypeChanged():void {
+            widthOrMaterialTypeChanged();
+        }
+
+        private function widthChanged():void {
+            widthOrMaterialTypeChanged();
+        }
+
+        private function uValueChanged():void {
+            insulationElement = createInsulationElement();
+            insulationElement.uValue = uValueNumericStepper.value;
+            insulationElement.materialHeatTransfer = dropDownList.selectedItem.data.heatTransferCoefficient;
+            insulationElement = uValueElementPreparer.prepare(insulationElement);
+
+            //dropDownList.selectedIndex = getSelectedIndexForInsulationQuality(insulationElement.insulationQuality);
+            widthNumericStepper.value = insulationElement.width;
+
+            heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType, true, true, foundationsTypeDropDownList.selectedItem.data);
+        }
+
+        private function widthOrMaterialTypeChanged():void {
+            insulationElement = createInsulationElement();
+            insulationElement.width = widthNumericStepper.value;
+            insulationElement.materialHeatTransfer = dropDownList.selectedItem.data.heatTransferCoefficient;
+            insulationElement = uValueElementPreparer.prepare(insulationElement);
+
+            //dropDownList.selectedIndex = getSelectedIndexForInsulationQuality(insulationElement.insulationQuality);
+            uValueNumericStepper.value = insulationElement.uValue;
+
+            heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType, true, true, foundationsTypeDropDownList.selectedItem.data);
+        }
+
+
+        private function foundationsChanged():void {
+            insulationElement = createInsulationElement();
+            insulationElement.uValue = uValueNumericStepper.value;
+            insulationElement.materialHeatTransfer = dropDownList.selectedItem.data.heatTransferCoefficient;
+            insulationElement = uValueElementPreparer.prepare(insulationElement);
+
+            var enabled:Boolean = foundationsTypeDropDownList.selectedItem.data == FoundationsType.TRADITIONAL ||
+                    foundationsTypeDropDownList.selectedItem.data == FoundationsType.TRADITIONAL_INSULATED;
+            heatMasterListener.foundationsChanged(enabled, FoundationsType.getUValueForTraditionalType(foundationsTypeDropDownList.selectedItem.data), foundationsTypeDropDownList.selectedItem.data, insulationElement);
+        }
+
+        private function doorTypeChanged():void {
+            var doorType:DoorType = doorTypeDropDownList.selectedItem.data as DoorType;
+            heatMasterListener.doorTypeChanged(doorType);
+        }
+
+
+        private function prepareElementForBuildingAge(buildingAge:BuildingAge):InsulationElement {
+            var insulationElement:InsulationElement = createInsulationElement();
+            /*
+             if (_insulationElementType == InsulationElementType.WALL) {
+             insulationElement.uValue = buildingAge.uWalls;
+             }
+             else if (_insulationElementType == InsulationElementType.FLOOR) {
+             insulationElement.uValue = buildingAge.uFloor;
+             }
+             else if (_insulationElementType == InsulationElementType.ROOF) {
+             insulationElement.uValue = buildingAge.uRoof;
+             }
+             */
+            insulationElement.width = 0;
+            insulationElement.materialHeatTransfer = InsulationMaterialType.STANDARD.heatTransferCoefficient;
+            return uValueElementPreparer.prepare(insulationElement);
+        }
+
+        private function initInsulationElement(type:int):InsulationElement {
+            var width:Number = 0.0;
+            if (type == InsulationElementType.WALL) {
+                width = 15.0;
+            }
+            else if (type == InsulationElementType.FLOOR) {
+                width = 5.0;
+            }
+            else if (type == InsulationElementType.ROOF) {
+                width = 20.0;
+            }
+            var insulationElement:InsulationElement = createInsulationElement();
+            insulationElement.width = width;
+            insulationElement.materialHeatTransfer = dropDownList.selectedItem.data.heatTransferCoefficient;
+            return uValueElementPreparer.prepare(insulationElement);
+        }
+
+
+        private function createInsulationElement():InsulationElement {
+            if (_insulationElementType == InsulationElementType.FLOOR) {
+                return new FloorElement();
+            }
+            if (_insulationElementType == InsulationElementType.WALL) {
+                return new WallElement();
+            }
+            if (_insulationElementType == InsulationElementType.ROOF) {
+                return new RoofElement();
+            }
+            return new InsulationElement();
+        }
+
+        private function parse(s:String):Number {
+            return parseFloat(s);
+        }
+
+        private function customFormatter(value:Number):String {
+            var formatter:NumberFormatter = new NumberFormatter();
+            formatter.decimalSeparatorTo = ".";
+            formatter.precision = 1;
+
+            var integerPart:int = value;
+            var fractionalPart:int = (value - integerPart) * 10;
+
+            return integerPart.toString() + "." + fractionalPart.toString();
+        }
+
+        public function set insulationElementType(value:int):void {
+            _insulationElementType = value;
+            foundationsGroup.visible = _insulationElementType == InsulationElementType.FLOOR;
+            doorGroup.visible = _insulationElementType == InsulationElementType.WALL;
+
+        }
+
+        private function getSelectedIndexForInsulationQuality(insulationQuality:InsulationQuality):int {
+            try {
+                for (var i:int = 0; i < insulationList.length; i++) {
+                    var obj:Object = insulationList.getItemAt(i);
+                    if (obj.data == insulationQuality) {
+                        return obj.idx;
+                    }
+                }
+            } catch (e:Error) {
+                Alert.show("Error in getSelectedIndexForInsulationQuality....");
+            }
+            return 0;
+        }
+
+        private function getSelectedIndexForInsulationMaterialType(insulationType:InsulationMaterialType):int {
+            try {
+                for (var i:int = 0; i < insulationList.length; i++) {
+                    var obj:Object = insulationList.getItemAt(i);
+                    if (obj.data == insulationType) {
+                        return obj.idx;
+                    }
+                }
+            } catch (e:Error) {
+                Alert.show("Error in getSelectedIndexForInsulationQuality....");
+            }
+            return 0;
+        }
+
+        private function openInsulationInfoPanel(evt:MouseEvent):void {
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            var toolTip:UIComponent = null;
+
+            var x:int = evt.stageX;
+            var y:int = evt.stageY - 20;
+
+            if (_insulationElementType == InsulationElementType.WALL) {
+                toolTip = new WallsToolTip();
+            }
+            else if (_insulationElementType == InsulationElementType.FLOOR) {
+                toolTip = new FloorToolTip();
+                y = y - 150;
+            }
+            else if (_insulationElementType == InsulationElementType.ROOF) {
+                toolTip = new RoofToolTip();
+            }
+
+            if (toolTip != null) {
+                heatMaster.addToolTip(x, y, toolTip);
+            }
+        }
+        ]]></fx:Script>
+
+    <s:Image x="0" y="0" source="{_undercoutImgSource}"/>
+
+    <s:Group x="{_groupX}" y="{_groupY}">
+
+        <s:Group id="labelSubGroup" x="{_labelsSubgroupX}" y="{_labelsSubgroupY}">
+            <s:Label x="{_headerLabelX}" y="0" width="120" styleName="{headerLabelStyleName}"
+                     text="{_headerText}" />
+
+            <s:RichText x="{_comboLabelsX}" y="{_comboLabelsY}" fontSize="10" fontWeight="bold" color="gray">
+                <s:span>{resourceManager.getString('hm','hm.label.insulation.material.quality')}</s:span>
+            </s:RichText>
+
+            <s:RichText id="cmRichText" visible="{_richCmTextVisible}" y="{_comboLabelsY}"  left="{widthNumericStepper.x + widthNumericStepper.width - 20}" fontSize="10" fontWeight="bold" color="gray">
+                <s:span>cm</s:span>
+            </s:RichText>
+
+            <s:RichText left="{uValueNumericStepper.x + uValueNumericStepper.width - 40}" y="{_comboLabelsY}" fontSize="10" fontWeight="bold" color="gray" text="RichText">
+                <s:span>W/(m</s:span><s:span baselineShift="superscript">2</s:span><s:span text="\u00B7K)"/>
+            </s:RichText>
+        </s:Group>
+
+        <s:Group x="{_controlsSubGroupX}" y="{_controlsSubGroupY}" id="controlsSubgroup">
+            <s:DropDownList id="dropDownList" x="0" y="0" width="117" selectedIndex="{_initialIndex}" labelField="name" dataProvider="{insulationList}"
+                            change="insulationTypeChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin" />
+            <s:NumericStepper id="widthNumericStepper" x="{dropDownList.x + dropDownList.width + 2}" y="0" width="38"  height="20" maximum="{_maximumWidth}"  change="widthChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"
+                              valueParseFunction="{GlobalValues.parseIntValue}"/>
+            <s:NumericStepper id="uValueNumericStepper" x="{widthNumericStepper.x + widthNumericStepper.width + 2}"
+                              y="0" stepSize="0.01"  width="38" height="20"
+                              minimum="0.05"
+                              maximum="5"
+                              change="uValueChanged()"
+                              valueParseFunction="{GlobalValues.parseFloatValue}"
+                              valueFormatFunction="{GlobalValues.formatFloatValue}"
+                              skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+
+            <s:Group x="0" y="21" id="doorGroup" visible="false">
+                <s:Label id="doorLabel" x="0" y="8" text="{resourceManager.getString('hm','hm.label.door')}" styleName="{grayFontStyleName}"/>
+                <s:DropDownList id="doorTypeDropDownList" x="40" y="3" width="157"
+                                labelField="name"
+                                change="doorTypeChanged()" dataProvider="{doorTypeList}" selectedIndex="1"/>
+            </s:Group>
+        </s:Group>
+
+
+        <s:Group id="foundationsGroup" visible="false" x="0" y="61">
+            <s:Label x="0" y="4" id="foundationsLabel" text="{resourceManager.getString('hm','hm.label.foundations')}" styleName="{grayFontStyleName}"/>
+            <s:DropDownList id="foundationsTypeDropDownList" x="73" y="-2"
+                            width="124" labelField="name"
+                            change="foundationsChanged()" dataProvider="{foundationsList}" selectedIndex="1"/>
+        </s:Group>
+
+    </s:Group>
+
+    <mx:Button top="{_infoIconTop}" right="{_infoIconRight}" buttonMode="true"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+               click="openInsulationInfoPanel(event)"
+               visible="{_infoIconVisible}"/>
+
+
+
+</balloon:BaseDropdownBaloon>

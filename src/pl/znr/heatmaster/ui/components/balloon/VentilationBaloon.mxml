@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<balloon:BaseDropdownBaloon implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener" xmlns:fx="http://ns.adobe.com/mxml/2009"
+                            xmlns:s="library://ns.adobe.com/flex/spark"
+                            xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
+                            xmlns:mx="library://ns.adobe.com/flex/mx">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Declarations>
+
+        <s:ArrayCollection id="tightnessList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_RECUP}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE}"/>
+        </s:ArrayCollection>
+
+    </fx:Declarations>
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.constants.combo.AirTightness;
+        import pl.znr.heatmaster.constants.combo.DropDownType;
+        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
+        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.core.model.HouseData;
+        import pl.znr.heatmaster.core.model.VentilationData;
+        import pl.znr.heatmaster.ui.components.tooltip.VentilationToolTip;
+        import pl.znr.heatmaster.util.HouseTypeHelper;
+
+        use namespace mx_internal;
+
+        [Bindable]
+        private var _headerLabelY:int = 11;
+
+        [Bindable]
+        private var _selectedIndex:int = 0;
+
+        private var groundType:Boolean = true;
+        private var ventMechanical:Boolean = false;
+
+        [Bindable]
+        private var _infoIconVisible:Boolean = true;
+
+        public function set headerLabelY(value:int):void {
+            _headerLabelY = value;
+        }
+
+        public function set infoIconVisible(value:Boolean):void {
+            _infoIconVisible = value;
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            try {
+                groundType = HouseTypeHelper.isGroundType(dataContext.houseData.houseType);
+                var ventilationData:VentilationData = dataContext.houseData.ventilationData;
+                var tightness:Number = ventilationData.tightness;
+                var ventilationMethod:VentilationMethod = ventilationData.ventilationMethodObject
+                setVentilationDropDownList(ventilationMethod);
+                setTightnessDropDownList(tightness);
+                groundHeatExchangerCheckBox.selected = ventilationData.gwcSet;
+                co2EnabledCheckBox.selected = ventilationData.co2Sensor;
+
+                ventMechanical = ventilationMethod.type == VentilationMethod.MECHANICAL;
+                groundHeatExchangerCheckBox.visible = groundType && ventMechanical;
+
+                sensorGroup.visible = ventMechanical;
+                ventImgA.visible = !ventMechanical;
+                ventImgB.visible = ventMechanical;
+
+            } catch (e:Error) {
+                Alert.show("Error in ventilationElement setupView: " + e.message);
+            }
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            setVentilationDropDownList(context.model.ventilationMethod);
+            setTightnessDropDownList(context.model.airTightness);
+
+            ventMechanical = context.model.ventilationMethod.type == VentilationMethod.MECHANICAL;
+            groundHeatExchangerCheckBox.visible = groundType && ventMechanical;
+
+            sensorGroup.visible = ventMechanical;
+            ventImgA.visible = !ventMechanical;
+            ventImgB.visible = ventMechanical;
+            co2EnabledCheckBox.selected = context.model.carbonDioxideSensor;
+
+            var ventilationData:VentilationData = dataContext.houseData.ventilationData;
+            ventilationData.ventilationMethodObject = context.model.ventilationMethod;
+            ventilationData.tightness = context.model.airTightness;
+            ventilationData.co2Sensor = context.model.carbonDioxideSensor;
+        }
+
+        public function getOrder():int {
+            return 1;
+        }
+
+
+        public function houseTypeChanged(houseType:int):void {
+            groundType = HouseTypeHelper.isGroundType(houseType);
+            groundHeatExchangerCheckBox.visible = groundType && ventMechanical;
+        }
+
+        public function groundHeatExchangerEnabled():Boolean {
+            return groundHeatExchangerCheckBox.visible && groundHeatExchangerCheckBox.selected;
+        }
+
+        private function setVentilationDropDownList(ventilationMethod:VentilationMethod):void {
+            for (var i:int = 0; i < ventilationDropDown.dataProvider.length; i++) {
+                var item:Object = ventilationDropDown.dataProvider.getItemAt(i);
+                if (item.data == ventilationMethod) {
+                    ventilationDropDown.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        private function setTightnessDropDownList(tightness:Number):void {
+            for (var i:int = 0; i < tightnessDropDown.dataProvider.length; i++) {
+                var item:Object = tightnessDropDown.dataProvider.getItemAt(i);
+                if (item.data == tightness) {
+                    tightnessDropDown.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        private function valueChanged():void {
+            var ventilationMethod:VentilationMethod = ventilationDropDown.selectedItem.data;
+            ventMechanical = ventilationMethod.type == VentilationMethod.MECHANICAL;
+            groundHeatExchangerCheckBox.visible = groundType && ventMechanical;
+
+            sensorGroup.visible = ventMechanical;
+            ventImgA.visible = !ventMechanical;
+            ventImgB.visible = ventMechanical;
+
+            var sensorEnabled:Boolean = co2EnabledCheckBox.enabled && co2EnabledCheckBox.selected;
+            heatMasterListener.ventilationMethodChanged(ventilationMethod, sensorEnabled);
+        }
+
+        private function tightnessChanged():void {
+            heatMasterListener.tightnessChanged(tightnessDropDown.selectedItem.data)
+        }
+
+        private function sensorEnabledChanged():void {
+            var ventilationMethod:VentilationMethod = ventilationDropDown.selectedItem.data;
+            heatMasterListener.ventilationMethodChanged(ventilationMethod, co2EnabledCheckBox.selected);
+        }
+
+        private function groundHeatExchangerChanged():void {
+            heatMasterListener.groundHeatExchangerEnabled(groundHeatExchangerCheckBox.selected);
+        }
+
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = dataContext.houseData;
+                houseData.ventilationData.ventilationMethodObject = ventilationDropDown.selectedItem.data;
+
+                houseData.ventilationData.tightness = 2;
+                heatMasterListener.initVentilationMethod(ventilationDropDown.selectedItem.data);
+            } catch (e:Error) {
+
+            }
+            return dataContext;
+        }
+
+        private function getDropDownListData():int {
+            return ventilationDropDown.selectedItem.data;
+        }
+
+        public function get selectedIndex():int {
+            return _selectedIndex;
+        }
+
+        public function set selectedIndex(value:int):void {
+            _selectedIndex = value;
+        }
+
+        private function showVentilationInfo(evt:MouseEvent):void {
+            var x:int = evt.stageX;
+            var y:int = evt.stageY - 250;
+
+            var toolTip:VentilationToolTip = new VentilationToolTip();
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            heatMaster.addToolTip(x, y, toolTip);
+        }
+
+        override public function langChanged(lang:String):void {
+            doLangChanged(lang);
+        }
+
+        override public function initialLangChanged(lang:String):void {
+            doLangChanged(lang);
+        }
+
+        private function doLangChanged(lang:String):void {
+            var oldIdx:int = tightnessDropDown.selectedIndex;
+            tightnessList.refresh();
+            tightnessDropDown.selectedIndex = oldIdx;
+        }
+        ]]></fx:Script>
+
+    <s:Image x="0" y="0" id="ventImgA" source="@Embed('/pl/znr/heatmaster/assets/images/baloons/dymek_wentylacja.png')"/>
+    <s:Image x="0" y="-2" id="ventImgB" source="@Embed('/pl/znr/heatmaster/assets/images/baloons/dymek_wentylacja2.png')" visible="false"/>
+
+    <s:Group x="{_groupX}" y="{_groupY}" width="100%" height="100%">
+        <s:Label x="21" id="ventLabel" y="{_headerLabelY}" width="119" height="18" styleName="{headerLabelStyleName}"
+                 text="{_headerText}" verticalAlign="middle" />
+
+        <s:DropDownList x="19" y="{ventLabel.y + ventLabel.height }" width="148"  id="ventilationDropDown" dataProvider="{_dataProvider}"
+                        labelField="name" selectedIndex="{_selectedIndex}" change="valueChanged()"
+                        skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"></s:DropDownList>
+
+        <s:Label x="21" id="tightnessLabel" y="{ventilationDropDown.y + ventilationDropDown.height + 8}" width="119" height="18" styleName="{headerLabelStyleName}"
+                 text="{resourceManager.getString('hm','hm.label.tightness')}" verticalAlign="middle" />
+
+        <s:DropDownList x="19" y="{tightnessLabel.y + tightnessLabel.height }" width="148"   id="tightnessDropDown" selectedIndex="2"
+                        labelField="name" dataProvider="{tightnessList}"
+                        change="tightnessChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"></s:DropDownList>
+
+
+        <s:Group  x="21" y="{tightnessDropDown.y + tightnessDropDown.height + 10}" id="sensorGroup" visible="false">
+            <s:CheckBox x="0" y="0" id="co2EnabledCheckBox"  selected="false" change="sensorEnabledChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterBalloonCheckBoxSkin"/>
+            <s:Group x="19" y="5" id="sensorLabelGroup">
+                <s:RichText x="0" y="0" styleName="pupupPanelGrayFontStyle" fontSize="9">
+                    <s:span>{resourceManager.getString('hm','hm.label.co2_sensor')}</s:span>
+                </s:RichText>
+            </s:Group>
+            <s:CheckBox id="groundHeatExchangerCheckBox" x="0" y="{co2EnabledCheckBox.y + 25}"
+                        styleName="pupupPanelGrayFontStyle" fontSize="9"
+                        selected="false" label="{resourceManager.getString('hm','hm.label.gwc')}" change="groundHeatExchangerChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterBalloonCheckBoxSkin"/>
+
+        </s:Group>
+    </s:Group>
+
+    <mx:Button right="{_infoIconRight}" top="{_infoIconTop}" buttonMode="true" click="showVentilationInfo(event)"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+               visible="{_infoIconVisible}"/>
+
+
+</balloon:BaseDropdownBaloon>

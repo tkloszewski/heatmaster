@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<balloon:BaseDropdownBaloon xmlns:fx="http://ns.adobe.com/mxml/2009"
+                            xmlns:s="library://ns.adobe.com/flex/spark"
+                            xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
+                            xmlns:mx="library://ns.adobe.com/flex/mx">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.collections.ArrayList;
+        import mx.collections.IList;
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.HeatMaster;
+
+        import pl.znr.heatmaster.constants.combo.DropDownType;
+        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
+        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.model.HouseData;
+        import pl.znr.heatmaster.ui.components.tooltip.BaseToolTip;
+
+        [Bindable]
+        private var _infoIconVisible:Boolean = true;
+
+        private var _type:int;
+
+        [Bindable]
+        private var _headerLabelY:int = 11;
+
+        [Bindable]
+        private var _selectedIndex:int = 0;
+
+        [Bindable]
+        private var _headerDropDownSpace = 3;
+
+        [Bindable]
+        private var _headerSubHeaderDownSpace = 0;
+
+        [Bindable]
+        private var _dropDownWidth:Number = 120;
+
+        [Bindable]
+        private var _labelDropDownX:Number = 21;
+
+        [Bindable]
+        private var _subHeaderText:String;
+
+        private var _hmToolTip:BaseToolTip;
+        private var toolTipAdded:Boolean = false;
+
+
+        override public function setupView(dataContext:DataContext):void {
+            try {
+                if (_type == DropDownType.VENTILATION_FREQUENCY) {
+                    var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
+                    var ventFreqIdx:int = getComboItemIndexForCollection(ventFreq,_dataProvider as ArrayCollection);
+                    if(ventFreqIdx != -1){
+                        dropDownList.selectedIndex = ventFreqIdx;
+                    }
+                }
+                else if (_type == DropDownType.WARM_WATER) {
+                    var intensity:Number = dataContext.houseData.warmWaterData.consumptionIntensity;
+                    var warmWaterConsumption:WarmWaterConsumption = WarmWaterConsumption.getWarmWaterConsumptionForIntensity(intensity);
+                    var warmWaterIdx:int = getComboItemIndexForCollection(warmWaterConsumption,_dataProvider as ArrayCollection);
+                    if(warmWaterIdx != -1){
+                       dropDownList.selectedIndex = warmWaterIdx;
+                    }
+                }
+            } catch (e:Error) {
+                Alert.show("Error in dropDown setupView: " + e.message);
+            }
+        }
+
+        public function getDropDownList():DropDownList {
+            return dropDownList;
+        }
+
+        private function setVentilationFreqDropDownList(freq:int):void {
+            for (var i:int = 0; i < dropDownList.dataProvider.length; i++) {
+                var item:Object = dropDownList.dataProvider.getItemAt(i);
+                if (item.data == freq) {
+                    dropDownList.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        protected function openInfoPanel(evt:MouseEvent):void {
+            if (_hmToolTip != null) {
+                if (!toolTipAdded) {
+                    _hmToolTip.x = evt.stageX;
+                    _hmToolTip.y = evt.stageY - 20;
+                    toolTipAdded = true;
+                }
+                var heatMaster:HeatMaster = HeatMaster.getInstance();
+                heatMaster.addElement(_hmToolTip);
+            }
+        }
+
+        public function set subHeaderText(value:String):void {
+            _subHeaderText = value;
+            subHeaderLabel.visible = true;
+        }
+
+
+        public function set headerSubHeaderDownSpace(value):void {
+            _headerSubHeaderDownSpace = value;
+        }
+
+        public function set hmToolTip(value:BaseToolTip):void {
+            _hmToolTip = value;
+        }
+
+        public function set dropDownWidth(value:Number):void {
+            _dropDownWidth = value;
+        }
+
+        public function set headerDropDownSpace(value:Number):void {
+            _headerDropDownSpace = value;
+        }
+
+        public function set headerLabelY(value:int):void {
+            _headerLabelY = value;
+        }
+
+        public function set labelDropDownX(value:Number):void {
+            _labelDropDownX = value;
+        }
+
+        private function valueChanged():void {
+            if (type == DropDownType.VENTILATION_METHOD) {
+                //not implemented
+            }
+            else if (type == DropDownType.VENTILATION_FREQUENCY) {
+                heatMasterListener.ventilationFrequencyChanged(dropDownList.selectedItem.data);
+            }
+            else if (type == DropDownType.TIGHTNESS) {
+                heatMasterListener.tightnessChanged(dropDownList.selectedItem.data);
+            }
+            else if (type == DropDownType.WARM_WATER) {
+                heatMasterListener.warmWaterConsumptionChanged(dropDownList.selectedItem.data.intensity);
+            }
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = dataContext.houseData;
+                var data:int = getDropDownListData();
+                if (type == DropDownType.VENTILATION_METHOD) {
+                    houseData.ventilationData.ventilationMethodObject = dropDownList.selectedItem.data;
+                }
+                else if (type == DropDownType.VENTILATION_FREQUENCY) {
+                    houseData.ventilationData.ventilationFreq = dropDownList.selectedItem.data;
+                }
+                else if (type == DropDownType.TIGHTNESS) {
+                    houseData.ventilationData.tightness = dropDownList.selectedItem.data;
+                }
+                else if (type == DropDownType.WARM_WATER) {
+                    var intensity:Number = dropDownList.selectedItem.data.intensity;
+                    houseData.warmWaterData.consumptionIntensity = intensity;
+                }
+            } catch (e:Error) {
+
+            }
+            return dataContext;
+        }
+
+        private function getDropDownListData():int {
+            return dropDownList.selectedItem.data;
+        }
+
+        public function get selectedIndex():int {
+            return _selectedIndex;
+        }
+
+        public function set selectedIndex(value:int):void {
+            _selectedIndex = value;
+        }
+
+        public function get type():int {
+            return _type;
+        }
+
+        public function set type(value:int):void {
+            _type = value;
+        }
+
+        public function get infoIconVisible():Boolean {
+            return _infoIconVisible;
+        }
+
+        public function set infoIconVisible(value:Boolean):void {
+            _infoIconVisible = value;
+        }
+        ]]></fx:Script>
+
+    <s:Image x="0" y="0" source="{_undercoutImgSource}"/>
+
+    <s:Group x="{_groupX}" y="{_groupY}">
+        <s:Label x="{_labelDropDownX}" y="{_headerLabelY}" id="headerLabel" width="119" height="18" styleName="{headerLabelStyleName}"
+                 text="{_headerText}" />
+
+        <s:Label  y="{headerLabel.y + headerLabel.height + _headerSubHeaderDownSpace}" x="{headerLabel.x}" id="subHeaderLabel" text="{_subHeaderText}"
+                  visible="false" styleName="smallPupupPanelGrayFontStyle" fontSize="9" />
+
+
+        <s:DropDownList id="dropDownList" x="{_labelDropDownX}" y="{headerLabel.y + headerLabel.height + _headerDropDownSpace}" width="{_dropDownWidth}" dataProvider="{_dataProvider}"
+                        labelField="name" selectedIndex="{_selectedIndex}" change="valueChanged()"
+                        skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin">
+        </s:DropDownList>
+    </s:Group>
+
+    <mx:Button top="{_infoIconTop}" right="{_infoIconRight}" buttonMode="true"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+               visible="{_infoIconVisible}" click="openInfoPanel(event)"/>
+
+
+</balloon:BaseDropdownBaloon>

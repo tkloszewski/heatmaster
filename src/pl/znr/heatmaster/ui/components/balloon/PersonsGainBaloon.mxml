@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<balloon:BaseBaloon xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
+                    xmlns:mx="library://ns.adobe.com/flex/mx">
+    <!-- To change this template use File | Settings | File Templates. -->
+    <fx:Script><![CDATA[
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.ui.components.tooltip.BaseToolTip;
+
+        private var onePersonNumberImgSrc:String = "pl/znr/heatmaster/assets/images/icons/man1_icon.png";
+        private var twoPersonNumberImgSrc:String = "pl/znr/heatmaster/assets/images/icons/man2_icon.png";
+        private var threePersonNumberImgSrc:String = "pl/znr/heatmaster/assets/images/icons/man3_icon.png";
+        private var fourPersonNumberImgSrc:String = "pl/znr/heatmaster/assets/images/icons/man4_icon.png";
+
+
+        private var _hmToolTip:BaseToolTip;
+        private var toolTipAdded:Boolean = false;
+
+        private var personCount:int = GlobalValues.INITIAL_PERSON_NUMBER;
+
+        public function set hmToolTip(value:BaseToolTip):void {
+            _hmToolTip = value;
+        }
+
+        protected function openInfoPanel(evt:MouseEvent):void {
+            if (_hmToolTip != null) {
+                if (!toolTipAdded) {
+                    _hmToolTip.x = evt.stageX;
+                    _hmToolTip.y = evt.stageY - 20;
+                    toolTipAdded = true;
+                }
+                var heatMaster:HeatMaster = HeatMaster.getInstance();
+                heatMaster.addElement(_hmToolTip);
+            }
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            dataContext.houseData.personNumber = personCount;
+            return dataContext;
+        }
+
+
+        override public function setupView(dataContext:DataContext):void {
+            personNumberNS.value = dataContext.houseData.personNumber;
+            setViewForPersonNumber(personNumberNS.value);
+        }
+
+        private function personChanged():void {
+            var personNumber:Number = personNumberNS.value;
+            setViewForPersonNumber(personNumber);
+            heatMasterListener.personNumberChanged(personNumberNS.value);
+        }
+
+        private function setViewForPersonNumber(personNumber:int):void {
+            if (personNumber == 1) {
+                personNumberImage.source = onePersonNumberImgSrc;
+            }
+            else if (personNumber == 2) {
+                personNumberImage.source = twoPersonNumberImgSrc;
+            }
+            else if (personNumber == 3) {
+                personNumberImage.source = threePersonNumberImgSrc;
+            }
+            else if (personNumber >= 4) {
+                personNumberImage.source = fourPersonNumberImgSrc;
+            }
+        }
+
+
+        ]]></fx:Script>
+
+    <s:Image x="0" y="0" source="@Embed('/pl/znr/heatmaster/assets/images/baloons/dymek_mieszkancy.png')"/>
+
+
+    <s:NumericStepper id="personNumberNS" x="14" y="51" width="42" height="22" value="{personCount}" minimum="1" change="personChanged()"
+                      skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin" valueParseFunction="{GlobalValues.parseIntValue}"/>
+
+    <s:Image x="{personNumberNS.x + personNumberNS.width + 5}" y="{personNumberNS.y}" id="personNumberImage"  source="@Embed('/pl/znr/heatmaster/assets/images/icons/man4_icon.png')"/>
+    <!--<s:Label x="15" y="75" width="100"  text="mieszkańców" styleName="{headerLabelStyleName}"
+             verticalAlign="middle"/>-->
+
+    <s:Label x="14" y="77" text="{resourceManager.getString('hm','hm.label.person_number')}" styleName="smallPupupPanelGrayFontStyle" fontSize="9"
+             verticalAlign="middle" textAlign="left" />
+
+    <s:Label x="9" y="33" text="{resourceManager.getString('hm','hm.label.residual_heat')}" styleName="{headerLabelStyleName}"
+             textAlign="center" verticalAlign="middle"/>
+
+
+
+
+    <mx:Button right="{_infoIconRight}" top="{_infoIconTop}" buttonMode="true"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+               click="openInfoPanel(event)"/>
+
+
+</balloon:BaseBaloon>

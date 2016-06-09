@@ -1,0 +1,683 @@
+<?xml version="1.0"?>
+<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+                        xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
+                        xmlns:baloon="pl.znr.heatmaster.ui.components.balloon.*"
+                        xmlns:arr="pl.znr.heatmaster.ui.components.arrows.*"
+                        xmlns:hm="pl.znr.heatmaster.ui.components.*"
+                        xmlns:tooltip="pl.znr.heatmaster.ui.components.tooltip.*"
+                        creationComplete="housePanelInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+
+    <fx:Declarations>
+        <s:ArrayCollection id="ventilationMethodList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.natural')}" data="{VentilationMethod.NATURAL}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.natural.regulated')}" data="{VentilationMethod.NATURAL_REGULATED}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_60')}" data="{VentilationMethod.MECHANICAL_60_PER_CENT}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_75')}" data="{VentilationMethod.MECHANICAL_75_PER_CENT}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_85')}" data="{VentilationMethod.MECHANICAL_85_PER_CENT}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="ventilationFreqList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.sporadic')}" data="{VentilationFrequency.SPORADICALLY}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.standard')}" data="{VentilationFrequency.STANDARD}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.often')}" data="{VentilationFrequency.OFTEN}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.very_often')}" data="{VentilationFrequency.VERY_OFTEN}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.non_stop')}" data="{VentilationFrequency.NON_STOP}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="tightnessList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE}"/>
+        </s:ArrayCollection>
+
+
+        <s:ArrayCollection id="warmWaterConsumptionList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.very_low')}" data="{WarmWaterConsumption.VERY_SMALL}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.low')}" data="{WarmWaterConsumption.SMALL}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.standard')}" data="{WarmWaterConsumption.AVERAGE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.big')}" data="{WarmWaterConsumption.BIG}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.very_big')}" data="{WarmWaterConsumption.VERY_BIG}"/>
+        </s:ArrayCollection>
+
+        <s:BitmapImage id="dBitmapImage"/>
+    </fx:Declarations>
+
+
+    <fx:Script><![CDATA[
+        import mx.collections.ArrayList;
+        import mx.controls.Alert;
+        import mx.core.FlexGlobals;
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.constants.combo.AirTightness;
+
+        import pl.znr.heatmaster.constants.combo.DropDownType;
+        import pl.znr.heatmaster.constants.combo.FoundationsType;
+        import pl.znr.heatmaster.constants.combo.HouseType;
+        import pl.znr.heatmaster.constants.combo.InsulationElementType;
+        import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
+        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
+        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
+        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.core.model.InsulationElement;
+        import pl.znr.heatmaster.core.model.SolarCollectorData;
+        import pl.znr.heatmaster.core.model.WindowElement;
+        import pl.znr.heatmaster.util.HouseTypeHelper;
+
+        private var heatMaster:HeatMaster = FlexGlobals.topLevelApplication as HeatMaster;
+
+        private var currentHouseType:int = HouseType.DETACHED;
+
+        private var recuperatorVisible:Boolean = false;
+        private var foundationsEnabled:Boolean = true;
+        private var mechanicalVentilation:Boolean = false;
+        private var groundHeatExchangerEnabled:Boolean = false;
+        private var shuttersEnabled:Boolean = false;
+        private var bridgesDisabled:Boolean = true;
+
+        private var visibleCollectorImages:ArrayList = new ArrayList();
+
+        [Bindable]
+        private var foundationsVisible:Boolean = true;
+
+        [Bindable]
+        private var ventilationArrowY:Number = 560;
+
+        [Bindable]
+        private var ventilationArrowX:Number = 60;
+
+        private var originalInsulationLeftDownHeight:Number;
+        private var originalInsulationRightHeight:Number;
+        private var originalInsulationLeftUpHeight:Number;
+        private var originalInsulationLeftUpY:int;
+        private var originalInsulationRightY:int;
+        private var originalFlatRoofWidth:Number;
+        private var originalInsulationBridgeX:int;
+        private var originalInsulationBrideWidth:Number;
+
+        private var ventilationMechanicalBalloonY:int = 530;
+        private var ventilationGravitationalBalloonY:int = 545;
+
+        private var INSULATION_TOP:int = 167;
+        private var INSULATION_BOTTOM:int = 99;
+        private var WALL_HOLE_WIDTH:int = 24;
+        private var WALL_HOLE_X:int = 158;
+        private var FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION:int = 52;
+
+        override public function initData(dataContext:DataContext):DataContext {
+
+            return dataContext;
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            var houseType:int = dataContext.houseData.houseType;
+            var groundType:Boolean = HouseTypeHelper.isGroundType(dataContext.houseData.houseType);
+
+            var collectorData:SolarCollectorData = dataContext.solarCollectorData;
+            var windowElement:WindowElement = dataContext.houseData.windowElement;
+            var ventType:int = dataContext.houseData.ventilationData.ventilationMethodObject.type;
+            var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
+            var gwcSet:Boolean = dataContext.houseData.ventilationData.gwcSet;
+            var openWindowVisible:Boolean = false;
+            var ventMechanical:Boolean = ventType == VentilationMethod.MECHANICAL;
+
+
+            if (!ventMechanical && ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN ||
+                    ventFreq == VentilationFrequency.NON_STOP) {
+                openWindowVisible = true;
+            }
+
+            this.groundHeatExchangerEnabled = gwcSet;
+            this.foundationsEnabled = dataContext.houseData.foundationsEnabled;
+
+            this.houseTypeChanged(houseType);
+            this.collectorDataChanged(collectorData);
+            this.setCollectorAndWarmWaterComponentsVisibility(dataContext.includeWarmWater);
+            this.setShuttersVisible(windowElement.shutters);
+            this.setBridgesDisabled(!(windowElement.thermalBridgesType == ThermalBridgesType.MAX));
+            this.setOpenWindowVisible(openWindowVisible);
+            this.ventilationTypeChanged(ventMechanical);
+            this.setRecuperatorVisible(ventMechanical);
+
+            heatMaster.groundBackgroundVisible(groundType);
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            var foundationsEnabled:Boolean = FoundationsType.isFoundationsEnabledForType(context.model.foundationsType);
+
+            this.insulationElementChanged(context.wallInsulationElement,InsulationElementType.WALL,context.model.foundationsType);
+            this.insulationElementChanged(context.roofInsulationElement,InsulationElementType.ROOF,context.model.foundationsType);
+            this.insulationElementChanged(context.floorInsulationElement,InsulationElementType.FLOOR,context.model.foundationsType);
+            this.collectorDataChanged(context.model.solarCollectorData);
+            this.foundationsChanged(HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && foundationsEnabled,foundationsEnabled);
+
+            this.shuttersEnabled = context.model.shuttersEnabled;
+
+            this.setBridgesDisabled(!(context.model.thermalBridges == ThermalBridgesType.MAX));
+
+            var windowsOpen:Boolean = false;
+            var ventGravitational:Boolean = context.model.ventilationMethod.type == VentilationMethod.GRAVITATIONAL;
+            if(ventGravitational){
+               var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
+               if(ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN || ventFreq == VentilationFrequency.NON_STOP){
+                  windowsOpen = true;
+               }
+            }
+
+            this.setOpenWindowVisible(windowsOpen);
+            this.setRecuperatorVisible(!ventGravitational);
+            this.ventilationTypeChanged(!ventGravitational);
+        }
+
+        public function getOrder():int {
+            return 100;
+        }
+
+
+        public function houseTypeChanged(houseType:int):void {
+            this.currentHouseType = houseType;
+
+            heatMaster.groundBackgroundVisible(HouseTypeHelper.isGroundType(houseType));
+            ventilationBaloon.houseTypeChanged(houseType);
+            groundHeatExchangerImg.visible = ventilationBaloon.groundHeatExchangerEnabled();
+
+            setHouseVisibility(houseType);
+
+            var upFloor:Boolean = HouseTypeHelper.hasNeighboursUp(houseType);
+            var downFloor:Boolean = HouseTypeHelper.hasNeighboursDown(houseType);
+            var isGroundType:Boolean = HouseTypeHelper.isGroundType(houseType);
+
+            var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
+            var flatRoof:Boolean = HouseTypeHelper.hasFlatRoof(houseType);
+
+            roofGroup.visible = regularRoof;
+            flatRoofImg.visible = flatRoof;
+
+            setOthersElementsVisibility(upFloor, downFloor, isGroundType);
+            setInsulationVisibility(isGroundType, upFloor);
+        }
+
+
+        public function insulationElementChanged(insulationElement:InsulationElement, type:int, foundationsType:int):void {
+            var newWidth:int = 0.75 * insulationElement.width;
+            if (type == InsulationElementType.WALL) {
+                var oldRightWidth:Number = wallRightInsulationImg.width;
+                var oldLeftUpWidth:Number = wallUpLeftInsulationImg.width;
+                var oldLeftDownWidth:Number = wallDownLeftInsulationImg.width;
+
+                wallRightInsulationImg.width = newWidth;
+                wallUpLeftInsulationImg.width = newWidth;
+                wallDownLeftInsulationImg.width = newWidth;
+                wallUpLeftInsulationImg.x = wallUpLeftInsulationImg.x - (newWidth - oldLeftUpWidth);
+                wallDownLeftInsulationImg.x = wallDownLeftInsulationImg.x - (newWidth - oldLeftDownWidth);
+
+                if (wallDownLeftInsulationImg.width >= 2) {
+                    wallHoleImg.x = wallDownLeftInsulationImg.x;
+                    wallHoleImg.width = wallDownLeftInsulationImg.width + WALL_HOLE_WIDTH;
+                    wallHoleRecInImg.x = wallDownLeftInsulationImg.x;
+                    wallHoleRecInImg.width = wallDownLeftInsulationImg.width + WALL_HOLE_WIDTH;
+                    wallHoleRecOutImg.x = wallDownLeftInsulationImg.x;
+                    wallHoleRecOutImg.width = wallDownLeftInsulationImg.width + WALL_HOLE_WIDTH;
+                }
+                else {
+                    wallHoleImg.x = WALL_HOLE_X;
+                    wallHoleImg.width = WALL_HOLE_WIDTH + 1;
+                    wallHoleRecInImg.x = WALL_HOLE_X;
+                    wallHoleRecInImg.width = WALL_HOLE_WIDTH + 1;
+                    wallHoleRecOutImg.x = WALL_HOLE_X;
+                    wallHoleRecOutImg.width = WALL_HOLE_WIDTH + 1;
+                }
+
+                roofInsulationImg.x = wallUpLeftInsulationImg.x;
+                roofInsulationImg.width = roofInsulationImg.width + (newWidth - oldRightWidth)
+                        + (newWidth - oldLeftUpWidth);
+
+                flatRoofImg.width = originalFlatRoofWidth + wallRightInsulationImg.width + wallUpLeftInsulationImg.width;
+
+                var insWidth:Number = insulationElement.width;
+
+                if (wallUpLeftInsulationImg.x <= originalInsulationBridgeX) {
+                    bridgeUpInsulationImg.x = wallUpLeftInsulationImg.x;
+                    bridgeUpInsulationImg.width = originalInsulationBrideWidth + (originalInsulationBridgeX - wallUpLeftInsulationImg.x);
+
+                    if (insulationElement.width >= 2) {
+                        bridgeDownInsulationImg.width = bridgeUpInsulationImg.width;
+                        bridgeDownInsulationImg.x = bridgeUpInsulationImg.x;
+                    }
+                    else {
+                        bridgeDownInsulationImg.width = bridgeUpInsulationImg.width + 1;
+                        bridgeDownInsulationImg.x = bridgeUpInsulationImg.x - 1;
+                    }
+                }
+
+            }
+            else if (type == InsulationElementType.FLOOR) {
+                var oldFloorHeight:Number = floorInsulationImg.height;
+                var wallExtension:int = foundationsType != FoundationsType.TRADITIONAL_INSULATED ? newWidth : FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION;
+                wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + wallExtension;
+                if (!HouseTypeHelper.hasNeighboursUp(this.currentHouseType)) {
+                    wallRightInsulationImg.height = originalInsulationRightHeight + wallExtension;
+                }
+                else {
+                    wallRightInsulationImg.height = wallRightInsulationImg.height + (wallExtension - oldFloorHeight);
+                }
+
+                floorInsulationImg.height = newWidth;
+            }
+            else if (type == InsulationElementType.ROOF) {
+                var oldHeight:Number = roofInsulationImg.height;
+                roofInsulationImg.height = newWidth;
+                roofInsulationImg.y = roofInsulationImg.y - (newWidth - oldHeight);
+            }
+        }
+
+        public function collectorDataChanged(collectorData:SolarCollectorData):void {
+            var collectorCount:int = collectorData.count;
+            var flatCollector:Boolean = collectorData.collectorType.isFlatCollector();
+            var vacuumCollector:Boolean = collectorData.collectorType.isVacuumCollector();
+
+            visibleCollectorImages.removeAll();
+
+            flatCollector1.visible = flatCollector && collectorCount >= 1;
+            if (flatCollector1.visible) {
+                visibleCollectorImages.addItem(flatCollector1);
+            }
+            flatCollector2.visible = flatCollector && collectorCount >= 2;
+            if (flatCollector2.visible) {
+                visibleCollectorImages.addItem(flatCollector2);
+            }
+            flatCollector3.visible = flatCollector && collectorCount >= 3;
+            if (flatCollector3.visible) {
+                visibleCollectorImages.addItem(flatCollector3);
+            }
+            flatCollector4.visible = flatCollector && collectorCount >= 4;
+            if (flatCollector4.visible) {
+                visibleCollectorImages.addItem(flatCollector4);
+            }
+
+            vacuumCollector1.visible = vacuumCollector && collectorCount >= 1;
+            if (vacuumCollector1.visible) {
+                visibleCollectorImages.addItem(vacuumCollector1);
+            }
+            vacuumCollector2.visible = vacuumCollector && collectorCount >= 2;
+            if (vacuumCollector2.visible) {
+                visibleCollectorImages.addItem(vacuumCollector2);
+            }
+        }
+
+        public function setCollectorAndWarmWaterComponentsVisibility(visible:Boolean):void {
+            for (var i:int = 0; i < visibleCollectorImages.length; i++) {
+                var obj:Object = visibleCollectorImages.getItemAt(i);
+                var collectorImg:spark.components.Image = obj as spark.components.Image;
+                collectorImg.visible = visible;
+            }
+            bathImage.visible = visible;
+            warmWaterArrow.visible = visible;
+            warmWaterBaloon.visible = visible;
+            collectorSolarGainArrow.visible = visible;
+        }
+
+        public function foundationsChanged(visible:Boolean,enabled:Boolean):void {
+            foundationsVisible = visible;
+            foundationsEnabled = enabled;
+        }
+
+        public function groundHeatExchangerChanged(enabled:Boolean):void {
+            groundHeatExchangerEnabled = enabled;
+            groundHeatExchangerImg.visible = enabled && mechanicalVentilation;
+        }
+
+        public function ventilationTypeChanged(mechanical:Boolean):void {
+            mechanicalVentilation = mechanical;
+            airingBaloon.visible = !mechanical;
+            airingArrow.visible = !mechanical;
+            if (!mechanical) {
+                ventilationArrowY = 560;
+                ventilationArrowX = 60;
+                ventilationBaloon.y = ventilationGravitationalBalloonY;
+            }
+            else {
+                ventilationArrowY = 540;
+                ventilationArrowX = 15;
+            }
+
+            if (mechanical) {
+                ventilationBaloon.y = ventilationMechanicalBalloonY;
+            }
+
+            wallHoleImg.visible = !mechanical;
+            wallHoleRecInImg.visible = mechanical;
+            wallHoleRecOutImg.visible = mechanical;
+            groundHeatExchangerImg.visible = groundHeatExchangerEnabled && mechanical;
+        }
+
+        public function setShuttersVisible(visible:Boolean):void {
+            shuttersEnabled = visible;
+            shuttersImg.visible = visible && !bridgesDisabled;
+            rollBlind2Img.visible = visible && !bridgesDisabled;
+            shuttersWithoutBridgeImg.visible = shuttersEnabled && bridgesDisabled;
+        }
+
+        public function setBridgesDisabled(disabled:Boolean):void {
+            bridgesDisabled = disabled;
+            bridgeDownInsulationImg.visible = disabled;
+            bridgeUpInsulationImg.visible = disabled;
+            shuttersImg.visible = shuttersEnabled && !disabled;
+            rollBlind2Img.visible = shuttersEnabled && !disabled;
+            shuttersWithoutBridgeImg.visible = shuttersEnabled && disabled;
+        }
+
+        public function setRecuperatorVisible(visible:Boolean):void {
+            recuperatorVisible = visible;
+            recuperatorImg.visible = visible;
+            wallHoleImg.visible = !visible;
+            ventilationArrow.ventTypeChange(visible);
+        }
+
+        public function setOpenWindowVisible(visible:Boolean):void {
+            openWindowImg.visible = visible;
+        }
+
+        private function housePanelInitialized():void {
+            originalInsulationLeftDownHeight = wallDownLeftInsulationImg.height;
+            originalInsulationRightHeight = wallRightInsulationImg.height;
+            originalInsulationLeftUpHeight = wallUpLeftInsulationImg.height;
+            originalInsulationLeftUpY = wallUpLeftInsulationImg.y;
+            originalInsulationRightY = wallRightInsulationImg.y;
+            originalFlatRoofWidth = flatRoofImg.width;
+            originalInsulationBridgeX = bridgeUpInsulationImg.x;
+            originalInsulationBrideWidth = bridgeUpInsulationImg.width;
+
+        }
+
+        private function setHouseVisibility(houseType:int):void {
+            if (HouseTypeHelper.isDetachedType(houseType) || HouseTypeHelper.isTerraceType(houseType)) {
+                innerHouseImg.visible = true;
+                lowerHouseImg.visible = false;
+                upperHouseImg.visible = false;
+                lowerUpperHouseImg.visible = false;
+            }
+            else if (HouseTypeHelper.hasNeighboursUp(houseType) && HouseTypeHelper.hasNeighboursDown(houseType)) {
+                innerHouseImg.visible = false;
+                lowerHouseImg.visible = false;
+                upperHouseImg.visible = false;
+                lowerUpperHouseImg.visible = true;
+            }
+            else if (HouseTypeHelper.hasNeighboursUp(houseType)) {
+                innerHouseImg.visible = false;
+                lowerHouseImg.visible = false;
+                upperHouseImg.visible = true;
+                lowerUpperHouseImg.visible = false;
+            }
+            else if (HouseTypeHelper.hasNeighboursDown(houseType)) {
+                innerHouseImg.visible = false;
+                lowerHouseImg.visible = true;
+                upperHouseImg.visible = false;
+                lowerUpperHouseImg.visible = false;
+            }
+        }
+
+        private function setOthersElementsVisibility(upFloor:Boolean, downFloor:Boolean, isGroundType:Boolean):void {
+            floorInsulationBalloon.visible = !downFloor;
+            floorArrow.visible = !downFloor;
+            roofInsulationBaloon.visible = !upFloor;
+            roofArrow.visible = !upFloor;
+            foundationsVisible = isGroundType && foundationsEnabled;
+        }
+
+        private function setInsulationVisibility(isGroundType:Boolean, upFloor:Boolean):void {
+            floorInsulationImg.visible = isGroundType;
+            roofInsulationImg.visible = !upFloor;
+            if (!isGroundType && upFloor) {
+                wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + INSULATION_BOTTOM;
+                wallRightInsulationImg.y = originalInsulationRightY - INSULATION_TOP;
+                wallRightInsulationImg.height = originalInsulationRightHeight + INSULATION_TOP + INSULATION_BOTTOM;
+                wallUpLeftInsulationImg.y = originalInsulationLeftUpY - INSULATION_TOP;
+                wallUpLeftInsulationImg.height = originalInsulationLeftUpHeight + INSULATION_TOP;
+            }
+            else if (!isGroundType) {
+                wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + INSULATION_BOTTOM;
+                wallRightInsulationImg.y = originalInsulationRightY;
+                wallRightInsulationImg.height = originalInsulationRightHeight + INSULATION_BOTTOM;
+                wallUpLeftInsulationImg.y = originalInsulationLeftUpY;
+                wallUpLeftInsulationImg.height = originalInsulationLeftUpHeight;
+            }
+            else if (upFloor) {
+                wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + floorInsulationImg.height;
+                wallRightInsulationImg.y = originalInsulationRightY - INSULATION_TOP;
+                wallRightInsulationImg.height = originalInsulationRightHeight + INSULATION_TOP + floorInsulationImg.height;
+                wallUpLeftInsulationImg.y = originalInsulationLeftUpY - INSULATION_TOP;
+                wallUpLeftInsulationImg.height = originalInsulationLeftUpHeight + INSULATION_TOP;
+            }
+            else {
+                wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + floorInsulationImg.height;
+                wallRightInsulationImg.y = originalInsulationRightY;
+                wallRightInsulationImg.height = originalInsulationRightHeight + floorInsulationImg.height;
+                wallUpLeftInsulationImg.y = originalInsulationLeftUpY;
+                wallUpLeftInsulationImg.height = originalInsulationLeftUpHeight;
+            }
+        }
+
+        private function floorInsulationExpanded():void {
+            var additionalWidth:Number = getAdditionalFloorInsulationWidth();
+            floorInsulationImg.x = floorInsulationImg.x - additionalWidth;
+            floorInsulationImg.width += (int)(additionalWidth);
+        }
+
+        private function floorInsulationContracted():void {
+            var additionalWidth:Number = getAdditionalFloorInsulationWidth();
+            floorInsulationImg.x = floorInsulationImg.x + additionalWidth;
+            floorInsulationImg.width -= (int)(additionalWidth);
+        }
+
+        private function getAdditionalFloorInsulationWidth():Number {
+            return 2;
+        }
+
+        override public function langChanged(lang:String):void {
+            doLangChanged();
+        }
+
+
+        override public function initialLangChanged(lang:String):void {
+            doLangChanged()
+        }
+
+        private function doLangChanged():void {
+            var oldIdx:int = ventilationBaloon.ventilationDropDown.selectedIndex;
+            ventilationMethodList.refresh();
+            ventilationBaloon.ventilationDropDown.selectedIndex = oldIdx;
+
+            oldIdx = airingBaloon.getDropDownList().selectedIndex;
+            ventilationFreqList.refresh();
+            airingBaloon.getDropDownList().selectedIndex = oldIdx;
+
+            oldIdx = warmWaterBaloon.dropDownList.selectedIndex;
+            warmWaterConsumptionList.refresh();
+            warmWaterBaloon.dropDownList.selectedIndex = oldIdx;
+        }
+        ]]></fx:Script>
+
+
+    <s:BorderContainer x="0" y="0" borderVisible="false" width="100%" height="100%"  backgroundAlpha="0.0"  id="brdContainer" >
+
+        <s:Image id="shuttersImg" visible="false" x="178" y="281" source="@Embed('/pl/znr/heatmaster/assets/images/roller_blind1.png')"/>
+        <s:Image x="160" y="285" id="shuttersWithoutBridgeImg" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/rolety_mostek.png')"/>
+
+        <s:Image x="0" y="0"  id="innerHouseImg" source="@Embed('/pl/znr/heatmaster/assets/images/house/inner_house2.png')"/>
+
+        <mx:Image x="{roofInsulationImg.x - 31}" y="{roofInsulationImg.y -flatRoofImg.height}" id="flatRoofImg" maintainAspectRatio="false"
+                  width="769" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house/roof2.png')"/>
+
+
+        <s:Group x="115" y="{roofInsulationImg.y - roofImg.height }" id="roofGroup">
+            <s:Image x="0" y="0" id="roofImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house/roof.png')"/>
+
+            <s:Image x="278" y="37" id="flatCollector1" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor1.png')"/>
+            <s:Image x="328" y="37" id="flatCollector2" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor2.png')"/>
+            <s:Image x="378" y="37" id="flatCollector3" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor3.png')"/>
+            <s:Image x="428" y="37" id="flatCollector4" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor4.png')"/>
+
+            <s:Image x="285" y="30" id="vacuumCollector1" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor_lewy.png')"/>
+            <s:Image x="383" y="30" id="vacuumCollector2" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/collectors/kolektor_prawy.png')"/>
+        </s:Group>
+
+
+        <s:Image x="0" y="0" visible="false" id="lowerHouseImg" source="@Embed('/pl/znr/heatmaster/assets/images/house/lower_floor.png')"/>
+        <s:Image x="0" y="0" visible="false" id="upperHouseImg" source="@Embed('/pl/znr/heatmaster/assets/images/house/upper_floor.png')"/>
+        <s:Image x="0" y="0" visible="false" id="lowerUpperHouseImg" source="@Embed('/pl/znr/heatmaster/assets/images/house/upper_lower_floor.png')"/>
+
+        <mx:Image x="864" y="213" id="wallRightInsulationImg" maintainAspectRatio="false" height="403" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_wall_right.png')"/>
+        <mx:Image x="158.5" y="616" id="floorInsulationImg" maintainAspectRatio="false" width="706" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_floor_wide.png')"/>
+        <mx:Image x="137" y="485" id="wallDownLeftInsulationImg" maintainAspectRatio="false" height="131" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_wall_left_down.png')"/>
+        <mx:Image x="137" y="213" id="wallUpLeftInsulationImg" maintainAspectRatio="false" height="64" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_wall_left_up.png')"/>
+        <mx:Image x="136" y="191" id="roofInsulationImg" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_roof_wide.png')"/>
+
+        <mx:Image id="bridgeUpInsulationImg" x="159" y="277" width="18"  maintainAspectRatio="false" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_bridge.png')"/>
+        <mx:Image id="bridgeDownInsulationImg" x="158" y="473" width="19" maintainAspectRatio="false" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/isolation/isolation_bridge.png')"/>
+
+        <s:Image x="160" y="277" id="rollBlind2Img" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/roller_blind2.png')"/>
+        <s:Image x="182" y="277" id="openWindowImg" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/openWindow/open_window.png')"/>
+
+        <s:Image id="bathImage" x="600" y="470" scaleX="0.8" scaleY="0.8" source="@Embed('/pl/znr/heatmaster/assets/images/wanna.png')" visible="false"/>
+
+        <s:Image id="groundHeatExchangerImg" visible="false" x="30" y="551" source="@Embed('/pl/znr/heatmaster/assets/images/exchanger.png')"/>
+        <s:Image id="recuperatorImg" visible="false" x="180" y="511" source="@Embed('/pl/znr/heatmaster/assets/images/recuperator.png')"/>
+
+        <!--<s:CheckBox id="groundHeatExchangerCheckBox" x="40" y="683" selected="false" label="Gruntowy wymiennik ciepła" change="groundHeatExchangerChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterCheckBoxSkin"/>-->
+
+        <mx:Image x="158" y="580" id="wallHoleImg" visible="true" width="24" maintainAspectRatio="false"  source="@Embed('/pl/znr/heatmaster/assets/images/wall_hole.png')"/>
+        <mx:Image x="158" y="540" id="wallHoleRecInImg" visible="false" width="24" maintainAspectRatio="false"  source="@Embed('/pl/znr/heatmaster/assets/images/wall_hole.png')"/>
+        <mx:Image x="158" y="580" id="wallHoleRecOutImg" visible="false" width="24" maintainAspectRatio="false"  source="@Embed('/pl/znr/heatmaster/assets/images/wall_hole.png')"/>
+
+
+        <s:Image id="leftFoundationImg" x="144" y="614" visible="{foundationsVisible}" source="@Embed('/pl/znr/heatmaster/assets/images/fundament.png')"/>
+        <s:Image id="rightFoundationImg" x="827" y="614" visible="{foundationsVisible}" source="@Embed('/pl/znr/heatmaster/assets/images/fundament.png')"/>
+
+        <!--<s:CheckBox id="foundationsCheckBox" x="846" y="683" selected="true" label="Fundamenty" change="foundationsChecked()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterCheckBoxSkin"/>-->
+
+
+        <baloon:WindowsBaloon id="windowsBaloon" x="230" y="405" groupX="23" infoIconTop="-5" infoIconRight="15"/>
+
+        <baloon:LabelBaloon id="insolationBalloon" infoIconRight="13" infoIconTop="-5"
+                                      headerText="{resourceManager.getString('hm','hm.label.insolation')}" valueText="" headerLabelY="22" headerLabelX="17"
+                                      x="-5" y="340" undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_naslonecz.png">
+
+            <baloon:hmToolTip>
+                <tooltip:InsolationToolTip/>
+            </baloon:hmToolTip>
+        </baloon:LabelBaloon>
+
+        <!--<baloon:DropDownBaloon id="tightnessBalloon" x="630" y="282" headerLabelY="14" headerText="Szczelność " infoIconVisible="true" dataProvider="{tightnessList}" type="{DropDownType.TIGHTNESS}"-->
+        <!--selectedIndex="2" undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_szczelnosc.png">-->
+        <!--</baloon:DropDownBaloon>-->
+
+        <baloon:InsulationBaloon id="roofInsulationBaloon" x="760" y="173" groupX="24" infoIconTop="-5" infoIconRight="-5"
+                                 headerText="{resourceManager.getString('hm','hm.label.insulation.roof')}"  insulationElementType="{InsulationElementType.ROOF}"
+                                 maximumWidth="50" comboLabelsY="13" labelsSubgroupY="12" headerLabelX="1"
+                                 undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_izol_dachu.png">
+        </baloon:InsulationBaloon>
+
+        <baloon:InsulationBaloon id="wallsInsulationBaloon" x="752" y="460" groupX="10" groupY="10" controlsSubGroupY="33" infoIconTop="8" infoIconRight="0"
+                                 labelsSubgroupY="12"  comboLabelsY="11" headerLabelX="1"
+                                 headerText="{resourceManager.getString('hm','hm.label.insulation.wall')}" insulationElementType="{InsulationElementType.WALL}"
+                                 undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_izol_scian.png">
+        </baloon:InsulationBaloon>
+
+        <baloon:HeatingSourceLossBaloon id="heatingSourceLossBaloon" x="770" y="310" infoIconRight="5" infoIconTop="7" headerLabelY="22"
+                                        undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_utrata.png">
+            <baloon:hmToolTip>
+                <tooltip:DeviceLossToolTip/>
+            </baloon:hmToolTip>
+        </baloon:HeatingSourceLossBaloon>
+
+        <baloon:InsulationBaloon id="floorInsulationBalloon" x="510" y="570" groupX="10" groupY="-5" infoIconTop="-7" infoIconRight="7"
+                                 labelsSubgroupY="14" comboLabelsY="11" headerLabelX="1" initialIndex="0"
+                                 headerText="{resourceManager.getString('hm','hm.label.insulation.floor')}" insulationElementType="{InsulationElementType.FLOOR}"
+                                 maximumWidth="50"
+                                 undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_izol_podlogi.png">
+        </baloon:InsulationBaloon>
+
+
+
+
+
+
+
+        <!-- <baloon:DropDownBaloon id="ventilationBaloon" x="90" y="480" groupX="7" headerText="Wentylacja" dataProvider="{ventilationMethodList}" type="{DropDownType.VENTILATION_METHOD}"
+                                selectedIndex="0" undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_wentylacja.png" >
+         </baloon:DropDownBaloon>-->
+
+        <baloon:VentilationBaloon id="ventilationBaloon" x="297" y="543" groupX="2" groupY="0"
+                                  infoIconRight="-5" infoIconTop="-10"
+                                  headerText="{resourceManager.getString('hm','hm.label.ventilation')}" dataProvider="{ventilationMethodList}"
+                                  selectedIndex="1"
+                                  >
+        </baloon:VentilationBaloon>
+
+        <baloon:DropDownBaloon id="airingBaloon" x="230" y="278" headerLabelY="6" groupX="3"
+                               infoIconRight="-3" infoIconTop="-5"
+                               headerText="{resourceManager.getString('hm','hm.label.airing')}" dataProvider="{ventilationFreqList}"
+                               type="{DropDownType.VENTILATION_FREQUENCY}"
+                               selectedIndex="1" infoIconVisible="true"
+                               undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_wietrzenie.png">
+
+            <baloon:hmToolTip>
+                <tooltip:AiringToolTip/>
+            </baloon:hmToolTip>
+        </baloon:DropDownBaloon>
+
+        <baloon:PersonsGainBaloon id="personGainBaloon" x="475" y="422" infoIconRight="-5" infoIconTop="10">
+            <baloon:hmToolTip>
+                <tooltip:PersonGainToolTip/>
+            </baloon:hmToolTip>
+        </baloon:PersonsGainBaloon>
+
+        <baloon:DropDownBaloon id="warmWaterBaloon" visible="false"  headerText="{resourceManager.getString('hm','hm.label.warm_water')}" x="605" y="295"
+                               type="{DropDownType.WARM_WATER}"
+                               dataProvider="{warmWaterConsumptionList}"
+                               labelDropDownX="8" groupY="-2" groupX="5"
+                               dropDownWidth="95"
+                               selectedIndex="2"
+                               infoIconRight="0" infoIconTop="-8"
+                               subHeaderText="{resourceManager.getString('hm','hm.label.consumption')}"
+                               headerDropDownSpace="13"
+                               headerSubHeaderDownSpace="2"
+                               headerLabelY="8"
+                               undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_ciepla_woda1.png">
+            <baloon:hmToolTip>
+                <tooltip:WarmWaterToolTip/>
+            </baloon:hmToolTip>
+        </baloon:DropDownBaloon>
+
+        <hm:EnergyMeter id="energyMeter" x="-12" y="54"/>
+
+        <arr:WallArrow id="wallArrow" x="810" y="{wallsInsulationBaloon.y - 63}"/>
+        <!--<arr:FoundationsArrow id="foundationsArrow" x="810" y="595"/>-->
+        <arr:RoofArrow id="roofArrow" x="{roofInsulationBaloon.x - 100}" y="{roofInsulationBaloon.y - 60}"/>
+        <arr:FloorArrow id="floorArrow" x="705" y="560"/>
+        <arr:WindowsArrow id="windowsArrow" x="55" y="417"/>
+
+        <arr:HeatSourceLossArrow id="heatSourceLossArrow" x="810" y="{heatingSourceLossBaloon.y - 60}"/>
+
+        <arr:SunGainArrow id="SunGainArrow" x="170" y="345"/>
+        <arr:VentilationArrow id="ventilationArrow"  x="{ventilationArrowX}" y="{ventilationArrowY}"/>
+        <arr:AiringArrow  id="airingArrow" x="55" y="280"/>
+        <arr:WarmWaterArrow id="warmWaterArrow" x="599" y="370" visible="false"/>
+        <arr:CollectorSolarGainArrow id="collectorSolarGainArrow" x="{warmWaterArrow.x}" y="150" visible="false"/>
+
+        <arr:PersonGainArrow id="personGainArrow" x="477" y="280"/>
+
+
+    </s:BorderContainer>
+
+</hm:HeatMasterComponent>

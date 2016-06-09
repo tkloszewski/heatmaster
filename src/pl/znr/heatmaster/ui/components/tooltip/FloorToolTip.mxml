@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<tooltip:BaseToolTip xmlns:fx="http://ns.adobe.com/mxml/2009"
+                     xmlns:tooltip="pl.znr.heatmaster.ui.components.tooltip.*"
+                     xmlns:s="library://ns.adobe.com/flex/spark" >
+    <!-- To change this template use File | Settings | File Templates. -->
+    <fx:Script><![CDATA[
+
+        import spark.utils.TextFlowUtil;
+
+        ]]></fx:Script>
+
+    <tooltip:textFlow>
+        {TextFlowUtil.importFromString(resourceManager.getString('hm','hm.tooltip.insulation.floor'))}
+    </tooltip:textFlow>
+
+</tooltip:BaseToolTip>

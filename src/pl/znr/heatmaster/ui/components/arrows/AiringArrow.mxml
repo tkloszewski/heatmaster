@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()"
+        >
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.ArrowOrientation;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        private var originalValueLabelY:int = 10;
+        private var unitsInlineValueLabelY:int = 20;
+
+        override protected function getWidthCoefficient():Number {
+            return 1.5;
+        }
+
+        override protected function getValueLabel():Label {
+            return airValueLabel;
+        }
+
+        override protected function getArrowOrientation():int {
+            return ArrowOrientation.HORIZONTAL;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return airUnitLabel;
+        }
+
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthConvertedResult:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            return monthConvertedResult.enAir;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            var yearConvertedResult:ConvertedResult = resultData.yearlyAggregatedConvertedData;
+            return yearConvertedResult.enAir;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            airArrowImage.visible = regularArrowVisible;
+            airGainArrowImage.visible = !regularArrowVisible;
+            return regularArrowVisible ? airArrowImage : airGainArrowImage;
+        }
+
+
+        override protected function adjustPercentageLabel(percentageLabel:Label):void {
+            /*
+            percentageLabel.x = percentageLabel.x + percentageLabel.width * 0.4;
+            percentageLabel.width = percentageLabel.width * 0.6;
+            */
+            super.adjustPercentageLabel(percentageLabel);
+        }
+
+        override protected function arrowInitialized():void {
+            super.arrowInitialized();
+            airValueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelOriginalYPosition():void {
+            airValueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelWithUnitsInlinePosition():void {
+            airValueLabel.y = unitsInlineValueLabelY;
+        }
+
+        ]]></fx:Script>
+
+
+
+    <mx:Image x="70" y="2" id="airArrowImage" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_left.png')"/>
+    <mx:Image x="70" y="2" visible="false" id="airGainArrowImage" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_right.png')"/>
+
+
+    <s:Label id="airValueLabel" x="0" y="10" width="74" height="22" digitWidth="tabular"
+             text="" styleName="arrowLabelStyle"/>
+    <s:Label x="2" y="28" id="airUnitLabel" width="74" height="22" styleName="arrowLabelStyle" digitWidth="tabular"/>
+
+
+    <!--<s:Label x="0" y="10" width="50" id="airValueLabel" styleName="arrowLabelStyle" text=""/>
+    <s:Label x="0" y="32" width="60" id="airUnitLabel" styleName="arrowLabelStyle" text=""/>-->
+
+
+
+</arrows:HeatMasterArrow>

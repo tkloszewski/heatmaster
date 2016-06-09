@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<hm:HeatMasterComponent xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:hm="pl.znr.heatmaster.ui.components.*">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import flash.events.MouseEvent;
+
+        import mx.collections.IList;
+        import mx.core.UIComponent;
+
+        [Bindable]
+        protected var headerLabelStyleName:String = "baloonHeader";
+
+        [Bindable]
+        protected var grayFontStyleName:String = "pupupPanelGrayFontStyle";
+
+        [Bindable]
+        protected var _dataProvider:IList;
+
+        [Bindable]
+        protected var _groupX:int = 0;
+
+        [Bindable]
+        protected var _groupY:int = 0;
+
+        [Bindable]
+        protected var _infoIconTop:Number = 5;
+
+        [Bindable]
+        protected var _infoIconRight:Number = 5;
+
+        [Bindable]
+        protected var _headerText:String;
+
+        [Bindable]
+        protected var _undercoutImgSource:String;
+
+        public function get groupX():int {
+            return _groupX;
+        }
+
+        public function set groupX(value:int):void {
+            _groupX = value;
+        }
+
+        public function get groupY():int {
+            return _groupY;
+        }
+
+        public function set groupY(value:int):void {
+            _groupY = value;
+        }
+
+        public function get infoIconTop():Number {
+            return _infoIconTop;
+        }
+
+        public function set infoIconTop(value:Number):void {
+            _infoIconTop = value;
+        }
+
+        public function get infoIconRight():Number {
+            return _infoIconRight;
+        }
+
+        public function set infoIconRight(value:Number):void {
+            _infoIconRight = value;
+        }
+
+        public function get headerText():String {
+            return _headerText;
+        }
+
+        public function set headerText(value:String):void {
+            _headerText = value;
+        }
+
+        public function get undercoutImgSource():String {
+            return _undercoutImgSource;
+        }
+
+        public function set undercoutImgSource(value:String):void {
+            _undercoutImgSource = value;
+        }
+
+        public function get dataProvider():IList {
+            return _dataProvider;
+        }
+
+        public function set dataProvider(value:IList):void {
+            _dataProvider = value;
+        }
+
+        ]]></fx:Script>
+
+
+
+
+</hm:HeatMasterComponent>

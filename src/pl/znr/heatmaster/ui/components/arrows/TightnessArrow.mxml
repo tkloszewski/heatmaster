@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import pl.znr.heatmaster.constants.ArrowOrientation;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            return monthlyData.enTightness;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            return resultData.yearlyAggregatedConvertedData.enTightness;
+        }
+
+        override protected function getWidthCoefficient():Number {
+            return 1.5;
+        }
+
+        override protected function getValueLabel():Label {
+            return tightnessValueLabel;
+        }
+
+        override protected function getArrowOrientation():int {
+            return ArrowOrientation.HORIZONTAL;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return tightnessUnitLabel;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            tightnessImgArrow.visible = regularArrowVisible;
+            tightnessImgGainArrow.visible = !regularArrowVisible;
+            return regularArrowVisible ? tightnessImgArrow :tightnessImgGainArrow;
+        }
+        ]]></fx:Script>
+
+    <mx:Image x="0" y="10" id="tightnessImgArrow" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_right.png')"/>
+    <mx:Image x="0" y="10" id="tightnessImgGainArrow" visible="false" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_left.png')"/>
+
+    <s:Label x="100" y="15" id="tightnessValueLabel" width="54" height="22" styleName="arrowLabelStyle"/>
+    <s:Label x="100" y="36" id="tightnessUnitLabel" width="60" height="22" styleName="arrowLabelStyle"/>
+
+</arrows:HeatMasterArrow>

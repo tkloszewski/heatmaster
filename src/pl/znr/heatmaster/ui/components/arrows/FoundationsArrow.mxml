@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            return monthlyData.enFoundations;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            return resultData.yearlyAggregatedConvertedData.enFoundations;
+        }
+
+        override protected function getMaxScaleRatio():Number {
+            return 1.5;
+        }
+
+        override protected function getValueLabel():Label {
+            return valueFoundationsLabel;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return unitFoundationsLabel;
+        }
+
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            imgFoundationsArrow.visible = regularArrowVisible;
+            imgFoundationsGainArrow.visible = !regularArrowVisible;
+            return regularArrowVisible ? imgFoundationsArrow : imgFoundationsGainArrow;
+        }
+        ]]></fx:Script>
+
+
+
+    <mx:Image x="0" y="10" id="imgFoundationsArrow" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_right.png')"/>
+    <mx:Image x="0" y="10" id="imgFoundationsGainArrow" visible="false" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_left.png')"/>
+
+    <s:Label x="100" y="15" id="valueFoundationsLabel" width="54" height="22" styleName="arrowLabelStyle"/>
+    <s:Label x="100" y="36" id="unitFoundationsLabel" width="60" height="22" styleName="arrowLabelStyle"/>
+
+
+</arrows:HeatMasterArrow>
+

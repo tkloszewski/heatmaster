@@ -1,0 +1,989 @@
+<?xml version="1.0"?>
+<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+                        xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:hm="pl.znr.heatmaster.ui.components.*"
+                        creationComplete="heatingPopupInitialized()"
+        >
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Declarations >
+
+        <s:ArrayCollection id="detachedHeatingSourceList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_pellets')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_PELLETS)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_wood')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_WOOD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.furnace')}" data="{new HeatingSourceTypeItem(HeatingSourceType.FURNACE)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COAL_OLD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COAL_MODERN)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="multiFamilyHeatingSourceList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="warmWaterDetachedHeatingSourceList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_pellets')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_PELLETS)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_wood')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_WOOD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_electric_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_ELECTRIC_HEATER)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_HEATER)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="warmWaterMultiFamilyHeatingSourceList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_electric_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_ELECTRIC_HEATER)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_HEATER)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
+        </s:ArrayCollection>
+
+
+
+        <s:ArrayCollection id="detachedWarmWaterDistributionList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_not_insulated')}" data="{WarmWaterDistribution.NOT_ISOLATED_PIPES}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="multiFamilyWarmWaterDistributionList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_not_insulated')}" data="{WarmWaterDistribution.NOT_ISOLATED_PIPES}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="warmWaterStorageList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.heat_node_without_storage')}" data="{WarmWaterStorage.HEAT_NODE_WITHOUT_STORAGE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.modern_storage')}" data="{WarmWaterStorage.MODERN_STORAGE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.standard_80_90_storage')}" data="{WarmWaterStorage.STANDARD_80_90_STORAGE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.old_storage')}" data="{WarmWaterStorage.OLD_STORAGE}"/>
+        </s:ArrayCollection>
+
+        <s:ArrayCollection id="solarCollectorTypesList">
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.none')}" data="{SolarCollectorType.NONE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.flat')}" data="{SolarCollectorType.FLAT}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.vacuum')}" data="{SolarCollectorType.VACUUM}"/>
+        </s:ArrayCollection>
+
+    </fx:Declarations>
+
+    <fx:Script><![CDATA[
+        import mx.collections.IList;
+        import mx.collections.IList;
+        import mx.controls.Alert;
+        import mx.core.FlexGlobals;
+        import mx.formatters.Formatter;
+        import mx.formatters.NumberBaseRoundType;
+        import mx.formatters.NumberFormatter;
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.CountryItem;
+        import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.constants.combo.HouseStandardType;
+        import pl.znr.heatmaster.constants.combo.HouseType;
+        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
+        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
+        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
+        import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
+        import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
+        import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+        import pl.znr.heatmaster.core.model.HeatingSourceData;
+        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+        import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
+        import pl.znr.heatmaster.core.model.SolarCollectorData;
+        import pl.znr.heatmaster.core.model.WarmWaterData;
+        import pl.znr.heatmaster.ui.components.popup.HeatingSourceTypeItem;
+        import pl.znr.heatmaster.ui.components.popup.HeatingSourceTypeItem;
+        import pl.znr.heatmaster.util.HouseStandardModelContainer;
+        import pl.znr.heatmaster.util.HouseTypeHelper;
+        import pl.znr.heatmaster.util.HouseTypeHelper;
+
+        import spark.components.BorderContainer;
+
+        private var controlsVisible:Boolean = false;
+        private var solarSurfaceChanged = false;
+        private var personCount:int = GlobalValues.INITIAL_PERSON_NUMBER;
+        private var previousHouseType:int = HouseType.DETACHED;
+
+        private var currentImg:mx.controls.Image;
+        private var warmWaterIncluded:Boolean = false;
+
+        [Bindable]
+        private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
+
+
+        private var localCurrency:Boolean = false;
+        private var selectedCountry:CountryItem;
+
+        override public function langChanged(lang:String):void {
+            var oldIdx:int = heatingTypeDropDownList.selectedIndex;
+            detachedHeatingSourceList.refresh();
+            multiFamilyHeatingSourceList.refresh();
+            heatingTypeDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = warmWaterHeatingTypeDropDownList.selectedIndex;
+            warmWaterDetachedHeatingSourceList.refresh();
+            warmWaterMultiFamilyHeatingSourceList.refresh();
+            warmWaterHeatingTypeDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = warmWaterStorageDropDownList.selectedIndex;
+            warmWaterStorageList.refresh();
+            warmWaterStorageDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = warmWaterDistributionDropDownList.selectedIndex;
+            detachedWarmWaterDistributionList.refresh();
+            multiFamilyWarmWaterDistributionList.refresh();
+            warmWaterDistributionDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = collectorTypeDropDownList.selectedIndex;
+            solarCollectorTypesList.refresh();
+            collectorTypeDropDownList.selectedIndex = oldIdx;
+
+            applyCurrencyToLabels(selectedCountry, localCurrency);
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+
+                warmWaterDistributionDataProvider = detachedWarmWaterDistributionList;
+                var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
+                var warmWaterHeatingSourceType:HeatingSourceType = warmWaterHeatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
+                var heatingData:HeatingSourceData = createHeatingData();
+
+                dataContext.heatingData = heatingData;
+                dataContext.solarCollectorData = createSolarCollectorData();
+                var warmWaterData:WarmWaterData = createWarmWaterData();
+
+                dataContext.houseData.warmWaterData.distributorEfficiency = warmWaterData.distributorEfficiency;
+                dataContext.houseData.warmWaterData.storeEfficiency = warmWaterData.storeEfficiency;
+                dataContext.houseData.warmWaterData.warmWaterDistribution = warmWaterData.warmWaterDistribution;
+                dataContext.houseData.warmWaterData.warmWaterStorage = warmWaterData.warmWaterStorage;
+
+                dataContext.conversionData.pricePerKwh = heatingData.pricePerkWh;
+                dataContext.conversionData.waterPricePerkWh = warmWaterHeatingSourceType.pricePerkWh;
+
+                dataContext.conversionData.houseHeatingEfficiency = heatingData.heatingEfficiency / 100;
+                dataContext.conversionData.warmWaterHeatingEfficiency = warmWaterHeatingSourceType.efficiency / 100;
+                dataContext.conversionData.finalToPrimaryCoefficient = heatingSourceType.finalToPrimaryCoefficient;
+                dataContext.conversionData.warmWaterFinalToPrimaryCoefficient = warmWaterHeatingSourceType.finalToPrimaryCoefficient;
+                dataContext.conversionData.emissionCoefficient = heatingSourceType.emissionPerKWh;
+                dataContext.conversionData.waterEmissionCoefficient = warmWaterHeatingSourceType.emissionPerKWh;
+
+            } catch (e:Error) {
+                trace("Error in initData heatingPopupData: " + e.getStackTrace());
+                Alert.show("Error in initData housePopupData: ", e.message);
+            }
+            return dataContext;
+        }
+
+        public function configChanged(configItem:CountryItem, localCurrency:Boolean):void {
+            applyConfigPrices(detachedHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
+            applyConfigPrices(multiFamilyHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
+            applyConfigPrices(warmWaterDetachedHeatingSourceList, configItem, warmWaterHeatingTypeDropDownList, localCurrency);
+            applyConfigPrices(warmWaterMultiFamilyHeatingSourceList, configItem, warmWaterHeatingTypeDropDownList, localCurrency);
+
+            var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var warmWaterHeatingSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+
+            applyPriceValuesToControls(heatingSourceTypeItem.pricePerKwh);
+            applyWarmWaterPriceValuesToControls(warmWaterHeatingSourceTypeItem.pricePerKwh);
+
+            selectedCountry = configItem;
+            this.localCurrency = localCurrency;
+
+            applyCurrencyToLabels(configItem, localCurrency);
+        }
+
+        private function applyCurrencyToLabels(country:CountryItem, localCurrency:Boolean):void {
+            var currencyCode:String = localCurrency ? country.currencyLocaleCode : HeatMaster.CURRENCY_EURO_LOCALE_CODE;
+            var currencyName:String = resourceManager.getString('hm', currencyCode);
+
+            heatingCostRichText.text = currencyName;
+            warmWaterHeatingCostRichText.text = currencyName;
+        }
+
+        public function getConfigAppliedHeatingPrice():Number {
+            return priceNS.value;
+        }
+
+        public function getConfigAppliedWarmWaterPrice():Number {
+            return priceWarmWaterNS.value;
+        }
+
+        private function applyConfigPrices(heatingTypes:ArrayCollection, configItem:CountryItem, dropDownList:DropDownList, localCurrency:Boolean):void {
+            var rate:Number = localCurrency ? configItem.currencyExchangeRate : 1.0;
+            for each(var item:Object in heatingTypes) {
+                var heatingSourceTypeItem:HeatingSourceTypeItem = item.data;
+                if (HeatingSourceType.isOfCoalType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.coalPrice * rate;
+                }
+                else if (HeatingSourceType.isOfGasType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.gasPrice * rate;
+                }
+                else if (HeatingSourceType.isOfOilType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.heatingOilPrice * rate;
+                }
+                else if (HeatingSourceType.isOfPelletsType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.pelletsPrice * rate;
+                }
+                else if (HeatingSourceType.isOfWoodType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.firewoodPrice * rate;
+                }
+                else if (HeatingSourceType.isOfElectricType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.electricityPrice * rate;
+                }
+                else if (HeatingSourceType.isOfCombinedType(heatingSourceTypeItem.type)) {
+                    heatingSourceTypeItem.pricePerKwh = configItem.combinedPrice * rate;
+                }
+                else {
+                    trace("No proper heatingType: " + configItem.code);
+                }
+            }
+
+            var oldIdx:int = dropDownList.selectedIndex;
+            heatingTypes.refresh();
+            dropDownList.selectedIndex = oldIdx;
+
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            var houseType:int = dataContext.houseData.houseType;
+            var heatingData:HeatingSourceData = dataContext.heatingData;
+            var warmWaterData:WarmWaterData = dataContext.houseData.warmWaterData;
+            var collectorData:SolarCollectorData = dataContext.solarCollectorData;
+
+            applyHeatingDataToControls(houseType, heatingData);
+            applyWarmWaterDataToControls(houseType, heatingData, warmWaterData);
+            applySolarDataToControls(houseType, collectorData);
+
+            warmWaterIncluded = dataContext.includeWarmWater;
+            includeWarmWaterCheckBox.selected = warmWaterIncluded;
+
+            if (dataContext.currencyLocaleCode != null) {
+                var currencyName:String = resourceManager.getString('hm', dataContext.currencyLocaleCode);
+                heatingCostRichText.text = currencyName;
+                warmWaterHeatingCostRichText.text = currencyName;
+            }
+
+            setWarmWaterVisibility(false);
+        }
+
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            var houseType:int = dataContext.houseData.houseType;
+            var heatingSourceType:HeatingSourceType = houseType == HouseTypeHelper.isDetachedType(houseType) ? context.model.heatingSourceType : context.model.multiFamilyHeatingSourceType;
+            var warmWaterHeatingSourceType:HeatingSourceType = houseType == HouseTypeHelper.isDetachedType(houseType) ? context.model.warmWaterHeatingSourceType : context.model.multiFamilyWarmWaterHeatingSourceType;
+
+            var heatIdx:int = getComboItemIndexForCollectionOfHeatingItems(heatingSourceType, heatingTypeDropDownList.dataProvider);
+            var warmWaterIdx:int = getComboItemIndexForCollectionOfHeatingItems(warmWaterHeatingSourceType, warmWaterHeatingTypeDropDownList.dataProvider);
+
+            trace("heatIdx: " + heatIdx + " warmWaterIdx: " + warmWaterIdx);
+
+
+            heatingTypeDropDownList.selectedIndex = heatIdx;
+
+            var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            applyHeatingValuesToControls(heatingSourceTypeItem.type, heatingSourceTypeItem.pricePerKwh);
+
+            if (warmWaterIdx != -1) {
+                warmWaterHeatingTypeDropDownList.selectedIndex = warmWaterIdx;
+                var heatingWarmWaterSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+                applyWarmWaterValuesToControls(heatingWarmWaterSourceTypeItem.type, heatingWarmWaterSourceTypeItem.pricePerKwh);
+            }
+
+            var warmWaterDistributionIdx:int = getWarmWaterDistributionIndex(context.model.warmWaterDistribution, detachedWarmWaterDistributionList);
+            var warmWaterStorageIdx:int = getComboItemIndexForCollection(context.model.warmWaterStorage, warmWaterStorageList);
+
+            if (warmWaterDistributionIdx != -1) {
+                warmWaterDistributionDropDownList.selectedIndex = warmWaterDistributionIdx;
+
+                dataContext.houseData.warmWaterData.distributorEfficiency = context.model.warmWaterDistribution.efficiency;
+                dataContext.houseData.warmWaterData.warmWaterDistribution = context.model.warmWaterDistribution;
+            }
+
+            if (warmWaterStorageIdx != -1) {
+                warmWaterStorageDropDownList.selectedIndex = warmWaterStorageIdx;
+
+                dataContext.houseData.warmWaterData.storeEfficiency = context.model.warmWaterStorage.efficiency;
+                dataContext.houseData.warmWaterData.warmWaterStorage = context.model.warmWaterStorage;
+            }
+
+            applySolarDataToControls(houseType, context.model.solarCollectorData);
+
+            var heatingSourceData:HeatingSourceData = createHeatingData();
+
+            dataContext.heatingData = heatingSourceData;
+            dataContext.solarCollectorData = context.model.solarCollectorData;
+
+            var conversionData:ConversionData = dataContext.conversionData;
+            conversionData.pricePerKwh = heatingSourceData.pricePerkWh;
+            conversionData.waterPricePerkWh = heatingSourceData.priceWaterPerkWh;
+            conversionData.houseHeatingEfficiency = heatingSourceData.heatingEfficiency / 100;
+            conversionData.warmWaterHeatingEfficiency = heatingSourceData.waterHeatingEfficiency / 100;
+            conversionData.finalToPrimaryCoefficient = heatingSourceData.finalToPrimaryCoefficient;
+            conversionData.warmWaterFinalToPrimaryCoefficient = heatingSourceData.warmWaterFinalToPrimaryCoefficient;
+            conversionData.emissionCoefficient = heatingSourceData.emissionCoefficient;
+            conversionData.waterEmissionCoefficient = heatingSourceData.waterEmissionCoefficient;
+
+
+            // trace("conversionData: " + conversionData.toString());
+
+        }
+
+        public function getOrder():int {
+            return 0;
+        }
+
+        public function houseTypeChanged(houseType:int, standardType:HouseStandardType):WarmWaterData {
+            var currentHeatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type;
+            var warmWaterHeatingSourceType:HeatingSourceType = warmWaterHeatingTypeDropDownList.selectedItem.data.type;
+            var warmWaterDistribution:WarmWaterDistribution = warmWaterDistributionDropDownList.selectedItem.data;
+
+            var houseStandardModel:HouseStandardTypeModel = HouseStandardModelContainer.getHouseStandardTypeModelForStandardType(standardType);
+
+            var heatingTypeChanged:Boolean = false;
+
+            if (houseType == HouseType.DETACHED) {
+                try {
+                    var heatingIndex:int = getIndexOfHeatingItem(currentHeatingSourceType, detachedHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.heatingSourceType, detachedHeatingSourceList);
+                        if (heatingIndex < 0) {
+                            heatingIndex = 0;
+                        }
+                        heatingTypeChanged = true;
+                    }
+
+                    heatingTypeDropDownList.dataProvider = detachedHeatingSourceList;
+                    heatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                    heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
+                        if (heatingIndex < 0) {
+                            heatingIndex = 0;
+                        }
+                        heatingTypeChanged = true;
+                    }
+
+                    warmWaterHeatingTypeDropDownList.dataProvider = warmWaterDetachedHeatingSourceList;
+                    warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                    var distributionIdx:int = getComboItemIndexForCollection(warmWaterDistribution, detachedWarmWaterDistributionList);
+                    if (distributionIdx < 0) {
+                        heatingTypeChanged = true;
+                        distributionIdx = 0;
+                    }
+
+                    warmWaterDistributionDropDownList.dataProvider = detachedWarmWaterDistributionList;
+                    warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
+                } catch (e:Error) {
+                    Alert.show("Error in houseType changed detached: " + e.message);
+                }
+            }
+            else if (previousHouseType == HouseType.DETACHED) {
+                try {
+                    heatingIndex = getIndexOfHeatingItem(currentHeatingSourceType, multiFamilyHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyHeatingSourceType, multiFamilyHeatingSourceList);
+                        if (heatingIndex < 0) {
+                            heatingIndex = 0;
+                        }
+                        heatingTypeChanged = true;
+                    }
+
+                    heatingTypeDropDownList.dataProvider = multiFamilyHeatingSourceList;
+                    heatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                    heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = 0;
+                        if (heatingIndex < 0) {
+                            heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyWarmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+                        }
+                        heatingTypeChanged = true;
+                    }
+
+                    warmWaterHeatingTypeDropDownList.dataProvider = warmWaterMultiFamilyHeatingSourceList;
+                    warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
+
+
+                    distributionIdx = getComboItemIndexForCollection(warmWaterDistribution, multiFamilyWarmWaterDistributionList);
+                    if (distributionIdx < 0) {
+                        heatingTypeChanged = true;
+                        distributionIdx = 0;
+                    }
+
+                    warmWaterDistributionDropDownList.dataProvider = multiFamilyWarmWaterDistributionList;
+                    warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
+                } catch (e:Error) {
+                    Alert.show("Error in hheatingPopup: " + e.message);
+                }
+            }
+
+            previousHouseType = houseType;
+
+            if (heatingTypeChanged) {
+                try {
+                    var currentHeatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data;
+                    var warmWaterHeatingSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data;
+                    applyHeatingValuesToControls(currentHeatingSourceTypeItem.type, currentHeatingSourceTypeItem.pricePerKwh);
+                    applyWarmWaterValuesToControls(warmWaterHeatingSourceTypeItem.type, warmWaterHeatingSourceTypeItem.pricePerKwh);
+                } catch (e:Error) {
+                    Alert.show("Error applying values to heating popup controls...");
+                }
+                try {
+                    heatMasterListener.setConversionData(createHeatingData());
+                } catch (e:Error) {
+                    Alert.show("Error creating heatingData....");
+                }
+            }
+
+            var result:WarmWaterData = null;
+            try {
+                var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
+                collectorTypeDropDownList.enabled = regularRoof;
+                setNumericStepperEnable(regularRoof, solarSurfaceNS);
+                result = createWarmWaterData();
+            } catch (e:Error) {
+                Alert.show("Error creating warmWater data: " + e.message);
+            }
+            return result;
+        }
+
+        public function rollDownStartupPopup():void {
+            heatPopupMainSmallImg.visible = true;
+            mainGroup.visible = true;
+            heatPopupOkBtn.visible = true;
+        }
+
+        public function hideStartState():void {
+            setRolledBackState();
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            heatMaster.goToNormalState();
+        }
+
+        public function setRolledBackState():void {
+            heatPopupMainSmallImg.visible = false;
+            heatPopupOkBtn.visible = false;
+            includeWarmWaterCheckBox.visible = true;
+            tabClickGroup.visible = true;
+            setControlsVisibility(false);
+        }
+
+        public function personNumberChanged(personNumber:int):void {
+            /*this.personCount = personNumber;
+             if (!solarSurfaceChanged) {
+             var solarCollectorData:SolarCollectorData = createSolarCollectorData();
+             solarSurfaceNS.value = calcSolarSurfaceByPersonCount(solarCollectorData.collectorType, personCount);
+             }*/
+        }
+
+
+        private function heatingPopupInitialized():void {
+            currentImg = heatPopupMainSmallImg;
+
+            var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
+            var warmWaterHeatingSourceType:HeatingSourceType = warmWaterHeatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
+
+            efficiencyNS.value = heatingSourceType.efficiency;
+            priceNS.value = heatingSourceType.pricePerkWh;
+
+            efficiencyWarmWaterNS.value = warmWaterHeatingSourceType.efficiency;
+            priceWarmWaterNS.value = warmWaterHeatingSourceType.pricePerkWh;
+        }
+
+        private function applyHeatingDataToControls(houseType:int, heatingData:HeatingSourceData):void {
+            var heatingIdx:int = -1;
+            if (houseType == HouseType.DETACHED) {
+                heatingIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.heatingType, detachedHeatingSourceList);
+                heatingTypeDropDownList.dataProvider = detachedHeatingSourceList;
+            }
+            else {
+                heatingIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.heatingType, multiFamilyHeatingSourceList);
+                heatingTypeDropDownList.dataProvider = multiFamilyHeatingSourceList;
+            }
+
+            if (heatingIdx == -1) {
+                Alert.show("heatingData type not match: " + heatingData.heatingType.getId());
+            }
+
+            heatingTypeDropDownList.selectedIndex = heatingIdx;
+            efficiencyNS.value = heatingData.heatingEfficiency;
+            priceNS.value = heatingData.pricePerkWh;
+        }
+
+        private function applyWarmWaterDataToControls(houseType:int, heatingData:HeatingSourceData, warmWaterData:WarmWaterData):void {
+            var heatingSourceTypeIdx:int = -1;
+            var heatingDistributionIdx:int = -1;
+            if (houseType == HouseType.DETACHED) {
+                warmWaterHeatingTypeDropDownList.dataProvider = warmWaterDetachedHeatingSourceList;
+                heatingSourceTypeIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.waterHeatingType, warmWaterDetachedHeatingSourceList);
+
+                warmWaterDistributionDropDownList.dataProvider = detachedWarmWaterDistributionList;
+                heatingDistributionIdx = getWarmWaterDistributionIndex(warmWaterData.warmWaterDistribution, detachedWarmWaterDistributionList);
+
+            }
+            else {
+                warmWaterHeatingTypeDropDownList.dataProvider = warmWaterMultiFamilyHeatingSourceList;
+                heatingSourceTypeIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.waterHeatingType, warmWaterMultiFamilyHeatingSourceList);
+
+                warmWaterDistributionDropDownList.dataProvider = multiFamilyWarmWaterDistributionList;
+                heatingDistributionIdx = getWarmWaterDistributionIndex(warmWaterData.warmWaterDistribution, multiFamilyWarmWaterDistributionList);
+            }
+
+            if (heatingSourceTypeIdx == -1) {
+                Alert.show("Couldn't match warmWaterHeatingSourceType: " + heatingData.waterHeatingType.getId());
+            }
+            if (heatingDistributionIdx == -1) {
+                Alert.show("Couldn't match warmWaterDistributionIdx: " + warmWaterData.warmWaterDistribution.getId());
+            }
+
+            warmWaterHeatingTypeDropDownList.selectedIndex = heatingSourceTypeIdx;
+            warmWaterDistributionDropDownList.selectedIndex = heatingDistributionIdx;
+
+            warmWaterStorageDropDownList.selectedIndex = getComboItemIndexForCollection(warmWaterData.warmWaterStorage, warmWaterStorageList);
+
+            efficiencyWarmWaterNS.value = heatingData.waterHeatingEfficiency;
+            priceWarmWaterNS.value = heatingData.priceWaterPerkWh;
+        }
+
+        private function getWarmWaterDistributionIndex(warmWaterDistribution:WarmWaterDistribution, dataItemList:IList):int {
+            for (var i:int = 0; i < dataItemList.length; i++) {
+                var item:Object = dataItemList.getItemAt(i);
+                var itemWarmWaterDistribution:WarmWaterDistribution = item.data as WarmWaterDistribution;
+                if (itemWarmWaterDistribution.getId() == warmWaterDistribution.getId()) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private function applySolarDataToControls(houseType:int, solarData:SolarCollectorData):void {
+            var collectorType:SolarCollectorType = solarData.collectorType;
+            var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
+
+            collectorTypeDropDownList.selectedIndex = getComboItemIndexForCollection(solarData.collectorType, solarCollectorTypesList);
+            solarSurfaceNS.value = solarData.surface;
+
+            solarSurfaceNS.visible = collectorType.type != SolarCollectorType.NONE_TYPE;
+            collectorSurfaceLabel.visible = collectorType.type != SolarCollectorType.NONE_TYPE;
+
+            collectorTypeDropDownList.enabled = regularRoof;
+
+            setNumericStepperEnable(regularRoof, solarSurfaceNS);
+        }
+
+        private function getIndexOfHeatingItem(heatingSourceType:HeatingSourceType, list:ArrayCollection):int {
+            for (var i:int = 0; i < list.length; i++) {
+                var item:Object = list.getItemAt(i);
+                if (item.data.type == heatingSourceType) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private function createWarmWaterData():WarmWaterData {
+            var warmWaterDistribution:WarmWaterDistribution = warmWaterDistributionDropDownList.selectedItem.data;
+            var warmWaterStorage:WarmWaterStorage = warmWaterStorageDropDownList.selectedItem.data;
+            var warmWaterData:WarmWaterData = new WarmWaterData();
+            warmWaterData.heatingSourceType = warmWaterHeatingTypeDropDownList.selectedItem.data.type;
+            warmWaterData.distributorEfficiency = warmWaterDistribution.efficiency;
+            warmWaterData.storeEfficiency = warmWaterStorage.efficiency;
+            warmWaterData.warmWaterDistribution = warmWaterDistribution;
+            warmWaterData.warmWaterStorage = warmWaterStorage;
+            return warmWaterData;
+        }
+
+        private function createSolarCollectorData():SolarCollectorData {
+            var solarCollectorType:SolarCollectorType = collectorTypeDropDownList.selectedItem.data;
+            var solarSurface:Number = solarSurfaceNS.value;
+            var solarCollectorData:SolarCollectorData = new SolarCollectorData();
+            solarCollectorData.collectorType = solarCollectorType;
+            if (solarCollectorType.type == SolarCollectorType.NONE_TYPE) {
+                solarCollectorData.surface = 0;
+                solarCollectorData.count = 0;
+            }
+            else {
+                solarCollectorData.surface = solarSurface;
+                solarCollectorData.count = solarSurface / solarCollectorType.unitSurface;
+            }
+            return solarCollectorData;
+        }
+
+        private function heatingTypeChanged():void {
+            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            applyHeatingValuesToControls(heatingSourceType.type, heatingSourceType.pricePerKwh);
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function applyHeatingValuesToControls(heatingSourceType:HeatingSourceType, pricePerkWh:Number):void {
+            efficiencyNS.value = heatingSourceType.efficiency;
+            priceNS.value = pricePerkWh;
+        }
+
+        private function applyWarmWaterValuesToControls(warmWaterHeatingSourceType:HeatingSourceType, pricePerkWh:Number):void {
+            efficiencyWarmWaterNS.value = warmWaterHeatingSourceType.efficiency;
+            priceWarmWaterNS.value = pricePerkWh;
+        }
+
+        private function applyPriceValuesToControls(pricePerkWh:Number):void {
+            priceNS.value = pricePerkWh;
+        }
+
+        private function applyWarmWaterPriceValuesToControls(pricePerkWh:Number):void {
+            priceWarmWaterNS.value = pricePerkWh;
+        }
+
+        private function warmWaterHeatingTypeChanged():void {
+            var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            applyWarmWaterValuesToControls(warmWaterHeatingSourceType.type, warmWaterHeatingSourceType.pricePerKwh);
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function efficiencyChanged():void {
+            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            // priceNS.value = heatingSourceType.pricePerkWh * (100 / efficiencyNS.value);
+            priceNS.value = heatingSourceType.pricePerKwh;
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function priceChanged():void {
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatingData.pricePerkWh = priceNS.value;
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function warmWaterHeatingEfficiencyChanged():void {
+            var heatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            //priceWarmWaterNS.value = heatingSourceType.pricePerkWh * (100 / efficiencyWarmWaterNS.value);
+            priceWarmWaterNS.value = heatingSourceType.pricePerKwh;
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function warmWaterPriceChanged():void {
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatingData.priceWaterPerkWh = priceWarmWaterNS.value;
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function warmWaterDistributionChanged():void {
+            heatMasterListener.storeAndDistributeEfficiencyChanged(createWarmWaterData());
+        }
+
+        private function warmWaterStorageChanged():void {
+            heatMasterListener.storeAndDistributeEfficiencyChanged(createWarmWaterData());
+        }
+
+        private function collectorsTypeChanged():void {
+            var solarCollectorData:SolarCollectorData = createSolarCollectorData();
+            solarSurfaceNS.visible = solarCollectorData.collectorType.type != SolarCollectorType.NONE_TYPE;
+            collectorSurfaceLabel.visible = solarCollectorData.collectorType.type != SolarCollectorType.NONE_TYPE;
+            if (!solarSurfaceChanged) {
+                if (solarCollectorData.collectorType.type != SolarCollectorType.NONE_TYPE) {
+                    var collectorSurface:Number = calcSolarSurfaceByPersonCount(solarCollectorData.collectorType, personCount);
+                    solarCollectorData.surface = collectorSurface;
+                    solarCollectorData.count = collectorSurface / solarCollectorData.collectorType.unitSurface;
+                    solarSurfaceNS.value = collectorSurface;
+                }
+                else {
+                    solarCollectorData.surface = 0;
+                    solarCollectorData.count = 0;
+                }
+            }
+            heatMasterListener.solarCollectorsDataChanged(solarCollectorData);
+        }
+
+        private function calcSolarSurfaceByPersonCount(solarType:SolarCollectorType, personCount:int):Number {
+            return personCount / solarType.personPerCollector * solarType.unitSurface;
+        }
+
+        private function collectorsSurfaceChanged():void {
+            solarSurfaceChanged = true;
+            heatMasterListener.solarCollectorsDataChanged(createSolarCollectorData());
+        }
+
+        private function createHeatingData():HeatingSourceData {
+            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+
+            var heatingData:HeatingSourceData = new HeatingSourceData();
+            heatingData.heatingType = heatingSourceType.type;
+            heatingData.heatingEfficiency = efficiencyNS.value;
+            heatingData.pricePerkWh = heatingSourceType.pricePerKwh;
+
+            heatingData.waterHeatingType = warmWaterHeatingSourceType.type;
+            heatingData.waterHeatingEfficiency = efficiencyWarmWaterNS.value;
+            heatingData.priceWaterPerkWh = warmWaterHeatingSourceType.pricePerKwh;
+
+            heatingData.finalToPrimaryCoefficient = heatingSourceType.type.finalToPrimaryCoefficient;
+            heatingData.warmWaterFinalToPrimaryCoefficient = warmWaterHeatingSourceType.type.finalToPrimaryCoefficient;
+
+            heatingData.emissionCoefficient = heatingSourceType.type.emissionPerKWh;
+            heatingData.waterEmissionCoefficient = warmWaterHeatingSourceType.type.emissionPerKWh;
+
+            return heatingData;
+        }
+
+        private function hideOrShowControls():void {
+            controlsVisible = !controlsVisible;
+            setControlsVisibility(controlsVisible);
+            heatPopupRollUpImg.visible = false;
+            heatPopupRollDownImg.visible = false;
+            heatPopupRollUpOverImg.visible = controlsVisible;
+            heatPopupRollDownOverImg.visible = !controlsVisible;
+        }
+
+        private function hideOrShowControls1():void {
+
+        }
+
+        private function setControlsVisibility(visible:Boolean):void {
+            currentImg.visible = visible;
+            mainGroup.visible = visible;
+
+            if (!warmWaterIncluded) {
+                warmWaterBorderContainer.visible = false;
+            }
+            else {
+                warmWaterBorderContainer.visible = visible;
+            }
+
+            heatPopupRollUpImg.visible = visible;
+            heatPopupRollDownImg.visible = !visible;
+        }
+
+        private function parse(s:String):Number {
+            return parseFloat(s);
+        }
+
+        private function format(n:Number):String {
+            var format:NumberFormatter = new NumberFormatter();
+            format.precision = 2;
+            format.rounding = NumberBaseRoundType.NEAREST;
+            return format.format(n);
+        }
+
+        private function clickGroupMouseOver():void {
+            if (!heatPopupOkBtn.visible) {
+                if (heatPopupRollUpImg.visible) {
+                    heatPopupRollUpImg.visible = false;
+                    heatPopupRollUpOverImg.visible = true;
+                }
+                else if (heatPopupRollDownImg.visible) {
+                    heatPopupRollDownImg.visible = false;
+                    heatPopupRollDownOverImg.visible = true;
+                }
+            }
+        }
+
+        private function clickGroupMouseOut():void {
+            if (!heatPopupOkBtn.visible) {
+                if (heatPopupRollUpOverImg.visible) {
+                    heatPopupRollUpImg.visible = true;
+                    heatPopupRollUpOverImg.visible = false;
+                }
+                else if (heatPopupRollDownOverImg.visible) {
+                    heatPopupRollDownImg.visible = true;
+                    heatPopupRollDownOverImg.visible = false;
+                }
+            }
+        }
+
+        private function setNumericStepperEnable(enabled:Boolean, numericStepper:NumericStepper):void {
+            numericStepper.enabled = enabled;
+            numericStepper.skin.setCurrentState(enabled ? "normal" : "disabled");
+            numericStepper.skin.invalidateDisplayList();
+        }
+
+        private function setWarmWaterVisibility(invokeChangeListener:Boolean = true):void {
+            warmWaterIncluded = includeWarmWaterCheckBox.selected;
+            heatPopupMainImg.visible = warmWaterIncluded;
+            heatPopupMainSmallImg.visible = !warmWaterIncluded;
+            currentImg = warmWaterIncluded ? heatPopupMainImg : heatPopupMainSmallImg;
+            warmWaterBorderContainer.visible = warmWaterIncluded;
+
+            if (invokeChangeListener) {
+                heatMasterListener.includeWarmWaterChanged(warmWaterIncluded);
+            }
+        }
+
+        private function getComboItemIndexForCollectionOfHeatingItems(dataObject:HeatingSourceType, dataItemList:IList):int {
+            for (var i:int = 0; i < dataItemList.length; i++) {
+                var item:Object = dataItemList.getItemAt(i);
+                var itemType:HeatingSourceTypeItem = item.data as HeatingSourceTypeItem;
+                if (itemType.type == dataObject) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        ]]></fx:Script>
+
+    <mx:Image x="6"  y="2"  id="heatPopupMainSmallImg" scaleY="1.12" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_heat_small.png')" />
+    <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.12" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
+    <s:Image x="12" y="6"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
+
+    <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
+
+
+    <s:Label x="66" y="18" width="177" height="20" styleName="popupPanelHeader" text="{resourceManager.getString('hm','hm.label.title.heating_source')}" fontSize="14" />
+    <s:Group id="tabClickGroup" visible="false" x="15" y="10" height="35" width="280"
+             click="hideOrShowControls()" mouseOver="clickGroupMouseOver()" mouseOut="clickGroupMouseOut()">
+        <mx:Button x="249" y="12" click="hideOrShowControls1()" visible="false" id="heatPopupRollUpImg"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up.png')"/>
+
+        <mx:Button x="249" y="12" click="hideOrShowControls1()" visible="false" id="heatPopupRollDownImg"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down.png')"/>
+
+        <mx:Button x="248" y="9" click="hideOrShowControls1()" visible="false" id="heatPopupRollUpOverImg"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rollup_over.png')" />
+
+        <mx:Button x="248" y="11" click="hideOrShowControls1()" visible="false" id="heatPopupRollDownOverImg"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rolldown_over.png')"/>
+
+    </s:Group>
+
+    <mx:Button id="heatPopupOkBtn" visible="false" x="25" y="108" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_heat.png')">
+
+    </mx:Button>
+
+    <s:Group x="1" y="0" id="mainGroup" visible="false">
+        <s:Group id="heatPopupMainGroup" x="17" y="50" width="278" height="60" >
+            <s:Label right="200" y="5" color="#FF6600" fontSize="12" fontWeight="bold"
+                     text="{resourceManager.getString('hm','hm.label.heating.source')}" verticalAlign="middle"/>
+
+            <s:DropDownList id="heatingTypeDropDownList" x="81" y="0" width="187" selectedIndex="7"
+                            dataProvider="{detachedHeatingSourceList}" labelField="name" change="heatingTypeChanged()"
+                            skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
+
+            <s:Label right="200" y="35"  color="#FF6600" fontSize="12"
+                     fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.efficiency')}" verticalAlign="middle"/>
+
+            <s:RichText x="126" y="34" fontSize="11" fontWeight="bold" paddingTop="3"
+                        text="%" verticalAlign="middle"/>
+
+            <s:Label x="137" y="35" color="#FF6600" fontSize="12"
+                     fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
+
+            <s:NumericStepper x="81" y="30" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="1" maximum="400" id="efficiencyNS" change="efficiencyChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+
+            <s:NumericStepper x="210" y="30" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
+                              change="priceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            <s:RichText x="258" y="33" id="heatingCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
+
+            <s:CheckBox id="includeWarmWaterCheckBox" visible="false" x="10" y="53" click="setWarmWaterVisibility()"
+                        label="{resourceManager.getString('hm','hm.label.warm_water.include')}"/>
+        </s:Group>
+
+        <s:BorderContainer id="warmWaterBorderContainer" visible="false" x="17" y="{heatPopupMainGroup.y + heatPopupMainGroup.height + 11}" borderVisible="false" width="273" height="175" borderColor="red" borderWeight="1" backgroundAlpha="0.0">
+
+            <mx:HRule id="hRule" x="0" y="0" width="270" height="1"/>
+
+            <s:Group id="warmWaterGroup" x="0" y="{hRule.y + hRule.height}" width="278" height="100" >
+                <s:Label y="10" right="200" text="{resourceManager.getString('hm','hm.label.heating.source')}" color="#FF6600" fontSize="12" fontWeight="bold" verticalAlign="middle"/>
+                <s:DropDownList id="warmWaterHeatingTypeDropDownList" x="81" y="5" width="187" selectedIndex="7"
+                                dataProvider="{warmWaterDetachedHeatingSourceList}" labelField="name" change="warmWaterHeatingTypeChanged()"
+                                skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
+
+                <s:Label right="200" y="38"  color="#FF6600" fontSize="12"
+                         fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.efficiency')}" verticalAlign="middle"/>
+
+                <s:NumericStepper x="81" y="33" width="44" height="20" minimum="1" maximum="400" id="efficiencyWarmWaterNS"
+                                  change="warmWaterHeatingEfficiencyChanged()"
+                                  valueParseFunction="{GlobalValues.parseIntValue}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:RichText x="125" y="37" fontSize="11" fontWeight="bold" paddingTop="3"
+                            text="%" verticalAlign="middle"/>
+
+                <s:Label x="137" y="38"  color="#FF6600" fontSize="12"
+                         fontWeight="bold" text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
+
+                <s:NumericStepper x="210" y="33" width="44" height="20" id="priceWarmWaterNS" minimum="0.01" value = "0.45" stepSize="0.01"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
+                                  change="warmWaterPriceChanged()"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+
+                <s:RichText x="258" y="35" width="18" height="17" id="warmWaterHeatingCostRichText" fontSize="8" text="" verticalAlign="middle" textAlign="left"/>
+
+
+                <s:Label y="65" right="200"  text="{resourceManager.getString('hm','hm.label.warm_water.distribution')}" color="#FF6600"
+                         fontSize="12" fontWeight="bold" verticalAlign="middle" textAlign="center"/>
+                <s:DropDownList id="warmWaterDistributionDropDownList" y="60" x="81" width="187" selectedIndex="1"
+                                labelField="name" change="warmWaterDistributionChanged()" dataProvider="{detachedWarmWaterDistributionList}"
+                                skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
+
+                <s:Label y="95" right="200" text="{resourceManager.getString('hm','hm.label.warm_water.storage')}" color="#FF6600"
+                         fontSize="12" fontWeight="bold" verticalAlign="middle" textAlign="center"/>
+                <s:DropDownList id="warmWaterStorageDropDownList" y="90" x="81" width="187" selectedIndex="1"
+                                dataProvider="{warmWaterStorageList}" labelField="name" change="warmWaterStorageChanged()"
+                                skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
+            </s:Group>
+
+            <mx:HRule id="hRule1" x="0" y="{warmWaterGroup.y + warmWaterGroup.height + 15}" width="270" height="1"/>
+
+            <s:Group id="solarGroup" x="0" y="{hRule1.y + hRule1.height + 1}" width="278" height="70">
+                <s:Label y="5" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.solar_collectors')}" styleName="pupupPanelGrayFontStyle" color="0x669900"/>
+
+                <s:Label x="0" y="25" paddingLeft="5" width="40" height="24" text="{resourceManager.getString('hm','hm.label.type')}" color="#FF6600"
+                         fontSize="12" fontWeight="bold" verticalAlign="middle" textAlign="center"/>
+                <s:DropDownList id="collectorTypeDropDownList" y="25" x="50" width="130" selectedIndex="0"
+                                dataProvider="{solarCollectorTypesList}" labelField="name" change="collectorsTypeChanged()"
+                                skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
+
+                <s:NumericStepper id="solarSurfaceNS" visible="false" y="25" x="{collectorTypeDropDownList.x + collectorTypeDropDownList.width + 3}"
+                                  width="44" height="20" minimum="1" stepSize="1" maximum="999"
+                                  value="0" change="collectorsSurfaceChanged()"
+                                  valueParseFunction="{GlobalValues.parseIntValue}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"  />
+
+                <s:RichText id="collectorSurfaceLabel" visible="false" x="{solarSurfaceNS.x + solarSurfaceNS.width + 3}" verticalAlign="middle" y="30" styleName="pupupPanelGrayFontStyle">
+                    <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
+                </s:RichText>
+
+            </s:Group>
+        </s:BorderContainer>
+
+    </s:Group>
+</hm:HeatMasterComponent>

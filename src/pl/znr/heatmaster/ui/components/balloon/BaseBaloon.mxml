@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<hm:HeatMasterResultComponent xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:hm="pl.znr.heatmaster.ui.components.*">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+
+
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.core.UIComponent;
+        import mx.managers.ToolTipManager;
+
+        import pl.znr.heatmaster.HeatMaster;
+
+        [Bindable]
+        protected var headerLabelStyleName:String = "baloonHeader";
+
+        [Bindable]
+        protected var grayFontStyleName:String = "pupupPanelGrayFontStyle";
+
+        [Bindable]
+        protected var _headerText:String;
+
+        [Bindable]
+        protected var _infoIconTop:Number = 5;
+
+        [Bindable]
+        protected var _infoIconRight:Number = 5;
+
+
+        public function get infoIconTop():Number {
+            return _infoIconTop;
+        }
+
+        public function set infoIconTop(value:Number):void {
+            _infoIconTop = value;
+        }
+
+        public function get infoIconRight():Number {
+            return _infoIconRight;
+        }
+
+        public function set infoIconRight(value:Number):void {
+            _infoIconRight = value;
+        }
+
+        public function get headerText():String {
+            return _headerText;
+        }
+
+        public function set headerText(value:String):void {
+            _headerText = value;
+        }
+
+
+
+        ]]></fx:Script>
+
+
+
+
+</hm:HeatMasterResultComponent>

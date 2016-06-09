@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         creationComplete="toolTipCreated()"
+         >
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import flashx.textLayout.elements.TextFlow;
+
+        import pl.znr.heatmaster.HeatMaster;
+
+        [Bindable]
+        private var _textFlow:TextFlow;
+
+
+        protected function toolTipCreated():void {
+            this.x = this.x - this.width + 20;
+        }
+
+        public function get textFlow():TextFlow {
+            return _textFlow;
+        }
+
+        public function set textFlow(value:TextFlow):void {
+            _textFlow = value;
+            _textFlow.textAlign = 'justify';
+            invalidateDisplayList();
+        }
+
+        public function close():void{
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            heatMaster.removeElement(this);
+        }
+
+        ]]></fx:Script>
+
+
+    <s:Rect x="0" y="0" radiusX="20" radiusY="20" width="100%" height="100%" horizontalCenter="0" verticalCenter="0">
+        <s:fill>
+            <s:SolidColor color="0xf5f5dc"/>
+        </s:fill>
+        <s:stroke>
+            <s:SolidColorStroke color="black"/>
+        </s:stroke>
+    </s:Rect>
+
+    <s:RichEditableText editable="false" focusEnabled="false" id="richText"
+                        paddingLeft="10" paddingRight="10" paddingBottom="20"
+                        paddingTop="20" textFlow="{_textFlow}"
+                        fontSize="11">
+
+    </s:RichEditableText>
+
+    <mx:Button id="closeToolTipButton" buttonMode="true" right="7" top="7"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close-tooltip.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
+               click="close()">
+    </mx:Button>
+
+
+
+</s:Group>

@@ -1,0 +1,1100 @@
+<?xml version="1.0"?>
+<components:HeatMasterResultComponent xmlns:fx="http://ns.adobe.com/mxml/2009"
+                                      xmlns:components="pl.znr.heatmaster.ui.components.*"
+                                      xmlns:mx="library://ns.adobe.com/flex/mx"
+                                      xmlns:s="library://ns.adobe.com/flex/spark"
+                                      xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
+                                      xmlns:local="*"
+                                      initialize="popupInitialized()"
+                                      creationComplete="plotCreated()"
+        >
+    <!-- To change this template use File | Settings | File Templates. -->
+
+
+
+    <fx:Declarations>
+        <s:ArrayList id="monthList">
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_1')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_2')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_3')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_4')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_5')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_6')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_7')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_8')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_9')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_10')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_11')}</fx:String>
+            <fx:String>{resourceManager.getString('hm','hm.dropdown.month_12')}</fx:String>
+        </s:ArrayList>
+
+        <fx:String id="costMainLabel">Koszty ogrzewania w poszczególnych miesiacach. [zl/mies]</fx:String>
+        <fx:String id="mainLabelKWh">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [kWh/mies.]</fx:String>
+        <fx:String id="mainLabelWatts">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [W]</fx:String>
+        <fx:String id="mainLabelGJ">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [GJ/mies]</fx:String>
+
+    </fx:Declarations>
+
+    <fx:Script><![CDATA[
+        import flashx.textLayout.elements.ParagraphElement;
+
+        import mx.charts.chartClasses.IAxis;
+        import mx.charts.chartClasses.IAxisRenderer;
+        import mx.charts.series.renderData.LineSeriesRenderData;
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.utils.StringUtil;
+
+
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.constants.EnergyClass;
+        import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.DataContext;
+
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+        import pl.znr.heatmaster.core.converter.ConverterHelper;
+        import pl.znr.heatmaster.ui.components.tooltip.EnergyClassToolTip;
+        import pl.znr.heatmaster.ui.components.tooltip.FinalPrimaryEnergyToolTip;
+        import pl.znr.heatmaster.util.EnergyClassHelper;
+
+        import spark.components.Label;
+
+        import spark.primitives.Rect;
+
+        private static const COST:String = "Koszty";
+        private static const EMISSION:String = "Emisje";
+        private static const MONTH_COST:String = "Koszty miesięczne";
+        private static const MONTH_EMISSION:String = "Emisje miesięczne";
+
+        [Bindable]
+        private var plotDataProvider:ArrayCollection = new ArrayCollection([]);
+
+        [Bindable]
+        private var lineSeriesDataProvider:ArrayCollection = new ArrayCollection([]);
+
+        [Bindable]
+        private var unitName:String = "";
+
+        [Bindable]
+        private var yMaxValue:Number = 6000;
+
+        [Bindable]
+        private var yMinValue:Number = 0;
+
+        [Bindable]
+        private var yInterval:Number = 1000;
+
+        [Bindable]
+        private var gutterLeft:Number = 50;
+
+        [Bindable]
+        private var gutterRight:Number = 0;
+
+        [Bindable]
+        private var gutterBottom:Number = 0;
+
+        [Bindable]
+        private var panelLabelWidth:Number;
+
+        [Bindable]
+        private var mainLegendRectWidth:Number = 20;
+
+        [Bindable]
+        private var mainLegendRectHeight:Number = 12;
+
+        [Bindable]
+        private var enBalanceVisible:Boolean = false;
+
+        [Bindable]
+        private var bluePlotLineVisible:Boolean = false;
+
+        [Bindable]
+        private var legendRectLabelPaddingTop:int = 2;
+
+        [Bindable]
+        private var legendItemGap:int = 5;
+
+        private var warmWaterGroup:Group;
+
+        private var legendEnergyLossGroupY:int;
+
+        private var warmWaterLegendGroupVar:Group;
+        private var collectorsLegendGroupVar:Group;
+
+
+        private var houseHeatingEfficiency:Number = GlobalValues.INITIAL_HOUSE_HEATING_SOURCE.efficiency;
+        private var warmWaterHeatingEfficiency:Number;
+
+        private var warmWaterIncluded:Boolean = false;
+
+        var isCostUnit:Boolean;
+        var isEmissionUnit:Boolean;
+        var energyClass:EnergyClass;
+
+        var yearlyCost:Number = 0;
+
+        private var currencyCode:String;
+        private var localCurrency:Boolean = false;
+
+        private var _originalChartWidth:int;
+
+        override public function initData(dataContext:DataContext):DataContext {
+            currencyCode = HeatMaster.CURRENCY_EURO_LOCALE_CODE;
+            return dataContext;
+        }
+
+        override public function langChanged(lang:String):void {
+            if (isCostUnit) {
+                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_cost');
+                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.costs');
+            }
+            else if (isEmissionUnit) {
+                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_emission');
+                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.emissions');
+            }
+            energyClassDescriptionLabel.text = resourceManager.getString('hm', energyClass.description);
+            yearlyCostValueLabel.text = formatHMValue(yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
+        }
+
+        private function popupInitialized():void {
+            panelLabelWidth = (chart.width - gutterLeft - gutterRight) + (chart.width - gutterLeft - gutterRight) / 12;
+            warmWaterLegendGroupVar = warmWaterLegendGroup;
+            collectorsLegendGroupVar = collectorsLegendGroup;
+            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+            legendGainGroup.removeElement(collectorsLegendGroupVar);
+            legendVerticalLayout.gap = 17;
+        }
+
+        private function plotCreated():void {
+            /*warmWaterLegendGroup.visible = false;
+             collectorsLegendGroup.visible = false;
+
+             legendEnergyLossGroupY = legendEnergyLossGroup.y;
+             legendEnergyLossGroup.y = legendEnergyLossGroupY - 10;
+             */
+
+            _originalChartWidth = chart.width;
+        }
+
+        private function closePlot():void {
+            HeatMaster.getInstance().hideReport();
+        }
+
+
+        override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+            super.updateDisplayList(unscaledWidth, unscaledHeight);
+            trace("Chart width: " + chart.width );
+        }
+
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+            try {
+                var dataContext:DataContext = resultData.dataContext;
+
+                if (warmWaterIncluded != dataContext.includeWarmWater) {
+                    warmWaterIncluded = dataContext.includeWarmWater;
+                    if (!dataContext.includeWarmWater) {
+                        legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+                        legendGainGroup.removeElement(collectorsLegendGroupVar);
+                        legendVerticalLayout.gap = 17;
+                    }
+                    else {
+                        legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, 1);
+                        legendGainGroup.addElement(collectorsLegendGroupVar);
+                        legendVerticalLayout.gap = 12;
+                    }
+                }
+
+                var plotObject:Object;
+                try {
+                    plotObject = getPlotArrayData(resultData);
+                } catch (e:Error) {
+                    Alert.show("Plot array data error: " + e.message);
+                }
+
+                var plotArrayData:Array = plotObject.columnData;
+                var plotLineArrayData:Array = plotObject.lineData;
+                plotDataProvider = new ArrayCollection(plotArrayData);
+                lineSeriesDataProvider = new ArrayCollection(plotLineArrayData);
+                unitName = resultData.conversionData.unitName;
+
+                var conversionData:ConversionData = resultData.conversionData;
+
+                currencyCode = resultData.dataContext.currencyLocaleCode;
+
+                isCostUnit = ConversionUnits.isCostUnit(conversionData.selectedUnit);
+                isEmissionUnit = ConversionUnits.isEmisionUnit(conversionData.selectedUnit);
+                if (isCostUnit) {
+                    costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_cost');
+                    costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.costs') + " " + resourceManager.getString('hm', currencyCode);
+                }
+                else if (isEmissionUnit) {
+                    costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_emission');
+                    costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.emissions');
+                }
+
+                legendCostGroup.visible = isCostUnit || isEmissionUnit;
+                legendEnergyEmissionGroup.visible = !legendCostGroup.visible;
+                bluePlotLineVisible = !legendCostGroup.visible;
+
+                var userEnergyConsumption:Number = resultData.userEnergyConsumption;
+                var userEnergySqMConsumption:Number = resultData.unitSurfaceUserEnergyConsumption;
+                var finalEnergyConsumption:Number = resultData.finalEnergyConsumption;
+                var finalEnergySqMConsumption:Number = resultData.unitSurfaceFinalEnergyConsumption;
+                var primaryEnergyConsumption:Number = resultData.primaryEnergyConsumption;
+                var primaryEnergySqMConsumption:Number = resultData.unitSurfacePrimaryEnergyConsumption;
+
+                setEnergyLabelsRow(userEnergySpan, userUnitNameSpan, userEnergySqSpan, userEnergySqUnitNameSpan,
+                        userEnergyConsumption, userEnergySqMConsumption, conversionData);
+
+                setEnergyLabelsRow(finalEnergySpan, finalUnitNameSpan, finalEnergySqSpan, finalEnergySqUnitNameSpan,
+                        finalEnergyConsumption, finalEnergySqMConsumption, conversionData);
+
+                setEnergyLabelsRow(primaryEnergySpan, primaryUnitNameSpan, primaryEnergySqSpan, primaryEnergySqUnitNameSpan,
+                        primaryEnergyConsumption, primaryEnergySqMConsumption, conversionData);
+
+
+                yearlyCost = resultData.yearlyCost;
+
+                yearlyCostValueLabel.text = formatHMValue(resultData.yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
+
+                energyClass = EnergyClassHelper.getEnergyClass(resultData.unitSurfaceFinalEnergyClassConsumption);
+                trace("Energy class: " + energyClass);
+                energyClassCodeLabel.text = energyClass.code;
+                energyClassCodeLabel.setStyle("color", energyClass.color);
+                energyClassDescriptionLabel.text = resourceManager.getString('hm', energyClass.description);
+                energyClassDescriptionLabel.setStyle("color", energyClass.color);
+
+                energyClassCodeLabel.visible = !energyClass.separateIconUrl;
+                passiveLogoImg.visible = energyClass.separateIconUrl;
+
+            } catch (e:Error) {
+                trace("Plot error: " + e.getStackTrace());
+                Alert.show("Plot error: " + e.message);
+            }
+        }
+
+
+        private function setEnergyLabelsRow(energySpan:SpanElement, unitNameSpan:SpanElement, energySqMSpan:SpanElement, energySqMUnitNameSpan:SpanElement, energyConsumption:Number, unitSurfaceEnergyConsumption:Number, conversionData:ConversionData):void {
+
+            var energyUnitName:String = getAdjustedEnergyUnitName(energyConsumption, conversionData.selectedUnit);
+            var energyConsumptionVal:Number = adjustNumber(energyConsumption);
+
+            var decimalNumber:int = getDecimalNumbersCount(energyConsumption,
+                    ConversionUnits.isGJUnit(conversionData.selectedUnit), energyUnitName == "MWh");
+
+            var energyUnitNameSqM:String = getAdjustedEnergyUnitName(unitSurfaceEnergyConsumption, conversionData.selectedUnit);
+            var energyConsumptionSqM:Number = adjustNumber(unitSurfaceEnergyConsumption);
+
+            energySpan.text = formatHMValue(energyConsumptionVal, decimalNumber);
+            unitNameSpan.text = "  " + energyUnitName;
+
+            decimalNumber = getDecimalNumbersCount(unitSurfaceEnergyConsumption,
+                    ConversionUnits.isGJUnit(conversionData.selectedUnit), energyUnitNameSqM == "MWh");
+
+            energySqMSpan.text = formatHMValue(energyConsumptionSqM, energyConsumptionSqM < 100000 ? Math.max(1, decimalNumber) : 0);
+            energySqMUnitNameSpan.text = "  " + energyUnitNameSqM;
+
+        }
+
+        private function getDecimalNumbersCount(value:Number, isGJUnit:Boolean, isMGWhUnit:Boolean) {
+            var decimalNumber:int = 0;
+            if (isGJUnit) {
+                var formattedGJValue:String = formatHMValue(value);
+                if (formattedGJValue.length <= 2) {
+                    decimalNumber = 3;
+                }
+                else if (formattedGJValue.length <= 4) {
+                    decimalNumber = 2;
+                }
+                else if (formattedGJValue.length <= 5) {
+                    decimalNumber = 1;
+                }
+            }
+            else {
+                if (isMGWhUnit) {
+                    decimalNumber = 2;
+                    var formattedMWhValue:String = formatHMValue(value);
+                    if (formattedMWhValue.length >= 5) {
+                        decimalNumber = 2 - (7 - Math.min(6, formattedMWhValue.length));
+                    }
+                }
+            }
+            return decimalNumber;
+        }
+
+        private function getPlotArrayData(resultData:ProcessingResult):Object {
+            var result:Object = {};
+
+            var columnData:Array = [];
+            var lineData:Array = [];
+
+            var maxValue:Number = Number.MIN_VALUE;
+            var conversionData:ConversionData = resultData.conversionData;
+
+            var minValue:Number = 0;
+
+            for (var month:int = 0; month < 12; month++) {
+                var monthlyConverterResult:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+                var converterResult:ConvertedResult = ConverterHelper.buildWithAbsoluteValues(monthlyConverterResult);
+
+                var enLosses:Number = converterResult.getEnLosses() - converterResult.enRecuperator;
+                var enGains:Number = converterResult.getEnGains();
+
+                if (ConversionUnits.isEnergyUnit(conversionData.selectedUnit) || conversionData.selectedUnit == ConversionUnits.ENERGY_WATTS) {
+                    if (maxValue < enLosses) {
+                        maxValue = enLosses;
+                    }
+                    if (maxValue < enGains) {
+                        maxValue = enGains;
+                    }
+
+                    if (minValue > -enGains) {
+                        minValue = -enGains;
+                    }
+                }
+                else {
+                    if (maxValue < converterResult.getEfficiencyAwareBalanceValue()) {
+                        maxValue = converterResult.getEfficiencyAwareBalanceValue();
+                    }
+                }
+                var plotDataItem:Object = createPlotDataItem(converterResult, conversionData, month);
+
+                columnData.push(plotDataItem);
+            }
+
+            var objectFirst:Object = columnData[0];
+            var objectLast:Object = columnData[11];
+            var netLossAvg:Number = (objectFirst.netLoss + objectLast.netLoss) / 2;
+            for (var i:int = 0; i < 12; i++) {
+                var object:Object = columnData[i];
+                var lineDataItem:Object = {netLoss: object.netLoss};
+                if (i == 0) {
+                    lineData.push({netLoss: netLossAvg});
+                }
+                lineData.push(lineDataItem);
+
+                if (i < 11) {
+                    var objectNext:Object = columnData[i + 1];
+                    var avgNet:Number = (object.netLoss + objectNext.netLoss) / 2;
+                    lineData.push({netLoss: avgNet});
+                }
+
+                if (i == 11) {
+                    lineData.push({netLoss: netLossAvg});
+                }
+            }
+
+
+            yMaxValue = 1.05 * maxValue;
+            if (yMaxValue < 10) {
+                yMaxValue = 10;
+            }
+
+            yMinValue = 1.05 * minValue;
+
+            trace("yMinValue= " + yMinValue);
+
+            yInterval = adjustInterval(Math.round(yMaxValue / 6));
+
+            result.columnData = columnData;
+            result.lineData = lineData;
+
+            return result;
+        }
+
+
+        private function formatEnergyValueText(value:Number, precision:int, whiteSpaceLength:int):String {
+            var formatted:String = formatHMValue(value, precision);
+            if (whiteSpaceLength > 0) {
+                formatted = formatted + StringUtil.repeat("\u0020", whiteSpaceLength);
+                Alert.show("#" + formatted + "#");
+            }
+            return formatted;
+        }
+
+        private function formatEnergyText(value:Number, unitName:String, precision:int, textLength:int):String {
+            var formatted:String = formatHMValue(value, precision) + " " + unitName;
+            if (formatted.length < textLength) {
+                formatted = formatted + StringUtil.repeat(" ", textLength - formatted.length);
+            }
+            return formatted;
+        }
+
+        private function adjustNumber(value:Number):Number {
+            var r:int = value / 1000000;
+            if (r == 0) {
+                return value;
+            }
+            var k:int = 0;
+            while (k < Number.MAX_VALUE) {
+                if (r >= Math.pow(10, k) && r < Math.pow(10, k + 3)) {
+                    return value / Math.pow(10, k + 3);
+                }
+                k = k + 3;
+            }
+            return value;
+        }
+
+        private function getAdjustedEnergyUnitName(value:Number, selectedUnit:int):String {
+            if (ConversionUnits.isGJUnit(selectedUnit)) {
+                var prefixJ:String = "G";
+                var rJ:int = value / 1000000;
+                rJ = Math.pow(10, rJ);
+                if (rJ >= 10) {
+                    prefixJ = "T";
+                }
+                if (rJ >= 1000) {
+                    prefixJ = "P";
+                }
+                return prefixJ + "J";
+            }
+            else {
+                var prefix:String = "k";
+                var r:int = value / 1000000;
+                if (r >= 1) {
+                    prefix = "M";
+                }
+                if (r >= 1000) {
+                    prefix = "G";
+                }
+                if (r > 1000000) {
+                    prefix = "T";
+                }
+                return prefix + "Wh";
+            }
+        }
+
+        private function chooseMainLabelText(conversionData:ConversionData):String {
+            var result:String = costMainLabel;
+            if (ConversionUnits.isCostUnit(conversionData.selectedUnit)) {
+                result = costMainLabel;
+            }
+            else if (ConversionUnits.isKiloWattsUnit(conversionData.selectedUnit)) {
+                result = mainLabelKWh;
+            }
+            else if (conversionData.selectedUnit == ConversionUnits.ENERGY_WATTS) {
+                result = mainLabelWatts;
+            }
+            else if (conversionData.selectedUnit == ConversionUnits.ENERGY_GJ_PER_YEAR) {
+                result = mainLabelGJ;
+            }
+            return result;
+        }
+
+        private function createPlotDataItem(converterResult:ConvertedResult, conversionData:ConversionData, monthIdx:int):Object {
+            var monthName:String = monthList.getItemAt(monthIdx) as String;
+            var enLosses:Number = converterResult.getEnLosses() - converterResult.enRecuperator;
+            var enGains:Number = -converterResult.getEnGains();
+            var enBalance:Number = enLosses + enGains;
+            var netLoss:Number = converterResult.getBalanceValue() - converterResult.enRecuperator;
+
+            if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
+                enGains = 0;
+                enLosses = converterResult.getEfficiencyAwareBalanceValue();
+            }
+
+            return {month: monthName, enLosses: enLosses, enGains: enGains,
+                enBalance: enBalance, netLoss: netLoss,
+                conversionUnit: conversionData.selectedUnit, convertedResult: converterResult};
+        }
+
+        private function defineLabel(labelValue:Object, previousLabelValue:Object, ax:CategoryAxis, labelItem:Object):String {
+            var monthName:String = labelItem.monthName;
+            var enBalance:String = labelItem.enBalance.toString();
+            return monthName + "\n" + enBalance;
+        }
+
+
+        private function adjustInterval(interval:int):int {
+            var digits:int = 0;
+            var value:int = interval;
+            while (value > 0) {
+                value = value / 10;
+                digits++;
+            }
+
+            if (digits == 1) {
+                return interval;
+            }
+
+            var twoDigitValue:int = interval / (Math.pow(10, digits - 2));
+            var res:int = twoDigitValue % 10;
+            if (twoDigitValue < 15) {
+                twoDigitValue = 10;
+            }
+            else if (twoDigitValue < 35) {
+                twoDigitValue = 20
+            }
+            else if (twoDigitValue < 75) {
+                twoDigitValue = 50;
+            }
+            else {
+                twoDigitValue = 100;
+            }
+
+
+            /*if (res < 4) {
+             twoDigitValue = twoDigitValue - res;
+             }
+             else if (res < 7) {
+             twoDigitValue = (Math.round(twoDigitValue / 10)) * 10 + 5;
+             }
+             else {
+             twoDigitValue = (Math.round(twoDigitValue / 10)) * 10 + 10;
+             }*/
+            return twoDigitValue * Math.pow(10, digits - 2);
+        }
+
+
+        private function openPrimaryFinalEnergyToolTip(evt:MouseEvent):void {
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            var toolTip:FinalPrimaryEnergyToolTip = new FinalPrimaryEnergyToolTip();
+
+            var x:int = evt.stageX - 20;
+            var y:int = evt.stageY - 20;
+
+            if (toolTip != null) {
+                heatMaster.addToolTip(x, y, toolTip);
+            }
+        }
+
+        private function openClassEnergyToolTip(evt:MouseEvent):void {
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            var toolTip:EnergyClassToolTip = new EnergyClassToolTip();
+
+            var x:int = evt.stageX - 20;
+            var y:int = evt.stageY - 20;
+
+            if (toolTip != null) {
+                heatMaster.addToolTip(x, y, toolTip);
+            }
+        }
+
+        private function getFontRatio():Number {
+            if (this.width <= 1154) {
+                return 11 / 12;
+            }
+            return 1;
+        }
+
+        private function getWidthRatio():Number {
+            if (this.width <= 1154) {
+                return 15 / 16;
+            }
+            return 1;
+        }
+
+        private function getOffsetRatio():Number {
+            if (this.width <= 1154) {
+                return 0.6;
+            }
+            return 1;
+        }
+
+        private function getFirstOffsetRatio():Number {
+            if (this.width <= 1154) {
+                return 0.8;
+            }
+            return 1;
+        }
+        ]]></fx:Script>
+
+    <!--backgroundColor="0xd3d3d3"-->
+    <s:BorderContainer id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false">
+        <mx:Image x="0" y="0" id="plotBkgImg"  maintainAspectRatio="false" width="{this.width}" height="{this.height}" source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
+        <mx:Button x="{40 * getOffsetRatio()}" y="5" id="primaryFinalInfoIcon" buttonMode="true"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+                   click="openPrimaryFinalEnergyToolTip(event)"/>
+
+        <!--USER ENERGY -->
+
+        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="12" id="userEnergyMainLabel" styleName="reportBlackLabel"
+                 fontSize="{12 * getFontRatio()}"
+                 text="{resourceManager.getString('hm','hm.label.effective_energy.consumption')}"/>
+
+        <s:RichText id="userEnergyValueText" x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}" y="{userEnergyMainLabel.y}"
+                    width="{60 * getWidthRatio()}" styleName="reportBlackLabel"
+                    kerning="on" textAlign="right"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span id="userEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="userEnergyUnitNameRichText" styleName="reportBlackLabel" x="{userEnergyValueText.x + userEnergyValueText.width}" y="{userEnergyMainLabel.y}"
+
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span id="userUnitNameSpan" textAlign="right"></s:span>
+                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                <s:span>:</s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="userEnergyValueSqRichText" textAlign="right" styleName="reportBlackLabel" x="{userEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{userEnergyMainLabel.y}"
+                    width="{50 * getWidthRatio()}"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="right" id="userEnergySqSpan"></s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="userEnergyValueSqUnitNameRichText" styleName="reportBlackLabel" x="{userEnergyValueSqRichText.x + userEnergyValueSqRichText.width}" y="{userEnergyMainLabel.y}"
+                    width="{40 * getWidthRatio()}"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="left" id="userEnergySqUnitNameSpan"></s:span>
+            </s:content>
+        </s:RichText>
+
+        <!--USER ENERGY END-->
+
+
+        <!--FINAL ENERGY-->
+
+        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y + 20}" id="finalEnergyMainLabel" styleName="reportGrayLabel"
+                 text="{resourceManager.getString('hm','hm.label.final_energy.consumption')}" fontSize="{12 * getFontRatio()}"/>
+
+        <s:RichText id="finalEnergyValueText" x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}" y="{finalEnergyMainLabel.y}"
+                    width="{60 * getWidthRatio()}" styleName="reportGrayLabel" kerning="on" textAlign="right"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span id="finalEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="finalEnergyUnitNameRichText" styleName="reportGrayLabel" x="{finalEnergyValueText.x + finalEnergyValueText.width}"
+                    y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 *getFontRatio()}">
+            <s:content>
+                <s:span id="finalUnitNameSpan" textAlign="right"></s:span>
+                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                <s:span>:</s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="finalEnergyValueSqRichText" textAlign="right" styleName="reportGrayLabel" x="{finalEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{finalEnergyMainLabel.y}"
+                    width="{50 * getWidthRatio()}"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="right" id="finalEnergySqSpan"></s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="finalEnergyValueSqUnitNameRichText" styleName="reportGrayLabel" x="{finalEnergyValueSqRichText.x + finalEnergyValueSqRichText.width}" y="{finalEnergyMainLabel.y}"
+                    width="{40 * getWidthRatio()}"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="left" id="finalEnergySqUnitNameSpan"></s:span>
+            </s:content>
+        </s:RichText>
+
+        <!--FINAL ENERGY END-->
+
+        <mx:VRule id="vRule1" x="{userEnergyValueSqUnitNameRichText.x + userEnergyValueSqUnitNameRichText.width + 20 * this.width/1200}" y="{userEnergyMainLabel.y + 5}" height="40" width="1"/>
+        <s:Label id="yearlyCostLabel" x="{vRule1.x + vRule1.width + 50 * getOffsetRatio()}" y="{vRule1.y + 5}" text="{resourceManager.getString('hm','hm.label.energy_cost')}" styleName="popupPanelHeader"
+                 fontSize="{14 * getFontRatio()}"/>
+        <mx:VRule id="vRule2" x="{yearlyCostLabel.x + yearlyCostLabel.width + 50 * getOffsetRatio()}" y="{vRule1.y}" height="40" width="1"/>
+
+        <mx:Button x="{vRule2.x + vRule2.width + 50 * getOffsetRatio()}" y="{5}" id="energyClassInfoIcon" buttonMode="true"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+                   click="openClassEnergyToolTip(event)"/>
+
+        <s:Label x="{energyClassInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{vRule1.y}" id="energyClassLabel" text="{resourceManager.getString('hm','hm.label.energy_class')}"
+                 styleName="reportBlackLabel" fontSize="{12 * getFontRatio()}" />
+        <s:Label x="{energyClassLabel.x + energyClassLabel.width + 60 * getOffsetRatio()}" y="{vRule1.y}" id="energyClassCodeLabel" text="F"
+                 styleName="popupPanelHeader" fontSize="{47 * getFontRatio()}"/>
+
+
+
+        <!--PRIMARY ENERGY -->
+
+        <s:Label x="{finalEnergyMainLabel.x}" y="{finalEnergyMainLabel.y + 20 * getWidthRatio()}" id="primaryEnergyMainLabel"
+                 styleName="reportDarkGrayLabel" text="{resourceManager.getString('hm','hm.label.primary_energy.consumption')}"
+                 fontSize="{12 * getFontRatio()}"/>
+
+        <s:RichText id="primaryEnergyValueText" x="{finalEnergyValueText.x}" y="{primaryEnergyMainLabel.y}"
+                    width="{finalEnergyValueText.width}" styleName="reportDarkGrayLabel" kerning="on" textAlign="right"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span id="primaryEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="primaryEnergyUnitNameRichText" styleName="reportDarkGrayLabel" x="{finalEnergyUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span id="primaryUnitNameSpan" textAlign="right"></s:span>
+                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                <s:span>:</s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="primaryEnergyValueSqRichText" textAlign="right" styleName="reportDarkGrayLabel" x="{finalEnergyValueSqRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    width="{finalEnergyValueSqRichText.width}" fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="right" id="primaryEnergySqSpan"></s:span>
+            </s:content>
+        </s:RichText>
+        <s:RichText id="primaryEnergyValueSqUnitNameRichText" styleName="reportDarkGrayLabel" x="{finalEnergyValueSqUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    width="{finalEnergyValueSqUnitNameRichText.width}" fontSize="{12 * getFontRatio()}">
+            <s:content>
+                <s:span textAlign="left" id="primaryEnergySqUnitNameSpan"></s:span>
+            </s:content>
+        </s:RichText>
+
+        <!--PRIMARY ENERGY END-->
+
+
+        <s:Label id="yearlyCostValueLabel" x="{yearlyCostLabel.x}" y="{vRule1.y + 25 * this.width/1200}" width="{yearlyCostLabel.width}" text="7321 zl"
+                 textAlign="center" styleName="popupPanelHeader" fontSize="{14 * getFontRatio()}"/>
+
+        <s:Label x="{energyClassLabel.x}" y="{vRule1.y + 20 * this.width/1200}" id="energyClassDescriptionLabel" text="Bardzo energochłonny"
+                 styleName="popupPanelHeader" fontSize="{12 * getFontRatio()}"/>
+
+        <s:Image id="passiveLogoImg" visible="false" scaleX="0.1" scaleY="0.1" x="{energyClassCodeLabel.x}" y="{energyClassCodeLabel.y}"
+                 source="@Embed('/pl/znr/heatmaster/assets/images/icons/Passivelogo.png')"/>
+
+        <!--<s:Label id="mainPlotLabel" y="0" height="10%" x="{chart.x + gutterLeft}" width="{chart.width - gutterLeft - gutterRight}"
+                 text="" textAlign="center" verticalAlign="middle" fontSize="16" fontWeight="bold"/>-->
+
+        <mx:ColumnChart id="chart" y="{plotContainer.height * 0.15}" gutterLeft="{gutterLeft}" gutterRight="{gutterRight}"
+                        gutterTop="0" gutterBottom="{gutterBottom}" dataProvider="{plotDataProvider}"
+                        showAllDataTips="false" width="{this.width - 180}" height="75%" >
+            <mx:horizontalAxis>
+                <mx:CategoryAxis id="monthAxis" />
+            </mx:horizontalAxis>
+
+            <mx:verticalAxis>
+                <mx:LinearAxis  id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}" >
+                </mx:LinearAxis>
+            </mx:verticalAxis>
+
+            <mx:verticalAxisRenderers>
+                <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none" minorTickPlacement="none">
+                    <mx:axisStroke>
+                        <mx:SolidColorStroke
+                                color="0x78838F"
+                                weight="2"
+                                caps="square"/>
+                    </mx:axisStroke>
+                </mx:AxisRenderer>
+            </mx:verticalAxisRenderers>
+
+            <mx:horizontalAxisRenderers>
+                <mx:AxisRenderer axis="{monthAxis}" labelAlign="center" showLine="false">
+                    <mx:axisStroke>
+                        <mx:SolidColorStroke color="0x78838F"
+                                             weight="1"
+                                             caps="square"/>
+                    </mx:axisStroke>
+                </mx:AxisRenderer>
+            </mx:horizontalAxisRenderers>
+
+            <mx:series>
+                <mx:ColumnSeries
+                        yField="enLosses"
+                        minField="enGains"
+                        labelField="{unitName}" itemRenderer="pl.znr.heatmaster.ui.components.CustomPlotColumnRenderer"/>
+
+
+                <mx:LineSeries yField="netLoss" interpolateValues="true"   dataProvider="{lineSeriesDataProvider}" visible="{bluePlotLineVisible}">
+                    <mx:lineStroke>
+                        <mx:SolidColorStroke color="blue" weight="2"/>
+                    </mx:lineStroke>
+                    <mx:horizontalAxis>
+                        <mx:LinearAxis minimum="0" maximum="24" />
+                    </mx:horizontalAxis>
+                </mx:LineSeries>
+
+                <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}" >
+                    <mx:lineStroke>
+                        <mx:SolidColorStroke color="red" weight="2"/>
+
+                    </mx:lineStroke>
+                </mx:LineSeries>
+
+            </mx:series>
+
+            <mx:backgroundElements>
+
+                <!--<components:DistinguishedGridLines distinguishedTick="7" >
+                    <components:distinguishedStroke>
+                        <s:Stroke weight="2" color="0x00008b"/>
+                    </components:distinguishedStroke>
+                    <components:horizontalFill>
+                      <s:SolidColor color="white"/>
+                    </components:horizontalFill>
+                    <components:horizontalAlternateFill>
+                      <s:SolidColor color="white"/>
+                    </components:horizontalAlternateFill>
+                </components:DistinguishedGridLines>-->
+
+                <mx:GridLines >
+                    <mx:horizontalFill>
+                        <mx:SolidColor color="white"/>
+                    </mx:horizontalFill>
+                    <mx:horizontalAlternateFill>
+                        <mx:SolidColor color="white"/>
+                    </mx:horizontalAlternateFill>
+                    <mx:horizontalOriginStroke>
+                        <mx:SolidColorStroke weight="2" color="gray"/>
+                    </mx:horizontalOriginStroke>
+                </mx:GridLines>
+            </mx:backgroundElements>
+        </mx:ColumnChart>
+
+        <s:Group visible="false" y="{plotContainer.height * 0.15}" x = "{chart.x + chart.width + 5}"
+                 width="12%" id="legendCostGroup" styleName="reportLegendVerticalLabel">
+            <s:layout>
+                <s:VerticalLayout/>
+            </s:layout>
+
+            <s:RichText id="costEmissionLegendText" fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.monthly_cost')}"/>
+
+            <s:Group width="100%">
+                <s:layout>
+                    <s:HorizontalLayout paddingTop="3" paddingBottom="3"/>
+                </s:layout>
+                <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:fill>
+                        <s:SolidColor color="0xF24848"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label id="costEmissionLegendItemText" text="{resourceManager.getString('hm','hm.label.costs')}" paddingTop="{legendRectLabelPaddingTop}"/>
+            </s:Group>
+
+        </s:Group>
+
+
+        <s:Group y="{plotContainer.height * 0.15}" x = "{chart.x + chart.width + 5}" width="12%" id="legendEnergyEmissionGroup"
+                 styleName="reportLegendVerticalLabel">
+            <s:layout>
+                <s:VerticalLayout id="legendVerticalLayout" gap="12" />
+            </s:layout>
+
+            <s:Group width="100%" id="legendEnergyLossGroup">
+                <s:layout>
+                    <s:VerticalLayout gap="{legendItemGap}"/>
+                </s:layout>
+
+                <s:RichText id="energyLegendText" fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}">
+
+                </s:RichText>
+
+                <s:Group id="warmWaterLegendGroup">
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFF0000"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xF24848"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.walls')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFF6464"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.roof')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFF8A8A"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.floor')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFFC6C6"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.windows')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFFECEC"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+            </s:Group>
+
+            <s:Group width="100%">
+                <s:layout>
+                    <s:VerticalLayout gap="{legendItemGap}"/>
+                </s:layout>
+
+                <s:RichText fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.ventilation')}"/>
+
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFFE88C"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFDD65E"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.airing')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xFFBC79"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+            </s:Group>
+
+            <s:Group width="100%" id="legendGainGroup">
+                <s:layout>
+                    <s:VerticalLayout gap="{legendItemGap}"/>
+                </s:layout>
+
+                <s:RichText fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.energy_gain')}"/>
+
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xADE7A3"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group>
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0xD3F1CD"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+                <s:Group id="collectorsLegendGroup">
+                    <s:layout>
+                        <s:HorizontalLayout/>
+                    </s:layout>
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                        <s:fill>
+                            <s:SolidColor color="0x00FF00"/>
+                        </s:fill>
+                        <s:stroke>
+                            <s:SolidColorStroke weight="1"/>
+                        </s:stroke>
+                    </s:Rect>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                </s:Group>
+            </s:Group>
+
+        </s:Group>
+
+
+
+
+        <!--<s:Group id="monthLabels" y="{chart.y + chart.height}" x="{chart.x + gutterLeft}" width="{chart.width - gutterLeft - gutterRight}"/>-->
+        <components:HorizontaAxisLabelPanel id="panelLabel" y="{chart.y + chart.height}"  x="{chart.x + gutterLeft}"
+                                            width="{7* (chart.width - gutterLeft)/6}" visible="true" />
+
+
+
+
+        <mx:Button right="5" top="2" buttonMode="true"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
+                   click="closePlot()"/>
+
+
+    </s:BorderContainer>
+
+</components:HeatMasterResultComponent>

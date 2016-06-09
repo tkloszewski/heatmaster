@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.Image;
+
+        import pl.znr.heatmaster.constants.ArrowOrientation;
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.core.ConvertedResult;
+
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            return  monthlyData.enRoof;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            return resultData.yearlyAggregatedConvertedData.enRoof;
+        }
+
+        override public function unitChanged(resultData:ProcessingResult, month:int, unit:int):void {
+            super.unitChanged(resultData, month, unit);
+        }
+
+        override protected function getValueLabel():Label {
+            return roofLabel;
+        }
+
+        override protected function getMaxScaleRatio():Number {
+            return 1.5;
+        }
+
+        override protected function getArrowOrientation():int {
+            return ArrowOrientation.VERTICAL;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            imgRoofArrow.visible = regularArrowVisible;
+            imgRoofGainArrow.visible = !regularArrowVisible;
+            return regularArrowVisible ? imgRoofArrow :imgRoofGainArrow;
+        }
+
+        override protected function adjustPercentageLabel(percentageLabel:Label):void {
+            percentageLabel.y = percentageLabel.y + percentageLabel.height * 0.6 - 11;
+            percentageLabel.height = percentageLabel.height * 0.4;
+        }
+
+        ]]></fx:Script>
+
+
+    <mx:Image x="40" y="40" id="imgRoofArrow" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_up.png')"/>
+    <mx:Image x="40" y="40" id="imgRoofGainArrow" visible="false" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_down.png')"/>
+
+    <s:Label x="0" y="10" id="roofLabel" width="127" height="27" styleName="arrowLabelStyle"/>
+
+</arrows:HeatMasterArrow>

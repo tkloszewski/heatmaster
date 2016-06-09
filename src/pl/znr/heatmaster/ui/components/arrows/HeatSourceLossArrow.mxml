@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<arrows:HeatMasterArrow xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:arrows="pl.znr.heatmaster.ui.components.arrows.*"
+                        creationComplete="arrowInitialized()">
+    <!-- To change this template use File | Settings | File Templates. -->
+
+    <fx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import pl.znr.heatmaster.constants.combo.ConversionUnits;
+
+        import pl.znr.heatmaster.core.ConvertedResult;
+
+        import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.converter.ConversionData;
+
+        private var originalValueLabelY:int = 15;
+        private var unitsInlineValueLabelY:int = 27;
+
+        override protected function getMonthValue(resultData:ProcessingResult, month:int):Number {
+            var monthlyData:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
+            return monthlyData.heatingSourceLoss + monthlyData.warmWaterHeatingSourceLoss;
+        }
+
+        override protected function getYearValue(resultData:ProcessingResult, month:int):Number {
+            return resultData.yearlyAggregatedConvertedData.heatingSourceLoss +
+                    resultData.yearlyAggregatedConvertedData.warmWaterHeatingSourceLoss;
+        }
+
+        override protected function getMaxScaleRatio():Number {
+            return 1.5;
+        }
+
+        override protected function getValueLabel():Label {
+            return valueLabel;
+        }
+
+        override protected function getSeparateUnitNameLabel():Label {
+            return heatSourceLossArrowUnitLabel;
+        }
+
+        override protected function setAndGetImageArrow(value:Number):Image {
+            var regularArrowVisible:Boolean = value > 0;
+            imgHeatSourceLossArrow.visible = regularArrowVisible;
+            imgHeatSourceGainArrow.visible = !regularArrowVisible;
+            return regularArrowVisible ? imgHeatSourceLossArrow : imgHeatSourceGainArrow;
+        }
+
+        override protected function adjustPercentageLabel(percentageLabel:Label):void {
+            percentageLabel.x = percentageLabel.x + percentageLabel.width * 0.4;
+            percentageLabel.width = percentageLabel.width * 0.6;
+        }
+
+        override protected function arrowInitialized():void {
+            super.arrowInitialized();
+            valueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelOriginalYPosition():void {
+            valueLabel.y = originalValueLabelY;
+        }
+
+        override protected function setValueLabelWithUnitsInlinePosition():void {
+            valueLabel.y = unitsInlineValueLabelY;
+        }
+        ]]></fx:Script>
+
+
+
+    <mx:Image x="0" y="10" id="imgHeatSourceLossArrow" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/orange_right.png')"/>
+    <mx:Image x="0" y="10" id="imgHeatSourceGainArrow" visible="false" maintainAspectRatio="false" source="@Embed('/pl/znr/heatmaster/assets/images/arrows/green_left.png')"/>
+
+    <s:Label x="100" y="15" id="valueLabel" width="90" height="22"  styleName="arrowLabelStyle"/>
+    <s:Label x="102" y="33" id="heatSourceLossArrowUnitLabel" width="90" height="22" styleName="arrowLabelStyle"/>
+
+
+</arrows:HeatMasterArrow>
