@@ -35,7 +35,7 @@ public class BuildingAge extends BaseComboObject{
         return null;
     }
 
-    function BuildingAge(_id:String,uWalls:Number, uRoof:Number, uFloor:Number, uWindows:Number) {
+    public function BuildingAge(_id:String,uWalls:Number, uRoof:Number, uFloor:Number, uWindows:Number) {
         super(_id);
         _uWalls = uWalls;
         _uRoof = uRoof;

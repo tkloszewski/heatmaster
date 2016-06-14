@@ -70,40 +70,35 @@ public class HeatMasterController {
     private function doStartCalculation():void{
         started = true;
         try {
-            doCalculation();
+            doCalculationAndPropagateResult();
         } catch (e:Error) {
             Alert.show("Error in calculation " + e.message);
         }
     }
 
+    public function setViewState(dataContext:DataContext,processingResult:ProcessingResult){
+        this.dataContext = dataContext;
+        this.selectedMonth = dataContext.selectedMonth;
+        this.processResult = processingResult;
+
+        setUpView(dataContext);
+        propagateResult();
+    }
+
     public function calculateAndSetViewState(dataContext:DataContext):void{
         this.dataContext = dataContext;
         this.selectedMonth = dataContext.selectedMonth;
-        try {
-            for (var i:int = 0; i < dataContextListeners.length; i++) {
-                var dataContextListener:IDataContextAware = dataContextListeners.getItemAt(i) as IDataContextAware;
-                dataContextListener.setupView(dataContext);
-            }
-        } catch (e:Error) {
-            trace(e.getStackTrace());
-            Alert.show("Error in setupView of dataContext: ", e.message);
-        }
+        this.started = true;
 
-        started = true;
-        try {
-            doCalculation();
-        } catch (e:Error) {
-            Alert.show("Error in setupFromCookie calculation " + e.message);
-        }
+        setUpView(dataContext);
+        doCalculationAndPropagateResult();
     }
-
 
     public function calculate():void{
         if(started){
-            doCalculation();
+            doCalculationAndPropagateResult();
         }
     }
-
 
     public function monthChanged(month:int):void{
         this.selectedMonth = month;
@@ -118,11 +113,19 @@ public class HeatMasterController {
                 this.processResult = convertResult(this.processResult,dataContext.conversionData);
                 this.processResult = reportDataCalculator.calcReportValues(this.dataContext,this.processResult,dataContext.conversionData);
             }
-            try {
-                propagateResult();
-            } catch (e:Error) {
-                Alert.show("Propagate errro: " + e.getStackTrace() + " " + e.message);
+            propagateResult();
+        }
+    }
+
+    private function setUpView(dataContext:DataContext):void{
+        try {
+            for (var i:int = 0; i < dataContextListeners.length; i++) {
+                var dataContextListener:IDataContextAware = dataContextListeners.getItemAt(i) as IDataContextAware;
+                dataContextListener.setupView(dataContext);
             }
+        } catch (e:Error) {
+            trace(e.getStackTrace());
+            Alert.show("Error in setupView of dataContext: ", e.message);
         }
     }
 
@@ -147,11 +150,11 @@ public class HeatMasterController {
         } catch (e:Error) {
             Alert.show("Calculation error", e.message);
         }
-        try {
-            propagateResult();
-        } catch (e:Error) {
-            Alert.show("Propagate result error: ", e.message);
-        }
+    }
+
+    private function doCalculationAndPropagateResult():void {
+        doCalculation();
+        propagateResult();
     }
 
     private function convertResult(processResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {
@@ -166,9 +169,13 @@ public class HeatMasterController {
     }
 
     private function propagateResult():void {
-        for(var i:int = 0; i < resultDataListeners.length;i++ ){
-            var resultDataListener:IResultDataAware = resultDataListeners.getItemAt(i) as IResultDataAware;
-            resultDataListener.resultCalculated(processResult,selectedMonth);
+        try {
+            for(var i:int = 0; i < resultDataListeners.length;i++ ){
+                var resultDataListener:IResultDataAware = resultDataListeners.getItemAt(i) as IResultDataAware;
+                resultDataListener.resultCalculated(processResult,selectedMonth);
+            }
+        } catch (e:Error) {
+            Alert.show("Propagate errro: " + e.getStackTrace() + " " + e.message);
         }
     }
 

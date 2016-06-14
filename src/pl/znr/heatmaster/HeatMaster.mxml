@@ -10,6 +10,7 @@
                xmlns:tooltip="pl.znr.heatmaster.ui.components.tooltip.*"
                creationComplete="appInitialized()"
                initialize="initHeatMaster()"
+               preinitialize=""
                pageTitle="HeatMaster"
                preloader="pl.znr.heatmaster.CustomPreloader"
 
@@ -33,6 +34,12 @@
         <s:BitmapFill id="bgGrass" source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_grass.png')"/>
         <s:BitmapFill id="bgSky" source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_sky.png')"/>
 
+        <s:HTTPService id="httpService"
+                        resultFormat="e4x"
+                        url="pl/znr/heatmaster/assets/XML/countries.xml"
+                        fault="httpService_fault(event);"
+                        result="httpService_result(event)" />
+
     </fx:Declarations>
 
 
@@ -49,6 +56,8 @@
         import mx.formatters.DateFormatter;
         import mx.managers.BrowserManager;
         import mx.managers.ToolTipManager;
+        import mx.rpc.events.FaultEvent;
+        import mx.rpc.events.ResultEvent;
 
         import pl.znr.heatmaster.HeatMaster;
 
@@ -132,9 +141,21 @@
 
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
+            httpService.send();
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(configXML, resourceManager);
             configItems = configurationReader.readConfig();
+        }
+
+        private function httpService_fault(evt:FaultEvent):void {
+            var title:String = evt.type + " (" + evt.fault.faultCode + ")";
+            var text:String = evt.fault.faultString;
+            trace("Error: " + title + text);
+        }
+
+        private function httpService_result(evt:ResultEvent):void {
+            var xmlList:XML = XML(evt.result);
+            trace("xmlList: " + xmlList.toString());
         }
 
         private function setPolishComponentsVisibility(polishVisible:Boolean):void {
@@ -203,7 +224,6 @@
         private function appInitialized():void {
             BrowserManager.getInstance().setFragment("HeatMaster");
             BrowserManager.getInstance().setTitle("HeatMaster");
-
 
             setUpHeatMasterListener();
             injectHeatMasterListener(heatMasterContainer, heatMasterListener);
@@ -311,8 +331,6 @@
                 var regionItem:RegionItem = CountryItemHelper.getInitialOrCachedRegionItem(true, cachedData, configItems);
                 var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getInitialOrCachedCountryItem(true, cachedData, configItems);
 
-                var conversionUnit:int = cachedData.conversionData.selectedUnit;
-
                 heatingPopup.configChanged(countryItem, cachedData.localCurrency);
                 housePanel.energyMeter.countryChanged(countryItem);
 
@@ -330,7 +348,6 @@
                 heatMasterListener.languageChanged(selectedLang);
             }
             notifyLangChangeListeners(selectedLang);
-
         }
 
         private function newCalculation():void {

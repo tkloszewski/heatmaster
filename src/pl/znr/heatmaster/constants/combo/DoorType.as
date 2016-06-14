@@ -8,8 +8,6 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
-import pl.znr.heatmaster.constants.combo.DoorType;
-
 public class DoorType extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
@@ -31,12 +29,13 @@ public class DoorType extends BaseComboObject{
         return null;
     }
 
-    public function DoorType(id:String,uValue:Number) {
+    function DoorType(id:String,uValue:Number) {
         super(id);
         _uValue = uValue;
-
         items.addItem(this);
     }
+
+
 
     public function get uValue():Number {
         return _uValue;

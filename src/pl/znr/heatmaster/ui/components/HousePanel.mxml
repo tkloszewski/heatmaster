@@ -27,15 +27,6 @@
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.non_stop')}" data="{VentilationFrequency.NON_STOP}"/>
         </s:ArrayCollection>
 
-        <s:ArrayCollection id="tightnessList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE}"/>
-        </s:ArrayCollection>
-
 
         <s:ArrayCollection id="warmWaterConsumptionList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.very_low')}" data="{WarmWaterConsumption.VERY_SMALL}"/>

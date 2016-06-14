@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionaries>
+    <door-types selected_index="0">
+       <door-type id="1" uValue="3.4" labelKey="hm.dropdown.door.energy_intensive"/>
+       <door-type id="2" uValue="2.6" labelKey="hm.dropdown.door.standard"/>
+       <door-type id="3" uValue="1.4" labelKey="hm.dropdown.door.energy_saving"/>
+       <door-type id="4" uValue="0.8" labelKey="hm.dropdown.door.super_energy_saving"/>
+    </door-types>
+</dictionaries>
+
