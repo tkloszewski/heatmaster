@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dictionaries>
     <door-types selected_index="0">
-       <door-type id="1" uValue="3.4" labelKey="hm.dropdown.door.energy_intensive"/>
-       <door-type id="2" uValue="2.6" labelKey="hm.dropdown.door.standard"/>
-       <door-type id="3" uValue="1.4" labelKey="hm.dropdown.door.energy_saving"/>
-       <door-type id="4" uValue="0.8" labelKey="hm.dropdown.door.super_energy_saving"/>
+       <door-type id="hm.door.energy_intensive" u-value="3.4" label-key="hm.dropdown.door.energy_intensive"/>
+       <door-type id="hm.door.standard" u-value="2.6" label-key="hm.dropdown.door.standard"/>
+       <door-type id="hm.door.energy_saving" u-value="1.4" label-key="hm.dropdown.door.energy_saving"/>
+       <door-type id="hm.door.energy_intensive" u-value="0.8" label-key="hm.dropdown.door.super_energy_saving"/>
     </door-types>
+
+    <insulation-material-types>
+        <insulation-material-type id="hm.insulation.material.average" heat-transfer="0.040"/>
+        <insulation-material-type id="hm.insulation.material.good" heat-transfer="0.036"/>
+        <insulation-material-type id="hm.insulation.material.very_good" heat-transfer="0.032"/>
+    </insulation-material-types>
+
+    <solar-collector-types>
+        <solar-collector-type id="hm.solar-collector.none"   efficiency="0.0" unit-surface="1.0" persons="0"/>
+        <solar-collector-type id="hm.solar-collector.flat"   efficiency="0.3" unit-surface="1.0" persons="1"/>
+        <solar-collector-type id="hm.solar-collector.vacuum" efficiency="0.5" unit-surface="2.0" persons="2"/>
+    </solar-collector-types>
+
+    <thermal-bridges-types>
+        <thermal-bridges-type id="hm.thermal-bridge.max" u-value="0.45"/>
+        <thermal-bridges-type id="hm.thermal-bridge.avg" u-value="0.2"/>
+        <thermal-bridges-type id="hm.thermal-bridge.min  " u-value="0.08"/>
+    </thermal-bridges-types>
+
 </dictionaries>
 

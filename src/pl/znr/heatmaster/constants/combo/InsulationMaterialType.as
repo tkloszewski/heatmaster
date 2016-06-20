@@ -8,6 +8,9 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
+import pl.znr.heatmaster.config.DictionaryConfig;
+import pl.znr.heatmaster.config.InsulationMaterialTypeConfig;
+
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
 
 public class InsulationMaterialType extends BaseComboObject {
@@ -17,15 +20,20 @@ public class InsulationMaterialType extends BaseComboObject {
 
     private var _labelCode:String;
 
-    public static var STANDARD:InsulationMaterialType = new InsulationMaterialType("5",0.040,'hm.dropdown.insulation.average');
-    public static var GOOD:InsulationMaterialType = new InsulationMaterialType("5",0.036,'hm.dropdown.insulation.good');
-    public static var VERY_GOOD:InsulationMaterialType = new InsulationMaterialType("5",0.032,'hm.dropdown.insulation.very_good');
+    public static var STANDARD:InsulationMaterialType = new InsulationMaterialType("hm.insulation.material_type.average",0.040,'hm.dropdown.insulation.average');
+    public static var GOOD:InsulationMaterialType = new InsulationMaterialType("hm.insulation.material_type.good",0.036,'hm.dropdown.insulation.good');
+    public static var VERY_GOOD:InsulationMaterialType = new InsulationMaterialType("hm.insulation.material_type.very_good",0.032,'hm.dropdown.insulation.very_good');
 
     function InsulationMaterialType(id:String,heatTransfer:Number,labelCode:String){
         super (id);
         _heatTransferCoefficient = heatTransfer;
         _labelCode = labelCode;
         _values.addItem(this);
+    }
+
+    override public function dictionaryInitialized(config:DictionaryConfig):void {
+        var insulationMaterialTypeCfg:InsulationMaterialTypeConfig = config.getInsulationMaterialTypeConfigById(getId());
+        this.heatTransferCoefficient = insulationMaterialTypeCfg.heatTransfer;
     }
 
     public static function getMaterialInsulationTypeForHouseStandard(standardType:HouseStandardType):InsulationMaterialType {

@@ -7,11 +7,16 @@
  */
 package pl.znr.heatmaster.config {
 
+import flash.globalization.StringTools;
+
 import mx.collections.XMLListCollection;
 import mx.formatters.NumberFormatter;
 import mx.collections.ArrayCollection;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
+import mx.utils.StringUtil;
+import mx.utils.StringUtil;
+import mx.validators.StringValidator;
 
 import pl.znr.heatmaster.constants.GlobalValues;
 
@@ -62,7 +67,6 @@ public class HeatMasterConfigurationReader {
             trace("Reading configuration for country: " + countryCode);
 
 
-
             var electricityPrice:Number = getPrice(country.prices.electricity,GlobalValues.PRICE_ELECTRICITY_KWH_DEFAULT);
             var gasPrice:Number = getPrice(country.prices.gas,GlobalValues.PRICE_ELECTRICITY_KWH_DEFAULT);
             var heatingOilPrice:Number = getPrice(country.prices.heating_oil,GlobalValues.PRICE_OIL_KWH_DEFAULT);
@@ -88,6 +92,9 @@ public class HeatMasterConfigurationReader {
 
             if(countryCode == 'pl'){
                polishExchangeRate = exchangeRate;
+            }
+            if(country.has_stattions != null && "true" == country.has_stattions){
+
             }
 
             countryItem.currencyLocaleCode = currencyLocaleCode;
@@ -142,7 +149,6 @@ public class HeatMasterConfigurationReader {
                         name = resourceManager.getString('hm',localeCode);
                         if(name == null || name == ""){
                             name = region.name;
-                            trace("Region name: " + name);
                         }
                     }
 
@@ -176,19 +182,9 @@ public class HeatMasterConfigurationReader {
                     regionItem.insolationWE = insolationWE;
 
                     regionItem.country = countryItem;
-                    trace("Set regionItemCountry for region: " + regionItem.code + " country " + regionItem.country.code);
-
                     countryItem.regions.addItem(regionItem);
-
-
-                    trace(regionItem.name);
                 }
-
             }
-
-            trace("Country currency code: " + countryItem.currencyLocaleCode + " for country: " + countryItem.code + " exchange rate: " + countryItem.currencyExchangeRate);
-            trace("Coal price: " + countryItem.coalPrice + " electricity price: " + countryItem.electricityPrice + " combined price " + countryItem.combinedPrice +
-                    " gas price " + countryItem.gasPrice + " heatingOilPrice " + countryItem.heatingOilPrice + " pellets price " + countryItem.pelletsPrice);
             result.addItem(countryItem);
         }
 
@@ -200,6 +196,22 @@ public class HeatMasterConfigurationReader {
         return polishExchangeRate;
     }
 
+    private function fillTemperaturesAndInsolationData(region:Object,temperatures:Array,groundTemperatures:Array,
+                                                       optimalInsolation:Array,insolationS:Array,insolationWE:Array,
+                                                       insolationN:Array):void {
+
+        for(var i:int = 0;i<12;i++){
+            temperatures[i] = new Number(region.temperatures.t[i]);
+            groundTemperatures[i] = new Number(region.temperaturesGround.t[i]);
+            optimalInsolation[i] = new Number(region.insolation.optimal.i[i]);
+            insolationS[i] = new Number(region.insolation.south.i[i]);
+            insolationWE[i] = new Number(region.insolation.west_east.i[i]);
+            insolationN[i] = new Number(region.insolation.north.i[i]);
+        }
+
+    }
+
+
     private function getPrice(xmlPrice:String,defaultPrice:Number):Number {
         if(xmlPrice == null || xmlPrice.length == 0){
             return defaultPrice;
@@ -210,6 +222,19 @@ public class HeatMasterConfigurationReader {
     private function getNumberValue(str:String):Number {
         str = str.replace(new RegExp(",","g"),".");
         return new Number(str);
+    }
+
+    private function isNotEmpty(s:String):Boolean {
+        if(s == null || StringUtil.isWhitespace(StringUtil.trim(s))){
+           return false;
+        }
+        var trimmed:String = StringUtil.trim(s);
+        for(var i:int = 0; i < trimmed.length; i++){
+            if(!StringUtil.isWhitespace(trimmed.charAt(i))){
+               return true;
+            }
+        }
+        return false;
     }
 
 

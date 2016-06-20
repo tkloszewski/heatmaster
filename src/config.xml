@@ -2848,6 +2848,8 @@
         <code>pl</code>
         <currency_name>hm.currency.pln</currency_name>
         <exchange_rate>4.12445</exchange_rate>
+        <stations_map_url></stations_map_url>
+        <stations_xml></stations_xml>
         <regions>
             <region>
                 <name>hm.country.pl.low</name>

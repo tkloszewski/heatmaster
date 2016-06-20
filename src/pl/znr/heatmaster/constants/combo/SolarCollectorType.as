@@ -8,6 +8,8 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
+import pl.znr.heatmaster.config.DictionaryConfig;
+
 public class SolarCollectorType extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
@@ -21,9 +23,9 @@ public class SolarCollectorType extends BaseComboObject{
     private var _unitSurface:Number;
     private var _personPerCollector:int;
 
-    public static var NONE:SolarCollectorType = new SolarCollectorType("1",NONE_TYPE,0,1,0);
-    public static var FLAT:SolarCollectorType = new SolarCollectorType("2",FLAT_TYPE,0.3,1.0,1);
-    public static var VACUUM:SolarCollectorType = new SolarCollectorType("3",VACUUM_TYPE,0.5,2.0,2);
+    public static var NONE:SolarCollectorType = new SolarCollectorType("hm.solar-collector.none",NONE_TYPE,0,1,0);
+    public static var FLAT:SolarCollectorType = new SolarCollectorType("hm.solar-collector.flat",FLAT_TYPE,0.3,1.0,1);
+    public static var VACUUM:SolarCollectorType = new SolarCollectorType("hm.solar-collector.vacuum",VACUUM_TYPE,0.5,2.0,2);
 
     public static function getSolarCollectorTypeById(_id:String):SolarCollectorType {
         for(var i:int = 0;i < items.length;i++){
@@ -43,6 +45,11 @@ public class SolarCollectorType extends BaseComboObject{
         _personPerCollector = perPersonCount;
 
         items.addItem(this);
+    }
+
+
+    override public function dictionaryInitialized(config:DictionaryConfig):void {
+
     }
 
     public function isFlatCollector():Boolean {

@@ -23,6 +23,8 @@ public class CountryItem {
 
     private var _currencyExchangeRate:Number;
 
+    //image url to
+    private var _stations:ArrayCollection;
 
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
@@ -50,7 +52,13 @@ public class CountryItem {
     public function CountryItem() {
     }
 
+    public function get stations():ArrayCollection {
+        return _stations;
+    }
 
+    public function set stations(value:ArrayCollection):void {
+        _stations = value;
+    }
 
     public function get electricityPrice():Number {
         return _electricityPrice;
