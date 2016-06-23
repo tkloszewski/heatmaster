@@ -10,7 +10,7 @@ public class EnvironmentalData {
     public function EnvironmentalData() {
     }
 
-    private var _insolationData:InsolationData;
+    private var _insolationData:InsolationData = new InsolationData();
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
     private var _tAvg:Number = -1;

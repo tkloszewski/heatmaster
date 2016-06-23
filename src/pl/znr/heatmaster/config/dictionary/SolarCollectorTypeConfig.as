@@ -1,7 +1,7 @@
 /**
  * Created by Dom on 2016-06-15.
  */
-package pl.znr.heatmaster.config {
+package pl.znr.heatmaster.config.dictionary {
 public class SolarCollectorTypeConfig {
     private var _id:String;
     private var _efficiency:Number;

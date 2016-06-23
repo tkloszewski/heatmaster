@@ -13,7 +13,7 @@ import pl.znr.heatmaster.core.DataContext;
 public class CountryItemHelper {
 
     public static function getInitialConfigItemCode():String {
-        return 'pl_low';
+        return 'pl';
     }
 
     public static function isInitialLocalCurrencySet():Boolean {

@@ -10,7 +10,7 @@ import flash.sampler._getInvocationCount;
 
 import mx.collections.ArrayCollection;
 
-public class CountryItem {
+public class CountryItem implements IEnvironmentalDataConfig{
 
     private var _code:String;
     private var _localeCode:String;
@@ -24,7 +24,7 @@ public class CountryItem {
     private var _currencyExchangeRate:Number;
 
     //image url to
-    private var _stations:ArrayCollection;
+
 
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
@@ -49,15 +49,19 @@ public class CountryItem {
 
     private var _regions:ArrayCollection = new ArrayCollection();
 
+    private var _stationsConfig:StationsConfig;
+
+
     public function CountryItem() {
     }
 
-    public function get stations():ArrayCollection {
-        return _stations;
+
+    public function get stationsConfig():StationsConfig {
+        return _stationsConfig;
     }
 
-    public function set stations(value:ArrayCollection):void {
-        _stations = value;
+    public function set stationsConfig(value:StationsConfig):void {
+        _stationsConfig = value;
     }
 
     public function get electricityPrice():Number {

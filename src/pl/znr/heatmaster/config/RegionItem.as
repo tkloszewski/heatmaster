@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.config {
-public class RegionItem {
+public class RegionItem implements IEnvironmentalDataConfig{
 
     private var _code:String;
     private var _localeCode:String;

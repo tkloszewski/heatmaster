@@ -34,8 +34,11 @@
 
 
     <fx:Script><![CDATA[
+        import pl.znr.heatmaster.config.StationItem;
+        import pl.znr.heatmaster.config.StationsConfig;
         import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.util.CollectionHelper;
 
         import spark.utils.TextFlowUtil;
 
@@ -72,8 +75,15 @@
         private var countryList:ArrayCollection;
         private var regionList:ArrayCollection;
         private var selectedCountry:CountryItem;
+        private var stationsConfig:StationsConfig;
 
         private var defaultItemCode:String;
+
+        [Bindable]
+        private var regionsVisible:Boolean = false;
+
+        [Bindable]
+        private var stationsVisible:Boolean = false;
 
         public function populateCountryRegionDropDownList(configItems:ArrayCollection, regionItem:RegionItem, countryItem:CountryItem, defaultItemCode:String):void {
             countryList = configItems;
@@ -83,18 +93,131 @@
             selectedCountry = countryItem;
 
             if (regionItem != null) {
-                regionDropDownList.visible = true;
-                regionLabel.visible = true;
+                regionsVisible = true;
                 regionList = countryItem.regions;
                 regionDropDownList.dataProvider = regionList;
                 regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
             }
             else {
-                regionDropDownList.visible = false;
-                regionLabel.visible = false;
+                regionsVisible = false;
             }
+
+            if (countryItem.stationsConfig != null) {
+                stationsVisible = true;
+                stationsConfig = countryItem.stationsConfig;
+                stationDropDownList.dataProvider = stationsConfig.stations;
+                stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationsConfig.defaultStation.code);
+            }
+            else {
+                stationsVisible = false;
+            }
+
             countryDropDownList.selectedIndex = getSelectedCountryIndex(configItems, countryItem.code);
         }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = initHouseData(dataContext.houseData, createHouseModel());
+                this.surfaceData = houseData.surfaceData;
+                applySecondarySurfaceDataToControls(houseData.surfaceData);
+                dataContext.houseData = houseData;
+                dataContext.countryCode = countryDropDownList.selectedItem.code;
+
+
+                dataContext.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(selectedCountry, CountryItemHelper.isInitialLocalCurrencySet());
+
+            } catch (e:Error) {
+                trace("Error init housePopup: " + e.getStackTrace());
+                Alert.show("Error init housePopup", e.message);
+            }
+            return dataContext;
+        }
+
+        override public function setupView(dataContext:DataContext):void {
+            var houseData:HouseData = dataContext.houseData;
+            this.surfaceData = houseData.surfaceData;
+
+            var code:String = dataContext.selectedCountryRegion != null ? dataContext.selectedCountryRegion : defaultItemCode;
+
+            var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(countryList, code);
+            var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(countryList, code);
+
+            selectedCountry = countryItem;
+
+            countryDropDownList.selectedIndex = getSelectedCountryIndex(countryList, countryItem.code);
+
+            if (regionItem == null) {
+                regionsVisible = false;
+                stationsVisible = dataContext.selectedStation != null;
+                if (stationsVisible) {
+                    stationsConfig = countryItem.stationsConfig;
+                    stationDropDownList.dataProvider = stationsConfig.stations;
+                    stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, dataContext.selectedStation);
+                }
+            }
+            else {
+                regionsVisible = true;
+                stationsVisible = false;
+                regionList = countryItem.regions;
+                regionDropDownList.dataProvider = regionList;
+                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
+            }
+
+            applyHouseDataToAllControls(houseData);
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            var surfaceData:SurfaceData = surfaceCalculator.calcSurface(createPrimarySurfaceData(), dataContext.houseData.houseType);
+            if (!isNaN(context.model.northWindowSurface)) {
+                surfaceData.windowsSurfaceN = context.model.northWindowSurface;
+            }
+            surfaceData.windowsSurfaceS = surfaceData.windowsSurfaceS * context.model.southWindowSurfaceFactor;
+
+            applySecondarySurfaceDataToControls(surfaceData);
+            surfaceData = houseDataChangeListener.windowSurfaceChanged(surfaceData, createHouseModel());
+
+            dataContext.houseData.surfaceData = surfaceData;
+        }
+
+        public function getOrder():int {
+            return 0;
+        }
+
+        public function rollDownStartupPopup():void {
+            housePopupMainSmallImg.visible = true;
+            housePopupUpperGroup.visible = true;
+
+            /*
+             housePopupLowerGroup.visible = true;
+             housePopupLowerLeftGroup.visible = true;
+             */
+            housePopupOkBtn.visible = true;
+        }
+
+        public function setRolledBackState():void {
+            housePopupOkBtn.visible = false;
+            detailsCheckBox.visible = true;
+            tabClickGroup.visible = true;
+            //countryDropDownList.enabled = false;
+            rolledUp = false;
+            setComponentsVisibility(false);
+            housePopupMainSmallImg.visible = false;
+            housePopupMainImg.visible = false;
+        }
+
+        public function notifyStationChanged(stationItem:StationItem):void {
+            stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationItem.code);
+        }
+
+        private function comboStandardChanged():void {
+            try {
+                var selectedStandard:HouseStandardType = houseStandardDropDownList.selectedItem.data as HouseStandardType;
+                heatMasterListener.houseStandardChanged(selectedStandard);
+            } catch (e:Error) {
+                trace("Error while changing standard type: " + e.getStackTrace());
+            }
+        }
+
 
         private function getSelectedCountryIndex(configItems:ArrayCollection, code:String):int {
             var selectedIdx:int = 0;
@@ -120,99 +243,8 @@
             return selectedIdx;
         }
 
-
-        override public function initData(dataContext:DataContext):DataContext {
-            try {
-                var houseData:HouseData = initHouseData(dataContext.houseData, createHouseModel());
-                this.surfaceData = houseData.surfaceData;
-                applySecondarySurfaceDataToControls(houseData.surfaceData);
-                dataContext.houseData = houseData;
-                dataContext.countryCode = countryDropDownList.selectedItem.code;
-
-                dataContext.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(selectedCountry,CountryItemHelper.isInitialLocalCurrencySet());
-
-            } catch (e:Error) {
-                trace("Error init housePopup: " + e.getStackTrace());
-                Alert.show("Error init housePopup", e.message);
-            }
-            return dataContext;
-        }
-
-        override public function setupView(dataContext:DataContext):void {
-            var houseData:HouseData = dataContext.houseData;
-            this.surfaceData = houseData.surfaceData;
-
-            var code:String = dataContext.selectedCountryRegion != null ? dataContext.selectedCountryRegion : defaultItemCode;
-
-            var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(countryList, code);
-            var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(countryList, code);
-
-            selectedCountry = countryItem;
-
-            countryDropDownList.selectedIndex = getSelectedCountryIndex(countryList, countryItem.code);
-
-            if (regionItem == null) {
-                regionDropDownList.visible = false;
-                regionLabel.visible = false;
-            }
-            else {
-                regionDropDownList.visible = true;
-                regionLabel.visible = true;
-                regionList = countryItem.regions;
-                regionDropDownList.dataProvider = regionList;
-                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
-            }
-
-            applyHouseDataToAllControls(houseData);
-        }
-
-        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
-
-            var surfaceData:SurfaceData = surfaceCalculator.calcSurface(createPrimarySurfaceData(), dataContext.houseData.houseType);
-            if (!isNaN(context.model.northWindowSurface)) {
-                surfaceData.windowsSurfaceN = context.model.northWindowSurface;
-            }
-            surfaceData.windowsSurfaceS = surfaceData.windowsSurfaceS * context.model.southWindowSurfaceFactor;
-
-            applySecondarySurfaceDataToControls(surfaceData);
-            surfaceData = houseDataChangeListener.windowSurfaceChanged(surfaceData, createHouseModel());
-
-            dataContext.houseData.surfaceData = surfaceData;
-        }
-
-        public function getOrder():int {
-            return 0;
-        }
-
-        private function comboStandardChanged():void {
-            try {
-                var selectedStandard:HouseStandardType = houseStandardDropDownList.selectedItem.data as HouseStandardType;
-                heatMasterListener.houseStandardChanged(selectedStandard);
-            } catch (e:Error) {
-                trace("Error while changing standard type: " + e.getStackTrace());
-            }
-        }
-
-        public function rollDownStartupPopup():void {
-            housePopupMainSmallImg.visible = true;
-            housePopupUpperGroup.visible = true;
-
-            /*
-             housePopupLowerGroup.visible = true;
-             housePopupLowerLeftGroup.visible = true;
-             */
-            housePopupOkBtn.visible = true;
-        }
-
-        public function setRolledBackState():void {
-            housePopupOkBtn.visible = false;
-            detailsCheckBox.visible = true;
-            tabClickGroup.visible = true;
-            //countryDropDownList.enabled = false;
-            rolledUp = false;
-            setComponentsVisibility(false);
-            housePopupMainSmallImg.visible = false;
-            housePopupMainImg.visible = false;
+        private function getSelectedStationIndex(configItems:ArrayCollection, code:String) {
+            return CollectionHelper.getSelectedIndexByProperty(configItems, "code", code);
         }
 
 
@@ -303,10 +335,23 @@
                 regionDropDownList.dataProvider = regionList;
                 regionDropDownList.selectedIndex = 0;
                 regionItem = countryItem.regions.getItemAt(0) as RegionItem;
+
+                stationsVisible = false;
             }
             else {
                 regionDropDownList.visible = false;
                 regionLabel.visible = false;
+
+                if (countryItem.stationsConfig != null) {
+                    stationsVisible = true;
+                    stationsConfig = countryItem.stationsConfig;
+                    stationDropDownList.dataProvider = stationsConfig.stations;
+                    stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationsConfig.defaultStation.code);
+                }
+                else {
+                    stationsVisible = false;
+                }
+
             }
             heatMasterListener.countryChanged(countryItem, regionItem);
         }
@@ -314,6 +359,14 @@
         private function regionChanged():void {
             var regionItem:RegionItem = regionDropDownList.selectedItem;
             heatMasterListener.regionChanged(regionItem);
+        }
+
+        private function stationChanged():void {
+            heatMasterListener.stationChanged(stationDropDownList.selectedItem);
+        }
+
+        private function showMap():void {
+            HeatMaster.getInstance().showStationsMap(stationsConfig);
         }
 
         private function inHouseTempChanged():void {
@@ -548,10 +601,23 @@
                         selectedIndex="0" labelField="name">
         </s:DropDownList>
 
-        <s:Label y="35" right="202" id="regionLabel" styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.region')}" />
+
+        <s:Label y="35" right="202" id="regionLabel" styleName="popupPanelLabelOrangeStyle"
+                 text="{resourceManager.getString('hm','hm.label.region')}" visible="{regionsVisible}"/>
         <s:DropDownList id="regionDropDownList" x="116" y="30" width="169" change="regionChanged()"
-                        selectedIndex="0" labelField="name">
+                        selectedIndex="0" labelField="name" visible="{regionsVisible}">
         </s:DropDownList>
+
+
+        <s:Label y="35" right="202" id="stationLabel" styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.location')}" visible="{stationsVisible}"/>
+        <s:DropDownList id="stationDropDownList" x="116" y="30" width="129"
+                        labelField="name" change="stationChanged()" visible="{stationsVisible}">
+        </s:DropDownList>
+        <s:Button y="30" x="250" width="25" click="showMap()" label="Map"  visible="{stationsVisible}"/>
+
+
+
+
 
         <s:Label y="65" right="202"    styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.type')}" />
         <s:DropDownList selectedIndex="0" id="houseDropDownList" x="116" y="60" width="169" dataProvider="{houseList}" rollOverColor="0xd3d3d3"

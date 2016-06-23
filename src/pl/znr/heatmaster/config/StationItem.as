@@ -2,11 +2,13 @@
  * Created by Dom on 2016-06-20.
  */
 package pl.znr.heatmaster.config {
-public class StationItem {
+public class StationItem implements IEnvironmentalDataConfig{
 
     private var _code:String;
     private var _localeCode:String;
     private var _name:String;
+
+    private var _defaultStation:Boolean;
 
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
@@ -15,9 +17,11 @@ public class StationItem {
     private var _insolationN:Array;
     private var _optimalInsolation:Array;
 
+    private var _mapX:int;
+    private var _mapY:int;
+
     public function StationItem() {
     }
-
 
     public function get code():String {
         return _code;
@@ -89,6 +93,31 @@ public class StationItem {
 
     public function set optimalInsolation(value:Array):void {
         _optimalInsolation = value;
+    }
+
+
+    public function get mapX():int {
+        return _mapX;
+    }
+
+    public function set mapX(value:int):void {
+        _mapX = value;
+    }
+
+    public function get mapY():int {
+        return _mapY;
+    }
+
+    public function set mapY(value:int):void {
+        _mapY = value;
+    }
+
+    public function isDefaultStation():Boolean {
+        return _defaultStation;
+    }
+
+    public function setDefaultStation(value:Boolean):void {
+        _defaultStation = value;
     }
 }
 }

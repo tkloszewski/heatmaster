@@ -6,9 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.constants.combo {
-import pl.znr.heatmaster.config.DictionaryConfig;
-import pl.znr.heatmaster.config.DictionaryConfigAware;
-import pl.znr.heatmaster.config.DictionaryConfigAwareContainer;
+import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
+import pl.znr.heatmaster.config.dictionary.DictionaryConfigAware;
+import pl.znr.heatmaster.config.dictionary.DictionaryConfigAwareContainer;
 
 public class BaseComboObject implements DictionaryConfigAware{
 

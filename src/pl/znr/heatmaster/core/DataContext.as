@@ -31,6 +31,7 @@ public class DataContext {
     private var _selectedCountryRegion:String;
     private var _countryCode:String;
     private var _initialConfigItem:CountryItem;
+    private var _selectedStation:String;
 
     private var _currencyLocaleCode:String;
     private var _localCurrency:Boolean;
@@ -145,6 +146,15 @@ public class DataContext {
 
     public function set lang(value:String):void {
         _lang = value;
+    }
+
+
+    public function get selectedStation():String {
+        return _selectedStation;
+    }
+
+    public function set selectedStation(value:String):void {
+        _selectedStation = value;
     }
 }
 }

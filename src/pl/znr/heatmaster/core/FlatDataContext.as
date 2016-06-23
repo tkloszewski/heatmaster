@@ -14,8 +14,10 @@ public class FlatDataContext {
 
     private var _selectedCountryRegion:String;
     private var _countryCode:String;
+    private var _selectedStation:String;
     private var _currencyLocaleCode:String;
     private var _localCurrency:Boolean;
+
 
     private var _selectedMonth:int;
 
@@ -884,6 +886,15 @@ public class FlatDataContext {
 
     public function set conversionElectricityPricePerkWh(value:Number):void {
         _conversionElectricityPricePerkWh = value;
+    }
+
+
+    public function get selectedStation():String {
+        return _selectedStation;
+    }
+
+    public function set selectedStation(value:String):void {
+        _selectedStation = value;
     }
 }
 }

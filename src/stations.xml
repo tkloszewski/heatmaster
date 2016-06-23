@@ -1,91 +1,173 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stations_config>
    <station_config>
-       <country>hm.country.pl</country>
-       <map_image>/pl/znr/heatmaster/assets/images/stations/stations_pl.png</map_image>
+       <country>pl</country>
+       <map_image>pl/znr/heatmaster/assets/images/maps/map_pl.png</map_image>
        <stations>
            <station>
+               <default_station>true</default_station>
                <name>hm.city.pl.warsaw</name>
                <position>
-                   <img_x>100</img_x>
-                   <img_y>300</img_y>
+                   <img_x>403</img_x>
+                   <img_y>234</img_y>
                    <zone>1</zone>
                </position>
                <temperatures>
-                   <t>1.5</t>
-                   <t>0.3</t>
-                   <t>4.5</t>
-                   <t>9</t>
-                   <t>14.3</t>
-                   <t>17.4</t>
-                   <t>19.3</t>
-                   <t>19</t>
-                   <t>14.3</t>
-                   <t>8.8</t>
-                   <t>3.4</t>
-                   <t>0.1</t>
+                   <t>-1.2</t>
+                   <t>-0.9</t>
+                   <t>4.4</t>
+                   <t>6.3</t>
+                   <t>12.2</t>
+                   <t>17.1</t>
+                   <t>19.2</t>
+                   <t>16.6</t>
+                   <t>12.8</t>
+                   <t>8.2</t>
+                   <t>2.9</t>
+                   <t>0.8</t>
                </temperatures>
                <insolation>
                    <optimal>
-                       <i>37.82</i>
-                       <i>72.58</i>
-                       <i>112.53</i>
-                       <i>129.9</i>
-                       <i>150.35</i>
-                       <i>145.5</i>
-                       <i>162.44</i>
-                       <i>164.61</i>
-                       <i>115.5</i>
-                       <i>80.6</i>
-                       <i>40.5</i>
-                       <i>28.83</i>
+                       <i>37.702</i>
+                       <i>42.500</i>
+                       <i>77.275</i>
+                       <i>101.665</i>
+                       <i>141.751</i>
+                       <i>150.228</i>
+                       <i>151.489</i>
+                       <i>135.486</i>
+                       <i>88.497</i>
+                       <i>55.005</i>
+                       <i>26.046</i>
+                       <i>21.400</i>
                    </optimal>
-                   <south>
-                       <i>33.79</i>
-                       <i>67.21</i>
-                       <i>98.58</i>
-                       <i>85.2</i>
-                       <i>87.42</i>
-                       <i>78.9</i>
-                       <i>90.21</i>
-                       <i>103.23</i>
-                       <i>85.5</i>
-                       <i>66.34</i>
-                       <i>35.7</i>
-                       <i>27.28</i>
-                   </south>
-                   <west_east>
-                       <i>15.19</i>
-                       <i>32.48</i>
-                       <i>60.45</i>
-                       <i>64.2</i>
-                       <i>82.77</i>
-                       <i>85.2</i>
-                       <i>91.45</i>
-                       <i>83.39</i>
-                       <i>55.2</i>
-                       <i>35.65</i>
-                       <i>16.2</i>
-                       <i>12.71</i>
-                   </west_east>
                    <north>
-                       <i>10.54</i>
-                       <i>19.49</i>
-                       <i>40.61</i>
-                       <i>36</i>
-                       <i>46.81</i>
-                       <i>51.3</i>
-                       <i>50.53</i>
-                       <i>40.92</i>
-                       <i>32.4</i>
-                       <i>20.46</i>
-                       <i>11.1</i>
-                       <i>9.92</i>
+                       <i>21.215</i>
+                       <i>25.556</i>
+                       <i>49.314</i>
+                       <i>69.001</i>
+                       <i>94.223</i>
+                       <i>100.296</i>
+                       <i>103.727</i>
+                       <i>88.775</i>
+                       <i>61.523</i>
+                       <i>36.646</i>
+                       <i>18.022</i>
+                       <i>15.549</i>
                    </north>
+                   <west_east>
+                       <i>23.218</i>
+                       <i>29.694</i>
+                       <i>57.792</i>
+                       <i>82.198</i>
+                       <i>115.298</i>
+                       <i>121.407</i>
+                       <i>125.292</i>
+                       <i>108.131</i>
+                       <i>70.698</i>
+                       <i>41.081</i>
+                       <i>19.676</i>
+                       <i>16.023</i>
+                   </west_east>
+                   <south>
+                       <i>42.377</i>
+                       <i>43.845</i>
+                       <i>75.781</i>
+                       <i>91.948</i>
+                       <i>116.562</i>
+                       <i>119.523</i>
+                       <i>122.667</i>
+                       <i>115.216</i>
+                       <i>82.852</i>
+                       <i>55.856</i>
+                       <i>27.615</i>
+                       <i>23.280</i>
+                   </south>
+               </insolation>
+           </station>
+           <station>
+               <name>hm.city.pl.szczecin</name>
+               <position>
+                   <img_x>53</img_x>
+                   <img_y>141</img_y>
+                   <zone>1</zone>
+               </position>
+               <temperatures>
+                   <t>1.1</t>
+                   <t>-0.2</t>
+                   <t>4.0</t>
+                   <t>7.8</t>
+                   <t>12.7</t>
+                   <t>15.9</t>
+                   <t>17.6</t>
+                   <t>17.5</t>
+                   <t>13.9</t>
+                   <t>8.0</t>
+                   <t>4.9</t>
+                   <t>2.0</t>
+               </temperatures>
+               <insolation>
+                   <optimal>
+                       <i>31.571</i>
+                       <i>46.325</i>
+                       <i>63.586</i>
+                       <i>96.275</i>
+                       <i>128.713</i>
+                       <i>129.153</i>
+                       <i>126.565</i>
+                       <i>120.210</i>
+                       <i>73.128</i>
+                       <i>53.136</i>
+                       <i>28.397</i>
+                       <i>20.776</i>
+                   </optimal>
+                   <north>
+                       <i>19.146</i>
+                       <i>21.630</i>
+                       <i>45.615</i>
+                       <i>64.219</i>
+                       <i>83.822</i>
+                       <i>94.990</i>
+                       <i>97.622</i>
+                       <i>83.993</i>
+                       <i>54.912</i>
+                       <i>34.942</i>
+                       <i>19.426</i>
+                       <i>19.041</i>
+                   </north>
+                   <west_east>
+                       <i>20.529</i>
+                       <i>27.284</i>
+                       <i>50.670</i>
+                       <i>78.479</i>
+                       <i>102.475</i>
+                       <i>108.602</i>
+                       <i>109.062</i>
+                       <i>96.019</i>
+                       <i>60.883</i>
+                       <i>39.217</i>
+                       <i>20.812</i>
+                       <i>19.067</i>
+                   </west_east>
+                   <south>
+                       <i>35.194</i>
+                       <i>49.963</i>
+                       <i>62.658</i>
+                       <i>86.195</i>
+                       <i>107.687</i>
+                       <i>109.192</i>
+                       <i>110.249</i>
+                       <i>108.201</i>
+                       <i>69.993</i>
+                       <i>54.862</i>
+                       <i>30.677</i>
+                       <i>21.341</i>
+                   </south>
                </insolation>
            </station>
        </stations>
    </station_config>
+
 </stations_config>
 
 

@@ -8,8 +8,8 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
-import pl.znr.heatmaster.config.DictionaryConfig;
-import pl.znr.heatmaster.config.InsulationMaterialTypeConfig;
+import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
+import pl.znr.heatmaster.config.dictionary.InsulationMaterialTypeConfig;
 
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
 

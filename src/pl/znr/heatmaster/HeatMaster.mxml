@@ -29,7 +29,8 @@
 
     <fx:Declarations>
 
-        <fx:XML id="configXML" format="e4x" source="/config.xml"/>
+        <fx:XML id="countriesXML" format="e4x" source="/config.xml"/>
+        <fx:XML id="stationsXML" format="e4x" source="/stations.xml"/>
 
         <s:BitmapFill id="bgGrass" source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_grass.png')"/>
         <s:BitmapFill id="bgSky" source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_sky.png')"/>
@@ -73,7 +74,9 @@
         import pl.znr.heatmaster.config.CountryItemHelper;
 
         import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
+        import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
         import pl.znr.heatmaster.config.RegionItem;
+        import pl.znr.heatmaster.config.StationsConfig;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
         import pl.znr.heatmaster.core.CachedDataContextManager;
@@ -91,6 +94,8 @@
         import pl.znr.heatmaster.ui.components.HeatMasterResultComponent;
         import pl.znr.heatmaster.ui.components.HouseStandardChangeListener;
         import pl.znr.heatmaster.ui.components.LangChangeListener;
+
+        import spark.primitives.BitmapImage;
 
         import spark.utils.TextFlowUtil;
 
@@ -129,6 +134,45 @@
             return FlexGlobals.topLevelApplication as HeatMaster;
         }
 
+        public function goToHeatingPopupState():void {
+            heatMasterContainer.removeElement(blurringImg);
+            heatMasterContainer.addElement(blurringImg);
+            heatMasterContainer.removeElement(heatingPopup);
+            heatingPopup.rollDownStartupPopup();
+            heatMasterContainer.addElement(heatingPopup);
+        }
+
+        public function goToNormalState():void {
+            try {
+                tryWriteCache();
+                heatMasterContainer.removeElement(blurringImg);
+            } catch (e:Error) {
+                Alert.show("Error writing cache...", e.message);
+            }
+        }
+
+        public function showStationsMap(stationsConfig:StationsConfig):void {
+            if(stationsPanel.visible){
+               stationsPanel.visible = false;
+               return;
+            }
+
+            var bitmapImg:BitmapImage = new BitmapImage();
+            bitmapImg.source = stationsConfig.mapImage;
+
+            stationsPanel.setStations(stationsConfig.stations);
+
+            stationsPanel.width = bitmapImg.sourceWidth + 1;
+            stationsPanel.height = bitmapImg.sourceHeight + 1;
+            stationsPanel.mapImage = stationsConfig.mapImage;
+            stationsPanel.visible = true;
+        }
+
+        public function groundBackgroundVisible(visible:Boolean):void {
+            bgGrassImg.visible = visible;
+            bgSkyImg.visible = !visible;
+        }
+
         public function getHousePanel():HousePanel {
             return housePanel;
         }
@@ -139,11 +183,19 @@
             addElement(toolTipComp);
         }
 
+        public function hideReport():void {
+            plotVisible = false;
+        }
+
+        public function hideMap():void {
+            stationsPanel.visible = false;
+        }
+
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
             httpService.send();
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
-            configurationReader = new HeatMasterConfigurationReader(configXML, resourceManager);
+            configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
             configItems = configurationReader.readConfig();
         }
 
@@ -227,7 +279,7 @@
 
             setUpHeatMasterListener();
             injectHeatMasterListener(heatMasterContainer, heatMasterListener);
-            setUpOtherListeners(heatMasterContainer,heatMasterListener);
+            setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
             cachedData = cachedDataContextManager.readCache();
 
@@ -243,11 +295,11 @@
             startButtonVisible = cachedData == null;
 
             var language:String = cachedData != null ? cachedData.lang : null;
-            if(language == null){
-               language = heatMasterLocaleManager.getLang();
+            if (language == null) {
+                language = heatMasterLocaleManager.getLang();
             }
-            if(!LangHelper.isPolishLang(language)){
-              setPolishComponentsVisibility(false);
+            if (!LangHelper.isPolishLang(language)) {
+                setPolishComponentsVisibility(false);
             }
             resourceManager.localeChain = [language];
             initialPhaseNotifyLangChangeListeners(language);
@@ -268,8 +320,8 @@
             if (component is IBuildingAgeChangeListener) {
                 hmListener.addBuildingChangeListener(component as IBuildingAgeChangeListener);
             }
-            if(component is HouseStandardChangeListener){
-               hmListener.addHouseStandardChangeListener(component as HouseStandardChangeListener)
+            if (component is HouseStandardChangeListener) {
+                hmListener.addHouseStandardChangeListener(component as HouseStandardChangeListener)
             }
             if (component is LangChangeListener) {
                 langChangeListeners.addItem(component as LangChangeListener);
@@ -356,8 +408,8 @@
             var initDataContext:DataContext = initDataContextWithConfig();
 
             initDataContext = heatMasterController.initData(initDataContext);
-            if(initDataContext.houseData.standardType != null){
-               initDataContext = heatMasterListener.applyHouseStandardChanged(initDataContext,initDataContext.houseData.standardType);
+            if (initDataContext.houseData.standardType != null) {
+                initDataContext = heatMasterListener.applyHouseStandardChanged(initDataContext, initDataContext.houseData.standardType);
             }
 
             heatMasterController.startCalculationWithConfig(initDataContext);
@@ -372,34 +424,17 @@
         }
 
         private function initDataContextWithConfig():DataContext {
-
             var regionItem:RegionItem = CountryItemHelper.getInitialOrCachedRegionItem(false, null, configItems);
             var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getInitialOrCachedCountryItem(false, null, configItems);
 
             var dataContext:DataContext = new DataContext();
-            var envData:EnvironmentalData = new EnvironmentalData();
-            var insolationData:InsolationData = new InsolationData();
-            if (regionItem != null) {
-                envData.temperatures = regionItem.temperatures;
-                envData.groundTemperatures = regionItem.groundTemperatures;
-                insolationData.groundInsolation45 = regionItem.optimalInsolation;
-                insolationData.northInsolation = regionItem.insolationN;
-                insolationData.southInsolation = regionItem.insolationS;
-                insolationData.westEastInsolation = regionItem.insolationWE;
-            }
-            else {
-                envData.temperatures = countryItem.temperatures;
-                envData.groundTemperatures = countryItem.groundTemperatures;
-                insolationData.groundInsolation45 = countryItem.optimalInsolation;
-                insolationData.northInsolation = countryItem.insolationN;
-                insolationData.southInsolation = countryItem.insolationS;
-                insolationData.westEastInsolation = countryItem.insolationWE;
-            }
-            envData.insolationData = insolationData;
-            envData = environmentalDataPreparer.prepare(envData);
-            dataContext.environmentalData = envData;
+            dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(new EnvironmentalData(),regionItem != null ? regionItem : countryItem);
             dataContext.initialConfigItem = countryItem;
             dataContext.selectedCountryRegion = regionItem != null ? regionItem.code : countryItem.code;
+            if(countryItem.stationsConfig != null){
+               dataContext.selectedStation = countryItem.stationsConfig.defaultStation.code;
+            }
+
             return dataContext;
         }
 
@@ -411,28 +446,6 @@
             houseTopBarImg.visible = true;
             houseTopBarWhiteImg.visible = false;
             logoImage.visible = true;
-        }
-
-        public function goToHeatingPopupState():void {
-            heatMasterContainer.removeElement(blurringImg);
-            heatMasterContainer.addElement(blurringImg);
-            heatMasterContainer.removeElement(heatingPopup);
-            heatingPopup.rollDownStartupPopup();
-            heatMasterContainer.addElement(heatingPopup);
-        }
-
-        public function goToNormalState():void {
-            try {
-                tryWriteCache();
-                heatMasterContainer.removeElement(blurringImg);
-            } catch (e:Error) {
-                Alert.show("Error writing cache...", e.message);
-            }
-        }
-
-        public function groundBackgroundVisible(visible:Boolean):void {
-            bgGrassImg.visible = visible;
-            bgSkyImg.visible = !visible;
         }
 
         private function tryWriteCache():void {
@@ -498,9 +511,6 @@
             cachedDataContextManager.clearCache();
         }
 
-        public function hideReport():void {
-            plotVisible = false;
-        }
 
         private function getLogoWidth():Number {
             return this.width < 1280 ? 120 : 200;
@@ -551,7 +561,6 @@
             resourceManager.localeChain = ["pl_PL"];
             initialPhaseNotifyLangChangeListeners(selectedLang);
         }
-
         ]]></fx:Script>
 
 
@@ -678,14 +687,16 @@
                 <mx:Image id="logoImage" x="20" y="10" source="@Embed('/pl/znr/heatmaster/assets/images/logo.png')" visible="false"/>
 
 
-
                 <components:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715" visible="{!plotVisible}"/>
                 <components:PlotPanel  x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90" height="560" width="{Math.min(Math.max(1000 * 1200/1280,1200/1280 * this.width),1200)}"
                                        id="plotPanel" visible="{plotVisible}"/>
 
 
+                <components:StationsPanel id="stationsPanel" x="{housePanel.x + 200}" y="100" width="676" height="600" visible="false"/>
+
                 <popup:HousePopup id="housePopup" y="18" x="{housePanel.x + 200}" height="400" visible="false" />
                 <popup:HeatingPopup id="heatingPopup" y="18" x="{housePopup.x + housePopup.width}" visible="false"/>
+
 
 
 

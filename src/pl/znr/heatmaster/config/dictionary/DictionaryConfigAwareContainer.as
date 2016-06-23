@@ -1,8 +1,12 @@
 /**
  * Created by Dom on 2016-06-14.
  */
-package pl.znr.heatmaster.config {
+package pl.znr.heatmaster.config.dictionary {
 import mx.collections.ArrayCollection;
+
+import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
+
+import pl.znr.heatmaster.config.dictionary.DictionaryConfigAware;
 
 public class DictionaryConfigAwareContainer {
 

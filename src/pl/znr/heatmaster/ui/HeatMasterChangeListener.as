@@ -17,7 +17,9 @@ import pl.znr.heatmaster.HeatMaster;
 import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.config.CountryItemHelper;
 import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
+import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
 import pl.znr.heatmaster.config.RegionItem;
+import pl.znr.heatmaster.config.StationItem;
 
 import pl.znr.heatmaster.constants.combo.BuildingAge;
 
@@ -50,6 +52,7 @@ import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.WallElement;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 import pl.znr.heatmaster.core.model.WindowElement;
+import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.HousePanel;
@@ -117,8 +120,6 @@ public class HeatMasterChangeListener {
         }
 
         houseStandardChangeListeners.addItemAt(houseStandardChangeListener,placeIndex);
-
-
     }
 
     public function buildingAgeChanged(buildingAge:BuildingAge):void {
@@ -161,7 +162,7 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function languageChanged(language:String):void {
+    public function  languageChanged(language:String):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         dataContext.lang = language;
         writeCache(dataContext);
@@ -199,26 +200,20 @@ public class HeatMasterChangeListener {
 
         if (regionItem != null) {
             dataContext.selectedCountryRegion = regionItem.code;
-            envData.temperatures = regionItem.temperatures;
-            envData.groundTemperatures = regionItem.groundTemperatures;
-
-            dataContext.environmentalData = new EnvironmentalDataPreparer().prepare(envData);
-            dataContext.environmentalData.insolationData.groundInsolation45 = regionItem.optimalInsolation;
-            dataContext.environmentalData.insolationData.southInsolation = regionItem.insolationS;
-            dataContext.environmentalData.insolationData.northInsolation = regionItem.insolationN;
-            dataContext.environmentalData.insolationData.westEastInsolation = regionItem.insolationWE;
+            dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,regionItem);
+            dataContext.selectedStation = null;
         }
         else {
             dataContext.selectedCountryRegion = countryItem.code;
             dataContext.countryCode = countryItem.code;
-            envData.temperatures = countryItem.temperatures;
-            envData.groundTemperatures = countryItem.groundTemperatures;
-
-            dataContext.environmentalData = new EnvironmentalDataPreparer().prepare(envData);
-            dataContext.environmentalData.insolationData.groundInsolation45 = countryItem.optimalInsolation;
-            dataContext.environmentalData.insolationData.southInsolation = countryItem.insolationS;
-            dataContext.environmentalData.insolationData.northInsolation = countryItem.insolationN;
-            dataContext.environmentalData.insolationData.westEastInsolation = countryItem.insolationWE;
+            if(countryItem.stationsConfig != null){
+                dataContext.selectedStation = countryItem.stationsConfig.defaultStation.code;
+                dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,countryItem.stationsConfig.defaultStation);
+            }
+            else {
+                dataContext.selectedStation = null;
+                dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,countryItem);
+            }
         }
 
         var localCurrency:Boolean = ConversionUnits.isLocalCurrencyCostUnit(conversionUnit);
@@ -250,17 +245,23 @@ public class HeatMasterChangeListener {
     public function regionChanged(regionItem:RegionItem):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         dataContext.selectedCountryRegion = regionItem.code;
-        var envData:EnvironmentalData = dataContext.environmentalData;
-        envData.temperatures = regionItem.temperatures;
-        envData.groundTemperatures = regionItem.groundTemperatures;
-
-        dataContext.environmentalData = new EnvironmentalDataPreparer().prepare(envData);
-        dataContext.environmentalData.insolationData.groundInsolation45 = regionItem.optimalInsolation;
-        dataContext.environmentalData.insolationData.southInsolation = regionItem.insolationS;
-        dataContext.environmentalData.insolationData.northInsolation = regionItem.insolationN;
-        dataContext.environmentalData.insolationData.westEastInsolation = regionItem.insolationWE;
+        dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,regionItem);
 
         energyMeter.environmentalDataChanged(dataContext.environmentalData);
+
+        heatMasterController.calculate();
+        writeCache(dataContext);
+    }
+
+    public function stationChanged(stationItem:StationItem,notifyHousePopup:Boolean = false){
+        var dataContext:DataContext = heatMasterController.getDataContext();
+        dataContext.selectedStation = stationItem.code;
+        dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,stationItem);
+
+        energyMeter.environmentalDataChanged(dataContext.environmentalData);
+        if(notifyHousePopup){
+           housePopup.notifyStationChanged(stationItem);
+        }
 
         heatMasterController.calculate();
         writeCache(dataContext);

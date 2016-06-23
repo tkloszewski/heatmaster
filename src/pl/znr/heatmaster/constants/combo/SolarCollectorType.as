@@ -8,7 +8,7 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
-import pl.znr.heatmaster.config.DictionaryConfig;
+import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 
 public class SolarCollectorType extends BaseComboObject{
 

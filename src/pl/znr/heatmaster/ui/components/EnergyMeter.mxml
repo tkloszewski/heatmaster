@@ -16,27 +16,20 @@
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.CountryItemHelper;
         import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
-
         import pl.znr.heatmaster.constants.GlobalValues;
-
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
         import pl.znr.heatmaster.core.BalanceValueHelper;
         import pl.znr.heatmaster.core.ConvertedResult;
-
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
-
         import pl.znr.heatmaster.ui.HeatMasterChangeListener;
-        import pl.znr.heatmaster.ui.builder.EnvironmentalDataHolder;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyMeterToolTip;
 
         private var configuratioReader:HeatMasterConfigurationReader;
-
-        private var environmentalDataPreparer:EnvironmentalDataPreparer = new EnvironmentalDataPreparer();
         private var environmentalData:EnvironmentalData
 
         [Bindable]
@@ -82,23 +75,13 @@
         }
 
         override public function initData(dataContext:DataContext):DataContext {
-            if (dataContext.initialConfigItem != null) {
-                //dataContext.environmentalData = environmentalDataPreparer.prepare(dataContext.environmentalData);
-                environmentalData = dataContext.environmentalData;
-            }
-            else {
-                environmentalData = environmentalDataPreparer.prepare(EnvironmentalDataHolder.getEnvironmentalData('pl'));
-                dataContext.environmentalData = environmentalData;
-            }
-
             tempSE.value = dataContext.environmentalData.temperatures[monthDropDownList.selectedIndex];
 
             var conversionData:ConversionData = dataContext.conversionData;
-
             conversionData.selectedUnit = unitDropDownList.selectedItem.data;
             conversionData.unitName = unitDropDownList.selectedItem.labelUnit;
             conversionData.shortUnitName = getShortUnitNameCode(unitDropDownList.selectedItem.data, unitDropDownList.selectedItem.shortUnit);
-            conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,configuratioReader.getEuroToPLNExchangeRate(),dataContext.initialConfigItem.currencyExchangeRate);
+            conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit, configuratioReader.getEuroToPLNExchangeRate(), dataContext.initialConfigItem.currencyExchangeRate);
 
             dataContext.currencyLocaleCode = ConversionUnits.isLocalCurrencyCostUnit(unitDropDownList.selectedItem.data) ? dataContext.initialConfigItem.currencyLocaleCode : HeatMaster.CURRENCY_EURO_LOCALE_CODE;
             dataContext.localCurrency = CountryItemHelper.isInitialLocalCurrencySet();
@@ -131,7 +114,7 @@
                 value = 0;
                 var convertedResult:ConvertedResult;
                 if (ConversionUnits.isYearUnit(unit)) {
-                   value = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
+                    value = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
                 }
                 else {
                     convertedResult = resultData.monthlyConvertedData[month];
@@ -197,7 +180,7 @@
 
         private function tempChanged():void {
             environmentalData.temperatures[monthDropDownList.selectedIndex] = tempSE.value;
-            environmentalData = environmentalDataPreparer.prepare(environmentalData);
+            environmentalData = EnvironmentalDataPreparer.applyTemperatureStats(environmentalData);
             heatMasterListener.environmentalDataChanged(environmentalData);
         }
 
@@ -330,6 +313,5 @@
                click="openInfoPanel(event)"/>
 
     <fx:Script><![CDATA[
-        import pl.znr.heatmaster.constants.combo.ConversionUnits;
         ]]></fx:Script>
 </hm:HeatMasterResultComponent>

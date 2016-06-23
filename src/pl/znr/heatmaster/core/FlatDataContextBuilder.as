@@ -47,6 +47,7 @@ public class FlatDataContextBuilder {
         flatDataContext.includeWarmWater = dataContext.includeWarmWater;
         flatDataContext.selectedCountryRegion = dataContext.selectedCountryRegion;
         flatDataContext.countryCode = dataContext.countryCode;
+        flatDataContext.selectedStation = dataContext.selectedStation;
         flatDataContext.currencyLocaleCode = dataContext.currencyLocaleCode;
         flatDataContext.localCurrency = dataContext.localCurrency;
 
@@ -246,6 +247,7 @@ public class FlatDataContextBuilder {
         dataContext.selectedMonth = flatDataContext.selectedMonth;
         dataContext.includeWarmWater = flatDataContext.includeWarmWater;
         dataContext.selectedCountryRegion = flatDataContext.selectedCountryRegion;
+        dataContext.selectedStation = flatDataContext.selectedStation;
         dataContext.countryCode = flatDataContext.countryCode;
         dataContext.currencyLocaleCode = flatDataContext.currencyLocaleCode;
         dataContext.localCurrency = flatDataContext.localCurrency;

@@ -1,10 +1,12 @@
 /**
  * Created by Dom on 2016-06-14.
  */
-package pl.znr.heatmaster.config {
+package pl.znr.heatmaster.config.dictionary {
+import pl.znr.heatmaster.config.*;
+
 import flash.utils.Dictionary;
 
-import pl.znr.heatmaster.config.SolarCollectorTypeConfig;
+import pl.znr.heatmaster.config.dictionary.SolarCollectorTypeConfig;
 
 import pl.znr.heatmaster.constants.combo.DoorType;
 

@@ -1,13 +1,12 @@
 /**
- * Created by Dom on 2016-06-14.
+ * Created by Dom on 2016-06-15.
  */
-package pl.znr.heatmaster.config {
-public class DoorTypeConfig {
-
+package pl.znr.heatmaster.config.dictionary {
+public class ThermalBridgesTypeConfig {
     private var _id:String;
     private var _uValue:Number;
 
-    public function DoorTypeConfig(id:String, uValue:Number) {
+    public function ThermalBridgesTypeConfig(id:String, uValue:Number) {
         _id = id;
         _uValue = uValue;
     }
