@@ -23,11 +23,11 @@ public class StationLocator {
         sort.compareFunction = compareDistance;
     }
 
-    public function findLimitedNearestStations(position:Position,limit:int): ArrayCollection {
+    public function findNearestStations(position:Position,limit:int = 0): ArrayCollection {
         var result:ArrayCollection = new ArrayCollection();
 
-        var nearestStations:ArrayCollection = findNearestStations(position);
-        var maxElements:int = Math.min(nearestStations.length,limit);
+        var nearestStations:ArrayCollection = doFindNearestStations(position);
+        var maxElements:int = limit > 0 ? Math.min(nearestStations.length,limit) : nearestStations.length;
         for(var i:int = 0; i < maxElements;i++){
             result.addItem(nearestStations.getItemAt(i));
         }
@@ -35,7 +35,7 @@ public class StationLocator {
         return result;
     }
 
-    public function findNearestStations(position:Position):ArrayCollection {
+    public function doFindNearestStations(position:Position):ArrayCollection {
         var result:ArrayCollection = new ArrayCollection();
         var stationDistances:Array = calcDistances(position).toArray();
 

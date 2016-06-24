@@ -44,7 +44,7 @@
     }
 
     private function mapClicked(event:MouseEvent) {
-      var nearestStations:ArrayCollection = stationLocator.findNearestStations(new Position(map.mouseX, map.mouseY));
+      var nearestStations:ArrayCollection = stationLocator.findNearestStations(new Position(map.mouseX, map.mouseY),5);
 
       nearestStationsList.dataProvider = nearestStations;
       nearestStationsList.x = map.mouseX;
