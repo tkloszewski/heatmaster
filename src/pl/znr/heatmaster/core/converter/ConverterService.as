@@ -14,7 +14,7 @@ import pl.znr.heatmaster.constants.combo.ConversionUnits;
 import pl.znr.heatmaster.constants.combo.HeatingSourceType;
 import pl.znr.heatmaster.core.ConvertedResult;
 import pl.znr.heatmaster.core.ProcessingResult;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
 public class ConverterService {
     public function ConverterService() {

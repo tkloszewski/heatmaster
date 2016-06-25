@@ -5,7 +5,7 @@
  * Time: 16:05
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core.calc {
+package pl.znr.heatmaster.core.calc.model {
 import mx.utils.NameUtil;
 
 public class MonthEnergyData {

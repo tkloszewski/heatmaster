@@ -7,8 +7,9 @@
  */
 package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.InsolationData;
 import pl.znr.heatmaster.core.model.SurfaceData;
 
@@ -16,13 +17,11 @@ public class SolarEnergyGainCalculator implements IMonthEnergyCalculator{
     public function SolarEnergyGainCalculator() {
     }
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         var houseData:HouseData = contextData.houseData;
-        var insolationData:InsolationData = contextData.environmentalData.insolationData;
-        var insolationS:Number = insolationData.southInsolation[month];
-        var insolationWE:Number = insolationData.westEastInsolation[month];
-        var insolationN:Number = insolationData.northInsolation[month];
-
+        var insolationS:Number = monthInputData.southInsolation;
+        var insolationWE:Number = monthInputData.westEastInsolation;
+        var insolationN:Number = monthInputData.northInsolation;
 
         energyData.enSolGain = calcSolEnergyGain(houseData.surfaceData,insolationS,insolationWE,insolationN,houseData.windowElement.winGain);
 

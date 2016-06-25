@@ -9,8 +9,9 @@ package pl.znr.heatmaster.core.calc {
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.VentilationData;
 
 public class BaseVentilationEnergyCalculator implements IMonthEnergyCalculator{
@@ -18,13 +19,13 @@ public class BaseVentilationEnergyCalculator implements IMonthEnergyCalculator{
     }
 
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthIinputData:MonthInputData):MonthEnergyData {
         try {
             var houseData:HouseData = contextData.houseData;
 
             var heatCoefficient:Number = calcHeatCoefficient(houseData.ventilationData);
-            var tInEffective:Number = calcEffectiveTIn(contextData, tOut,month);
-            var airVolume:Number = calcAirVolume(contextData, tOut,tInEffective);
+            var tInEffective:Number = calcEffectiveTIn(contextData, monthIinputData.tOut,monthIinputData.tGround);
+            var airVolume:Number = calcAirVolume(contextData, monthIinputData.tOut,tInEffective);
             var energy:Number = EnergyCalcHelper.calcAirHeatEnergyTransfer(airVolume, houseData.tIn,
                     tInEffective, heatCoefficient);
 
@@ -51,7 +52,7 @@ public class BaseVentilationEnergyCalculator implements IMonthEnergyCalculator{
         return 0;
     }
 
-    protected function calcEffectiveTIn(contextData:DataContext,tOut:Number,month:int):Number {
+    protected function calcEffectiveTIn(contextData:DataContext,tOut:Number,tGround:Number):Number {
         return tOut;
     }
 

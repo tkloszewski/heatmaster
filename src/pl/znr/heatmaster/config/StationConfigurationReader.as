@@ -5,7 +5,7 @@ package pl.znr.heatmaster.config {
 import mx.collections.ArrayCollection;
 import mx.resources.IResourceManager;
 
-import pl.znr.heatmaster.core.TemperatureCalculator;
+import pl.znr.heatmaster.core.util.TemperatureCalculator;
 
 public class StationConfigurationReader {
 

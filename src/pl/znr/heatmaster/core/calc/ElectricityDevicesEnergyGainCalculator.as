@@ -9,15 +9,16 @@ package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.calc.EnergyCalcHelper;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
 public class ElectricityDevicesEnergyGainCalculator implements IMonthEnergyCalculator{
     public function ElectricityDevicesEnergyGainCalculator() {
     }
 
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         energyData.enElectricityGain = 0;
         return energyData;
     }

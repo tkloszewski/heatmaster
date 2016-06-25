@@ -12,8 +12,9 @@ import pl.znr.heatmaster.constants.combo.DropDownType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
 import pl.znr.heatmaster.constants.combo.VentilationMethod;
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.VentilationData;
 
@@ -22,9 +23,9 @@ public class AiringEnergyCalculator extends BaseVentilationEnergyCalculator{
     }
 
 
-    override public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    override public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInput:MonthInputData):MonthEnergyData {
         if (contextData.houseData.ventilationData.ventilationMethodObject.type == VentilationMethod.GRAVITATIONAL) {
-            return super.calcEnergy(energyData, contextData, month, tOut);
+            return super.calcEnergy(energyData, contextData, monthInput);
         }
         energyData.enAir = 0;
         return energyData;

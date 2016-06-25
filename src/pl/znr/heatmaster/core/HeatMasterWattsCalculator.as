@@ -17,6 +17,7 @@ import pl.znr.heatmaster.core.calc.FloorEnergyCalculator;
 import pl.znr.heatmaster.core.calc.FoundationsEnergyCalculator;
 
 import pl.znr.heatmaster.core.calc.IMonthEnergyCalculator;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.calc.PersonEnergyGainCalculator;
 import pl.znr.heatmaster.core.calc.RoofEnergyCalculator;
 import pl.znr.heatmaster.core.calc.SolarCollectorEnergyGainCalculator;
@@ -27,7 +28,7 @@ import pl.znr.heatmaster.core.calc.WallEnergyCalculator;
 import pl.znr.heatmaster.core.calc.WarmWaterEnergyCalculator;
 import pl.znr.heatmaster.core.calc.WindowsEnergyCalculator;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.HouseData;
 
 public class HeatMasterWattsCalculator {
@@ -50,7 +51,7 @@ public class HeatMasterWattsCalculator {
         monthEnergyCalculator.addEnergyCalculator(new SolarCollectorEnergyGainCalculator());
     }
 
-    public function calcEnergyDataWithGaussianBlurring(dataContext:DataContext):WattsEnergyResult{
+     public function calcEnergyDataWithGaussianBlurring(dataContext:DataContext):WattsEnergyResult{
         var environmentalData:EnvironmentalData = dataContext.environmentalData;
 
         var tS:Number = 3 * environmentalData.tSigma;
@@ -65,11 +66,11 @@ public class HeatMasterWattsCalculator {
             //Alert.show("trying to calculate for month: " + month);
             var sumProbability:Number = 0;
             var tempMonth:Number = environmentalData.temperatures[month];
-            var val:Array = [];
+           // var val:Array = [];
             for(var tempM:Number = tempMonth - tS;tempM <= tempMonth + tS;tempM++){
                 var chunkRatio:Number = 1/(tSigma * Math.sqrt(2*Math.PI)) * Math.exp(-(tempM - tempMonth)*(tempM - tempMonth)/(2*tSigma*tSigma));
                 sumProbability += chunkRatio;
-                val.push(chunkRatio);
+               // val.push(chunkRatio);
             }
             //energy usage per month
 
@@ -92,11 +93,21 @@ public class HeatMasterWattsCalculator {
             var enElectricityGainWeighted:Number = 0;
             var enSolGainWeighted:Number = 0;
 
+            var monthInput:MonthInputData = new MonthInputData(0,dataContext.environmentalData.groundTemperatures[month],
+                    dataContext.environmentalData.insolationData.groundInsolation45[month],
+                    dataContext.environmentalData.insolationData.southInsolation[month],
+                    dataContext.environmentalData.insolationData.westEastInsolation[month],
+                    dataContext.environmentalData.insolationData.northInsolation[month]);
+
+
             for(tempM = tempMonth - tS;tempM <= tempMonth + tS;tempM++){
                 //Alert.show("Calculating energy for month: " + month);
 
                 var ratio:Number = 1/(tSigma * Math.sqrt(2* Math.PI)) * Math.exp(-(tempM - tempMonth)*(tempM - tempMonth)/(2*tSigma*tSigma))/sumProbability;
-                var energyData:MonthEnergyData = monthEnergyCalculator.calcEnergy(energyDataM,dataContext,month,tempM);
+
+                monthInput.tOut = tempM;
+
+                var energyData:MonthEnergyData = monthEnergyCalculator.calcEnergy(energyDataM,dataContext,monthInput);
 
                 enWallWeighted = enWallWeighted + energyData.enWalls * ratio;
                 enRoofWeighted = enRoofWeighted + energyData.enRoof * ratio;

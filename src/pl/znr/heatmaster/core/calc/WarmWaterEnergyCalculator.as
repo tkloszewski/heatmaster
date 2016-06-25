@@ -7,13 +7,15 @@
  */
 package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 
 public class WarmWaterEnergyCalculator implements IMonthEnergyCalculator{
     public function WarmWaterEnergyCalculator() {
     }
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         var enWarmWater:Number = 0;
         var warmWaterData:WarmWaterData = contextData.houseData.warmWaterData;
 

@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.calc {
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.InsolationData;
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.model.SolarCollectorData;
@@ -15,12 +17,11 @@ public class SolarCollectorEnergyGainCalculator implements IMonthEnergyCalculato
     public function SolarCollectorEnergyGainCalculator() {
     }
 
-    public function calcEnergy(energyData:MonthEnergyData,contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData,contextData:DataContext,monthInputData:MonthInputData):MonthEnergyData {
         energyData.enCollectorSolarGain = 0;
         if (contextData.includeWarmWater && HouseTypeHelper.hasRegularRoof(contextData.houseData.houseType)) {
             var solarCollectorData:SolarCollectorData = contextData.solarCollectorData;
-            var insolationData:Array = contextData.environmentalData.insolationData.groundInsolation45;
-            var enCollectorSolarGain:Number = solarCollectorData.collectorType.efficiency * solarCollectorData.surface * insolationData[month];
+            var enCollectorSolarGain:Number = solarCollectorData.collectorType.efficiency * solarCollectorData.surface * monthInputData.groundInsolation45;
             energyData.enCollectorSolarGain = EnergyCalcHelper.convertkWhPerMonthToWatts(enCollectorSolarGain);
         }
 

@@ -10,7 +10,7 @@ import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.model.Country;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.model.SolarCollectorData;

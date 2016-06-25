@@ -12,9 +12,10 @@ import pl.znr.heatmaster.constants.combo.DoorType;
 
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.calc.EnergyCalcHelper;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
 public class WallEnergyCalculator implements IMonthEnergyCalculator{
 
@@ -23,17 +24,17 @@ public class WallEnergyCalculator implements IMonthEnergyCalculator{
     public function WallEnergyCalculator() {
     }
 
-    public function calcEnergy(energyData:MonthEnergyData,dataContext:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData,dataContext:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         var houseData:HouseData = dataContext.houseData;
         var doorType:DoorType = houseData.doorType;
         var doorSurface:Number = calcDoorSurface(houseData.houseType,doorType);
 
         energyData.enWalls = EnergyCalcHelper.calcHeatTransfer(houseData.wallElement.uValue,
                                                                houseData.surfaceData.wallSurface - doorSurface,
-                                                               houseData.tIn,tOut);
+                                                               houseData.tIn,monthInputData.tOut);
 
 
-        var enDoor:Number = EnergyCalcHelper.calcHeatTransfer(doorType.uValue,doorSurface,houseData.tIn,tOut);
+        var enDoor:Number = EnergyCalcHelper.calcHeatTransfer(doorType.uValue,doorSurface,houseData.tIn,monthInputData.tOut);
         energyData.enWalls = energyData.enWalls + enDoor;
         return energyData;
     }

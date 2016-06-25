@@ -7,14 +7,15 @@
  */
 package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.HouseData;
 
 public interface IMonthEnergyCalculator {
 
-    function calcEnergy(energyData:MonthEnergyData,contextData:DataContext,month:int,tOut:Number):MonthEnergyData;
+    function calcEnergy(energyData:MonthEnergyData,contextData:DataContext,monthIinput:MonthInputData):MonthEnergyData;
 
 
 }

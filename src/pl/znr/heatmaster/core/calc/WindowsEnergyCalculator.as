@@ -8,8 +8,9 @@
 package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.calc.EnergyCalcHelper;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.WindowElement;
 
@@ -18,20 +19,20 @@ public class WindowsEnergyCalculator implements IMonthEnergyCalculator{
     }
 
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         var houseData:HouseData = contextData.houseData;
         var surfaceData:SurfaceData = houseData.surfaceData;
         var windowElement:WindowElement = houseData.windowElement;
 
         var enWindows:Number = EnergyCalcHelper.calcHeatTransfer(windowElement.uValue,
-                surfaceData.windowsSurface,houseData.tIn,tOut);
+                surfaceData.windowsSurface,houseData.tIn,monthInputData.tOut);
 
         if(houseData.windowElement.shutters){
             enWindows = enWindows * 0.8;
         }
 
         var thermalBridgesUValue:Number = windowElement.thermalBridgesType.uValue;
-        enWindows += thermalBridgesUValue * (houseData.tIn - tOut) * surfaceData.windowsSurface * 3;
+        enWindows += thermalBridgesUValue * (houseData.tIn - monthInputData.tOut) * surfaceData.windowsSurface * 3;
 
 
         energyData.enWindows = Math.max(enWindows,0);

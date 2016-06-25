@@ -6,16 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.ui.builder.prepare.surface {
-import mx.collections.ArrayCollection;
-import mx.collections.ArrayList;
-import mx.controls.Alert;
-
 import pl.znr.heatmaster.core.model.FloorSurfaceData;
-
 import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.calc.CalcUtils;
-import pl.znr.heatmaster.core.calc.CalcUtils;
-import pl.znr.heatmaster.constants.combo.HouseType;
 import pl.znr.heatmaster.util.HouseTypeHelper;
 
 public class BlockSurfaceCalculator extends AbstractSurfaceCalculator{

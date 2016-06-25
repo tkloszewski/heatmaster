@@ -14,7 +14,7 @@
         import pl.znr.heatmaster.core.ConvertedResult;
 
         import pl.znr.heatmaster.core.ProcessingResult;
-        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
         private var originalValueLabelY:int = 15;

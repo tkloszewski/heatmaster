@@ -15,12 +15,12 @@
         import pl.znr.heatmaster.core.BalanceValueHelper;
         import pl.znr.heatmaster.core.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
-        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
             try {
-                var value:Number = BalanceValueHelper.calcBalanceEnByProductHeatForMonth(resultData,month);
+                var value:Number = BalanceValueHelper.calcBalanceEnByProductHeatForMonth(resultData, month);
                 var yearValue:Number = BalanceValueHelper.calcBalanceEnByProductHeat(resultData);
 
                 var conversionData:ConversionData = resultData.conversionData;
@@ -33,7 +33,7 @@
 
 
                 this.scaleArrow(personGainImage, value, yearValue, resultData.conversionData);
-                this.displayNewValue(valueChosen,conversionData.selectedUnit,conversionData.shortUnitName);
+                this.displayNewValue(valueChosen, conversionData.selectedUnit, conversionData.shortUnitName);
             } catch (e:Error) {
                 Alert.show("Person gain error " + e.message);
             }

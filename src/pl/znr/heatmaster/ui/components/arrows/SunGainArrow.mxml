@@ -14,7 +14,7 @@
         import pl.znr.heatmaster.core.BalanceValueHelper;
         import pl.znr.heatmaster.core.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
-        import pl.znr.heatmaster.core.calc.MonthEnergyData;
+        import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
         private var originalValueLabelY:int = 5;
@@ -45,7 +45,7 @@
                 this.calculatedValue = valueChosen;
 
                 this.scaleArrow(sunGainImage, value, yearValue, resultData.conversionData);
-                this.displayNewValue(valueChosen,conversionData.selectedUnit,conversionData.shortUnitName);
+                this.displayNewValue(valueChosen, conversionData.selectedUnit, conversionData.shortUnitName);
             } catch (e:Error) {
                 Alert.show("SunGainArrow error" + e.message);
             }
@@ -80,7 +80,6 @@
         override protected function setValueLabelWithUnitsInlinePosition():void {
             sunGainValueLabel.y = unitsInlineValueLabelY;
         }
-
         ]]></fx:Script>
 
 

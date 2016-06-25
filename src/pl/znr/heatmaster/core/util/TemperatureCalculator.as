@@ -1,7 +1,7 @@
 /**
  * Created by Dom on 2016-06-20.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.util {
 public class TemperatureCalculator {
     public function TemperatureCalculator() {
     }

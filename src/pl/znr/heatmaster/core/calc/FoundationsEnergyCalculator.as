@@ -7,6 +7,8 @@
  */
 package pl.znr.heatmaster.core.calc {
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.util.HouseTypeHelper;
 
@@ -15,11 +17,9 @@ public class FoundationsEnergyCalculator implements IMonthEnergyCalculator{
     }
 
 
-    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData, contextData:DataContext, monthInput:MonthInputData):MonthEnergyData {
         var houseData:HouseData = contextData.houseData;
         var tAvg:Number = contextData.environmentalData.tAvg;
-        var tGround:Number = contextData.environmentalData.groundTemperatures[month];
-        var uValue:Number = houseData.floorElement.uValue;
 
         var sideLength:Number = Math.sqrt(houseData.surfaceData.floorSurface);
         var housePerimeter:Number = 4 * sideLength;
@@ -32,7 +32,7 @@ public class FoundationsEnergyCalculator implements IMonthEnergyCalculator{
 
         if(foundationsEnabled){
             var foundationsUValue:Number = isNaN(houseData.foundationsUValue) ? 0.75 : houseData.foundationsUValue;
-            enFloorEdge = foundationsUValue * (houseData.tIn - tGround) * housePerimeter + foundationsUValue * (houseData.tIn - tAvg) * 0.5 * housePerimeter;
+            enFloorEdge = foundationsUValue * (houseData.tIn - monthInput.tGround) * housePerimeter + foundationsUValue * (houseData.tIn - tAvg) * 0.5 * housePerimeter;
         }
 
         energyData.enFoundations = enFloorCenter + enFloorEdge;

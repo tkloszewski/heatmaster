@@ -9,19 +9,20 @@ package pl.znr.heatmaster.core.calc {
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.calc.MonthEnergyData;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
 public class RoofEnergyCalculator implements IMonthEnergyCalculator{
     public function RoofEnergyCalculator() {
     }
 
-    public function calcEnergy(energyData:MonthEnergyData,contextData:DataContext, month:int, tOut:Number):MonthEnergyData {
+    public function calcEnergy(energyData:MonthEnergyData,contextData:DataContext, monthInputData:MonthInputData):MonthEnergyData {
         var houseData:HouseData = contextData.houseData;
         energyData.enRoof = EnergyCalcHelper.calcHeatTransfer(houseData.roofElement.uValue,
                                                               houseData.surfaceData.roofSurface,
-                                                              houseData.tIn,tOut);
+                                                              houseData.tIn,monthInputData.tOut);
         energyData.enRoof = energyData.enRoof;
         return energyData;
     }

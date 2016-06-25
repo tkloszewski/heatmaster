@@ -10,7 +10,7 @@ import mx.controls.Alert;
 
 import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
 
-import pl.znr.heatmaster.core.TemperatureCalculator;
+import pl.znr.heatmaster.core.util.TemperatureCalculator;
 
 import pl.znr.heatmaster.core.model.EnvironmentalData;
 
