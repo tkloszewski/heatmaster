@@ -1,38 +1,21 @@
 /**
  * Created by Dom on 2016-06-20.
  */
-package pl.znr.heatmaster.core.util {
+package pl.znr.heatmaster.core.calc.util {
 public class TemperatureCalculator {
     public function TemperatureCalculator() {
     }
 
     public static function calcMaxTemperature(temperatures:Array):Number {
-        var maxTemp:Number = Number.MIN_VALUE;
-        for (var i:int = 0; i < temperatures.length; i++) {
-            if (temperatures[i] > maxTemp) {
-                maxTemp = temperatures[i];
-            }
-        }
-        return maxTemp;
+        return CalcUtils.maxValue(temperatures);
     }
 
     public static function calcMinTemperature(temperatures:Array):Number {
-        var minTemp:Number = Number.MAX_VALUE;
-        for (var i:int = 0; i < temperatures.length; i++) {
-            if (temperatures[i] < minTemp) {
-                minTemp = temperatures[i];
-            }
-        }
-        return minTemp;
+        return CalcUtils.minValue(temperatures);
     }
 
     public static function calcAvgTemperature(temperatures:Array):Number {
-        var avgTemp:Number = 0;
-        for (var i:int = 0; i < temperatures.length; i++) {
-            avgTemp += temperatures[i];
-        }
-        avgTemp = avgTemp / temperatures.length;
-        return avgTemp;
+        return CalcUtils.avgValue(temperatures);
     }
 
     public static function calcSigma(temperatures:Array,minTemp:Number = NaN,maxTemp:Number = NaN):Number {

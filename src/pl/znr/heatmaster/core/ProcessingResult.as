@@ -154,5 +154,6 @@ public class ProcessingResult {
     public function set classAwareWattsEnergyResult(value:WattsEnergyResult):void {
         _classAwareWattsEnergyResult = value;
     }
+
 }
 }

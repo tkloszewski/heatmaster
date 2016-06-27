@@ -3,10 +3,9 @@
  */
 package pl.znr.heatmaster.core {
 import pl.znr.heatmaster.core.calc.IMonthEnergyCalculator;
-import pl.znr.heatmaster.core.calc.model.MonthCalcResult;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.calc.model.MonthInputData;
-import pl.znr.heatmaster.core.util.ICalculatedResultProvider;
+import pl.znr.heatmaster.core.calc.util.ICalculatedResultProvider;
 
 public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
 
@@ -17,16 +16,13 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
     var monthInput:MonthInputData;
 
     var currentResult:MonthEnergyData = new MonthEnergyData();
-    var weightedEnergyBalance:Number = 0;
-    var weightedEnergyHeatBalanceV1:Number = 0;
-    var weightedEnergyHeatBalanceV2:Number = 0;
 
     public function MonthlyEnergyResultProvider(dataContext:DataContext, month:int,calculator:IMonthEnergyCalculator) {
         this.dataContext = dataContext;
         this.month = month;
         this.calculator = calculator;
 
-        monthInput = new MonthInputData(0,dataContext.environmentalData.groundTemperatures[month],
+        this.monthInput = new MonthInputData(0,dataContext.environmentalData.groundTemperatures[month],
                 dataContext.environmentalData.insolationData.groundInsolation45[month],
                 dataContext.environmentalData.insolationData.southInsolation[month],
                 dataContext.environmentalData.insolationData.westEastInsolation[month],
@@ -34,7 +30,7 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
     }
 
     public function getCalculatedResult():* {
-        return new MonthCalcResult(currentResult,weightedEnergyBalance,weightedEnergyHeatBalanceV1,weightedEnergyHeatBalanceV2);
+        return currentResult;
     }
 
     public function applyRatio(tempM:Number, ratio:Number):void {
@@ -56,28 +52,6 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
         currentResult.enPersonGain = currentResult.enPersonGain + energyData.enPersonGain * ratio;
         currentResult.enElectricityGain = currentResult.enElectricityGain + energyData.enElectricityGain * ratio;
         currentResult.enSolGain = currentResult.enSolGain + energyData.enSolGain * ratio;
-
-
-        var energyBalance:Number = (energyData.enWalls + energyData.enRoof + energyData.enFloor + energyData.enWindows +
-                energyData.enVent + energyData.enAir + energyData.enFoundations + energyData.enTightness)
-                -
-                (energyData.enPersonGain + energyData.enSolGain + energyData.enElectricityGain);
-
-        weightedEnergyBalance += energyBalance * ratio;
-
-        if(energyBalance > 0){
-            weightedEnergyHeatBalanceV1 += energyBalance * ratio;
-        }
-
-        energyBalance =  (energyData.enWalls + energyData.enRoof + energyData.enFloor + energyData.enWindows +
-                energyData.enVent )
-                -
-                (energyData.enPersonGain + energyData.enSolGain + energyData.enElectricityGain);
-
-        if(energyBalance > 0){
-            weightedEnergyHeatBalanceV2 += energyBalance * ratio;
-        }
-
     }
 
 }

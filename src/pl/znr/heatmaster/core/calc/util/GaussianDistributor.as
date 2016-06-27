@@ -1,7 +1,7 @@
 /**
  * Created by Dom on 2016-06-25.
  */
-package pl.znr.heatmaster.core.util {
+package pl.znr.heatmaster.core.calc.util {
 import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;

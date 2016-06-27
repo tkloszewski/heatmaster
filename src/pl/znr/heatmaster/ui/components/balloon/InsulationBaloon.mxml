@@ -58,7 +58,7 @@
         import pl.znr.heatmaster.core.model.WallElement;
         import pl.znr.heatmaster.ui.builder.prepare.element.RegularElementPreparer;
         import pl.znr.heatmaster.ui.builder.prepare.element.UValueBasedElementPreparer;
-        import pl.znr.heatmaster.ui.components.HousePanel;
+        import pl.znr.heatmaster.ui.components.panel.HousePanel;
         import pl.znr.heatmaster.ui.components.tooltip.FloorToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.RoofToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.WallsToolTip;

@@ -19,5 +19,15 @@ public class CollectionHelper {
         }
         return selectedIdx;
     }
+
+    public static function getItemByProperty(items:ArrayCollection,propertyName:String,value:String):* {
+        for (var i:int = 0; i < items.length; i++) {
+            var item:Object = items.getItemAt(i);
+            if (item[propertyName] == value) {
+                return item;
+            }
+        }
+        return null;
+    }
 }
 }

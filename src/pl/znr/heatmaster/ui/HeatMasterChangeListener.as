@@ -55,7 +55,7 @@ import pl.znr.heatmaster.core.model.WindowElement;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
-import pl.znr.heatmaster.ui.components.HousePanel;
+import pl.znr.heatmaster.ui.components.panel.HousePanel;
 import pl.znr.heatmaster.ui.components.HouseStandardChangeListener;
 import pl.znr.heatmaster.ui.components.IHeatMasterListenerAware;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;

@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<components:HeatMasterComponent xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:mx="library://ns.adobe.com/flex/mx"
+                                xmlns:components="pl.znr.heatmaster.ui.components.*"
+                                xmlns:s="library://ns.adobe.com/flex/spark"
+        >
+
+
+  <fx:Style>
+    .labelStyle {
+      fontSize: 12px;
+      color: black;
+      fontWeight: bold;
+    }
+
+  </fx:Style>
+
+
+  <fx:Script>
+    <![CDATA[
+    import mx.collections.ArrayCollection;
+    import mx.managers.PopUpManager;
+
+    import pl.znr.heatmaster.HeatMaster;
+    import pl.znr.heatmaster.config.StationItem;
+    import pl.znr.heatmaster.constants.GlobalValues;
+    import pl.znr.heatmaster.core.station.Position;
+    import pl.znr.heatmaster.core.station.StationDistance;
+    import pl.znr.heatmaster.core.station.StationLocator;
+    import pl.znr.heatmaster.ui.components.*;
+
+    import spark.components.DropDownList;
+
+
+    [Bindable]
+    private var _mapImage:String;
+
+    [Bindable]
+    private var _mapWidth:int;
+
+    [Bindable]
+    private var _mapHeight:int;
+
+    [Bindable]
+    private var stationName:String;
+
+    [Bindable]
+    private var stationModel:StationModel;
+
+    [Bindable]
+    private var stationClicked:Boolean;
+
+    private var nearestStation:StationItem;
+    private var nearestDistance:Number = NaN;
+
+    private var stationLocator:StationLocator;
+
+    private var confirmDialog:ConfirmDialog;
+
+    public function setStations(stations:ArrayCollection, selectedStation:StationItem):void {
+      stationLocator = new StationLocator(stations);
+      nearestStation = selectedStation;
+      stationModel = new StationModel(nearestStation.temperatures);
+      stationName = nearestStation.name;
+
+      confirmDialog = new ConfirmDialog();
+      confirmDialog.setUpHandlers(selectStation,cancelSelection);
+    }
+
+    public function set mapImage(value:String):void {
+      _mapImage = value;
+    }
+
+    public function set mapWidth(value:int):void {
+      _mapWidth = value;
+    }
+
+    public function set mapHeight(value:int):void {
+      _mapHeight = value;
+    }
+
+    private function mapClicked(event:MouseEvent):void {
+      stationClicked = true;
+
+      confirmDialog.title = stationName;
+      confirmDialog.x = event.localX;
+      confirmDialog.y = event.localY;
+      this.addElement(confirmDialog);
+    }
+
+    private function handleMouseOver(event:MouseEvent):void {
+      if(stationClicked){
+        return;
+      }
+
+      var findNearestStations:Boolean = true;
+      var nearestStationPosition:Position = new Position(nearestStation.mapX, nearestStation.mapY);
+      var currentPosition:Position = new Position(map.mouseX, map.mouseY);
+
+      if (!isNaN(nearestDistance)) {
+        findNearestStations = currentPosition.distance(nearestStationPosition) > nearestDistance;
+      }
+
+      if (findNearestStations) {
+        var nearestStations:ArrayCollection = stationLocator.findNearestStations(new Position(map.mouseX, map.mouseY), 1);
+        var nearestStationDistance:StationDistance = nearestStations.getItemAt(0) as StationDistance;
+
+        nearestStation = nearestStationDistance.station;
+        nearestDistance = nearestStationDistance.distance;
+
+        stationName = nearestStation.name;
+        stationModel = new StationModel(nearestStation.temperatures);
+      }
+    }
+
+    private function selectStation() {
+      stationClicked = false;
+      this.removeElement(confirmDialog);
+      hideMap();
+      nearestStation.temperatures = getUserSetTemperatures();
+      heatMasterListener.stationChanged(nearestStation, true);
+    }
+
+    private function cancelSelection() {
+      stationClicked = false;
+      stationModel = new StationModel(nearestStation.temperatures);
+      this.removeElement(confirmDialog);
+    }
+
+    private function hideMap() {
+      HeatMaster.getInstance().hideMap();
+    }
+
+    private function getUserSetTemperatures():Array {
+      var result:Array = new Array(12);
+      result[0] = nst1.value;
+      result[1] = nst2.value;
+      result[2] = nst3.value;
+      result[3] = nst4.value;
+      result[4] = nst5.value;
+      result[5] = nst6.value;
+      result[6] = nst7.value;
+      result[7] = nst8.value;
+      result[8] = nst9.value;
+      result[9] = nst10.value;
+      result[10] = nst11.value;
+      result[11] = nst12.value;
+      return result;
+    }
+
+
+
+    ]]>
+</fx:Script>
+
+  <s:TitleWindow id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false" close="hideMap()">
+
+    <s:BorderContainer x="0" y="0" id="mapContainer" backgroundAlpha="0.0" borderVisible="true">
+      <s:Image x="0" y="0" id="map" source="{_mapImage}" click="mapClicked(event)" mouseMove="handleMouseOver(event)"/>
+    </s:BorderContainer>
+
+    <s:BorderContainer id="rightPanelContainer" x="{map.x + map.width}" y="{map.y}" width="{0.2 * map.width}" height="{mapContainer.height}"  borderVisible="true" color="0xf5f5dc" >
+      <s:layout>
+        <s:VerticalLayout/>
+      </s:layout>
+
+      <s:Group height="10%"/>
+
+      <s:Group height="90%">
+
+        <s:layout>
+          <s:VerticalLayout paddingLeft="20" paddingRight="5" gap="5"/>
+        </s:layout>
+
+        <s:Label styleName="labelStyle" text="{stationName}" width="{0.8 * rightPanelContainer.width}"  />
+
+        <mx:Grid id="myGrid">
+          <mx:GridRow id="row1">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t1"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t1}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst1" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30" maximum="30"  value="{stationModel.t1}" valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row2">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t2"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t2}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst2" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30" maximum="30" value="{stationModel.t2}" valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row3">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t3"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t3}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst3" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t3}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row4">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t4"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t4}" visible="{!stationClicked}"/>
+                <s:NumericStepper id="nst4" y="-3" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t4}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row5">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t5"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t5}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst5" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t5}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row6">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t6"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t6}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst6" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t6}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row7">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t7"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t7}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst7" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t7}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row8">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t8"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t8}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst8" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t8}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row9">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t9"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t9}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst9" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t9}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row10">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t10"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t10}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst10" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t10}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row11">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t11"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t11}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst11" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t11}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+          <mx:GridRow id="row12">
+            <mx:GridItem>
+              <s:Label styleName="labelStyle" text="t12"/>
+            </mx:GridItem>
+            <mx:GridItem>
+              <s:Group>
+                <s:Label styleName="labelStyle" text="{stationModel.t12}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst12" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                                  maximum="30" value="{stationModel.t12}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+              </s:Group>
+
+            </mx:GridItem>
+          </mx:GridRow>
+
+        </mx:Grid>
+      </s:Group>
+
+
+    </s:BorderContainer>
+
+  </s:TitleWindow>
+
+</components:HeatMasterComponent>

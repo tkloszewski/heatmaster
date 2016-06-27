@@ -4,12 +4,11 @@
                                       xmlns:mx="library://ns.adobe.com/flex/mx"
                                       xmlns:s="library://ns.adobe.com/flex/spark"
                                       xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
-                                      xmlns:local="*"
+                                      xmlns:local="*" xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
                                       initialize="popupInitialized()"
                                       creationComplete="plotCreated()"
         >
     <!-- To change this template use File | Settings | File Templates. -->
-
 
 
     <fx:Declarations>
@@ -29,9 +28,14 @@
         </s:ArrayList>
 
         <fx:String id="costMainLabel">Koszty ogrzewania w poszczególnych miesiacach. [zl/mies]</fx:String>
-        <fx:String id="mainLabelKWh">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [kWh/mies.]</fx:String>
-        <fx:String id="mainLabelWatts">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [W]</fx:String>
-        <fx:String id="mainLabelGJ">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [GJ/mies]</fx:String>
+        <fx:String id="mainLabelKWh">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie
+            [kWh/mies.]
+        </fx:String>
+        <fx:String id="mainLabelWatts">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie [W]
+        </fx:String>
+        <fx:String id="mainLabelGJ">Bilans energetyczny budynku w kolejnych miesiącach: energia na ogrzewanie
+            [GJ/mies]
+        </fx:String>
 
     </fx:Declarations>
 
@@ -59,6 +63,7 @@
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
+        import pl.znr.heatmaster.ui.components.*;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyClassToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.FinalPrimaryEnergyToolTip;
         import pl.znr.heatmaster.util.EnergyClassHelper;
@@ -189,7 +194,7 @@
 
         override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
             super.updateDisplayList(unscaledWidth, unscaledHeight);
-            trace("Chart width: " + chart.width );
+            trace("Chart width: " + chart.width);
         }
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
@@ -499,9 +504,11 @@
                 enLosses = converterResult.getEfficiencyAwareBalanceValue();
             }
 
-            return {month: monthName, enLosses: enLosses, enGains: enGains,
+            return {
+                month: monthName, enLosses: enLosses, enGains: enGains,
                 enBalance: enBalance, netLoss: netLoss,
-                conversionUnit: conversionData.selectedUnit, convertedResult: converterResult};
+                conversionUnit: conversionData.selectedUnit, convertedResult: converterResult
+            };
         }
 
         private function defineLabel(labelValue:Object, previousLabelValue:Object, ax:CategoryAxis, labelItem:Object):String {
@@ -607,7 +614,8 @@
 
     <!--backgroundColor="0xd3d3d3"-->
     <s:BorderContainer id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false">
-        <mx:Image x="0" y="0" id="plotBkgImg"  maintainAspectRatio="false" width="{this.width}" height="{this.height}" source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
+        <mx:Image x="0" y="0" id="plotBkgImg" maintainAspectRatio="false" width="{this.width}" height="{this.height}"
+                  source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
         <mx:Button x="{40 * getOffsetRatio()}" y="5" id="primaryFinalInfoIcon" buttonMode="true"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
                    overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
@@ -615,19 +623,23 @@
 
         <!--USER ENERGY -->
 
-        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="12" id="userEnergyMainLabel" styleName="reportBlackLabel"
+        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="12" id="userEnergyMainLabel"
+                 styleName="reportBlackLabel"
                  fontSize="{12 * getFontRatio()}"
                  text="{resourceManager.getString('hm','hm.label.effective_energy.consumption')}"/>
 
-        <s:RichText id="userEnergyValueText" x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}" y="{userEnergyMainLabel.y}"
+        <s:RichText id="userEnergyValueText"
+                    x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}"
+                    y="{userEnergyMainLabel.y}"
                     width="{60 * getWidthRatio()}" styleName="reportBlackLabel"
                     kerning="on" textAlign="right"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
-                <s:span id="userEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+                <s:span id="userEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="userEnergyUnitNameRichText" styleName="reportBlackLabel" x="{userEnergyValueText.x + userEnergyValueText.width}" y="{userEnergyMainLabel.y}"
+        <s:RichText id="userEnergyUnitNameRichText" styleName="reportBlackLabel"
+                    x="{userEnergyValueText.x + userEnergyValueText.width}" y="{userEnergyMainLabel.y}"
 
                     fontSize="{12 * getFontRatio()}">
             <s:content>
@@ -637,14 +649,16 @@
                 <s:span>:</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="userEnergyValueSqRichText" textAlign="right" styleName="reportBlackLabel" x="{userEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{userEnergyMainLabel.y}"
+        <s:RichText id="userEnergyValueSqRichText" textAlign="right" styleName="reportBlackLabel"
+                    x="{userEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{userEnergyMainLabel.y}"
                     width="{50 * getWidthRatio()}"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
                 <s:span textAlign="right" id="userEnergySqSpan"></s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="userEnergyValueSqUnitNameRichText" styleName="reportBlackLabel" x="{userEnergyValueSqRichText.x + userEnergyValueSqRichText.width}" y="{userEnergyMainLabel.y}"
+        <s:RichText id="userEnergyValueSqUnitNameRichText" styleName="reportBlackLabel"
+                    x="{userEnergyValueSqRichText.x + userEnergyValueSqRichText.width}" y="{userEnergyMainLabel.y}"
                     width="{40 * getWidthRatio()}"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
@@ -657,17 +671,22 @@
 
         <!--FINAL ENERGY-->
 
-        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y + 20}" id="finalEnergyMainLabel" styleName="reportGrayLabel"
-                 text="{resourceManager.getString('hm','hm.label.final_energy.consumption')}" fontSize="{12 * getFontRatio()}"/>
+        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y + 20}"
+                 id="finalEnergyMainLabel" styleName="reportGrayLabel"
+                 text="{resourceManager.getString('hm','hm.label.final_energy.consumption')}"
+                 fontSize="{12 * getFontRatio()}"/>
 
-        <s:RichText id="finalEnergyValueText" x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}" y="{finalEnergyMainLabel.y}"
+        <s:RichText id="finalEnergyValueText"
+                    x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}"
+                    y="{finalEnergyMainLabel.y}"
                     width="{60 * getWidthRatio()}" styleName="reportGrayLabel" kerning="on" textAlign="right"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
-                <s:span id="finalEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+                <s:span id="finalEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="finalEnergyUnitNameRichText" styleName="reportGrayLabel" x="{finalEnergyValueText.x + finalEnergyValueText.width}"
+        <s:RichText id="finalEnergyUnitNameRichText" styleName="reportGrayLabel"
+                    x="{finalEnergyValueText.x + finalEnergyValueText.width}"
                     y="{finalEnergyMainLabel.y}"
                     fontSize="{12 *getFontRatio()}">
             <s:content>
@@ -677,14 +696,16 @@
                 <s:span>:</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="finalEnergyValueSqRichText" textAlign="right" styleName="reportGrayLabel" x="{finalEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{finalEnergyMainLabel.y}"
+        <s:RichText id="finalEnergyValueSqRichText" textAlign="right" styleName="reportGrayLabel"
+                    x="{finalEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{finalEnergyMainLabel.y}"
                     width="{50 * getWidthRatio()}"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
                 <s:span textAlign="right" id="finalEnergySqSpan"></s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="finalEnergyValueSqUnitNameRichText" styleName="reportGrayLabel" x="{finalEnergyValueSqRichText.x + finalEnergyValueSqRichText.width}" y="{finalEnergyMainLabel.y}"
+        <s:RichText id="finalEnergyValueSqUnitNameRichText" styleName="reportGrayLabel"
+                    x="{finalEnergyValueSqRichText.x + finalEnergyValueSqRichText.width}" y="{finalEnergyMainLabel.y}"
                     width="{40 * getWidthRatio()}"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
@@ -694,37 +715,46 @@
 
         <!--FINAL ENERGY END-->
 
-        <mx:VRule id="vRule1" x="{userEnergyValueSqUnitNameRichText.x + userEnergyValueSqUnitNameRichText.width + 20 * this.width/1200}" y="{userEnergyMainLabel.y + 5}" height="40" width="1"/>
-        <s:Label id="yearlyCostLabel" x="{vRule1.x + vRule1.width + 50 * getOffsetRatio()}" y="{vRule1.y + 5}" text="{resourceManager.getString('hm','hm.label.energy_cost')}" styleName="popupPanelHeader"
+        <mx:VRule id="vRule1"
+                  x="{userEnergyValueSqUnitNameRichText.x + userEnergyValueSqUnitNameRichText.width + 20 * this.width/1200}"
+                  y="{userEnergyMainLabel.y + 5}" height="40" width="1"/>
+        <s:Label id="yearlyCostLabel" x="{vRule1.x + vRule1.width + 50 * getOffsetRatio()}" y="{vRule1.y + 5}"
+                 text="{resourceManager.getString('hm','hm.label.energy_cost')}" styleName="popupPanelHeader"
                  fontSize="{14 * getFontRatio()}"/>
-        <mx:VRule id="vRule2" x="{yearlyCostLabel.x + yearlyCostLabel.width + 50 * getOffsetRatio()}" y="{vRule1.y}" height="40" width="1"/>
+        <mx:VRule id="vRule2" x="{yearlyCostLabel.x + yearlyCostLabel.width + 50 * getOffsetRatio()}" y="{vRule1.y}"
+                  height="40" width="1"/>
 
-        <mx:Button x="{vRule2.x + vRule2.width + 50 * getOffsetRatio()}" y="{5}" id="energyClassInfoIcon" buttonMode="true"
+        <mx:Button x="{vRule2.x + vRule2.width + 50 * getOffsetRatio()}" y="{5}" id="energyClassInfoIcon"
+                   buttonMode="true"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
                    overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
                    click="openClassEnergyToolTip(event)"/>
 
-        <s:Label x="{energyClassInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{vRule1.y}" id="energyClassLabel" text="{resourceManager.getString('hm','hm.label.energy_class')}"
-                 styleName="reportBlackLabel" fontSize="{12 * getFontRatio()}" />
-        <s:Label x="{energyClassLabel.x + energyClassLabel.width + 60 * getOffsetRatio()}" y="{vRule1.y}" id="energyClassCodeLabel" text="F"
+        <s:Label x="{energyClassInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{vRule1.y}" id="energyClassLabel"
+                 text="{resourceManager.getString('hm','hm.label.energy_class')}"
+                 styleName="reportBlackLabel" fontSize="{12 * getFontRatio()}"/>
+        <s:Label x="{energyClassLabel.x + energyClassLabel.width + 60 * getOffsetRatio()}" y="{vRule1.y}"
+                 id="energyClassCodeLabel" text="F"
                  styleName="popupPanelHeader" fontSize="{47 * getFontRatio()}"/>
-
 
 
         <!--PRIMARY ENERGY -->
 
-        <s:Label x="{finalEnergyMainLabel.x}" y="{finalEnergyMainLabel.y + 20 * getWidthRatio()}" id="primaryEnergyMainLabel"
-                 styleName="reportDarkGrayLabel" text="{resourceManager.getString('hm','hm.label.primary_energy.consumption')}"
+        <s:Label x="{finalEnergyMainLabel.x}" y="{finalEnergyMainLabel.y + 20 * getWidthRatio()}"
+                 id="primaryEnergyMainLabel"
+                 styleName="reportDarkGrayLabel"
+                 text="{resourceManager.getString('hm','hm.label.primary_energy.consumption')}"
                  fontSize="{12 * getFontRatio()}"/>
 
         <s:RichText id="primaryEnergyValueText" x="{finalEnergyValueText.x}" y="{primaryEnergyMainLabel.y}"
                     width="{finalEnergyValueText.width}" styleName="reportDarkGrayLabel" kerning="on" textAlign="right"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
-                <s:span id="primaryEnergySpan" digitWidth="tabular" textAlign="left">123456 </s:span>
+                <s:span id="primaryEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="primaryEnergyUnitNameRichText" styleName="reportDarkGrayLabel" x="{finalEnergyUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+        <s:RichText id="primaryEnergyUnitNameRichText" styleName="reportDarkGrayLabel"
+                    x="{finalEnergyUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
                     fontSize="{12 * getFontRatio()}">
             <s:content>
                 <s:span id="primaryUnitNameSpan" textAlign="right"></s:span>
@@ -733,13 +763,15 @@
                 <s:span>:</s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="primaryEnergyValueSqRichText" textAlign="right" styleName="reportDarkGrayLabel" x="{finalEnergyValueSqRichText.x}" y="{primaryEnergyMainLabel.y}"
+        <s:RichText id="primaryEnergyValueSqRichText" textAlign="right" styleName="reportDarkGrayLabel"
+                    x="{finalEnergyValueSqRichText.x}" y="{primaryEnergyMainLabel.y}"
                     width="{finalEnergyValueSqRichText.width}" fontSize="{12 * getFontRatio()}">
             <s:content>
                 <s:span textAlign="right" id="primaryEnergySqSpan"></s:span>
             </s:content>
         </s:RichText>
-        <s:RichText id="primaryEnergyValueSqUnitNameRichText" styleName="reportDarkGrayLabel" x="{finalEnergyValueSqUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+        <s:RichText id="primaryEnergyValueSqUnitNameRichText" styleName="reportDarkGrayLabel"
+                    x="{finalEnergyValueSqUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
                     width="{finalEnergyValueSqUnitNameRichText.width}" fontSize="{12 * getFontRatio()}">
             <s:content>
                 <s:span textAlign="left" id="primaryEnergySqUnitNameSpan"></s:span>
@@ -749,32 +781,37 @@
         <!--PRIMARY ENERGY END-->
 
 
-        <s:Label id="yearlyCostValueLabel" x="{yearlyCostLabel.x}" y="{vRule1.y + 25 * this.width/1200}" width="{yearlyCostLabel.width}" text="7321 zl"
+        <s:Label id="yearlyCostValueLabel" x="{yearlyCostLabel.x}" y="{vRule1.y + 25 * this.width/1200}"
+                 width="{yearlyCostLabel.width}" text="7321 zl"
                  textAlign="center" styleName="popupPanelHeader" fontSize="{14 * getFontRatio()}"/>
 
-        <s:Label x="{energyClassLabel.x}" y="{vRule1.y + 20 * this.width/1200}" id="energyClassDescriptionLabel" text="Bardzo energochłonny"
+        <s:Label x="{energyClassLabel.x}" y="{vRule1.y + 20 * this.width/1200}" id="energyClassDescriptionLabel"
+                 text="Bardzo energochłonny"
                  styleName="popupPanelHeader" fontSize="{12 * getFontRatio()}"/>
 
-        <s:Image id="passiveLogoImg" visible="false" scaleX="0.1" scaleY="0.1" x="{energyClassCodeLabel.x}" y="{energyClassCodeLabel.y}"
+        <s:Image id="passiveLogoImg" visible="false" scaleX="0.1" scaleY="0.1" x="{energyClassCodeLabel.x}"
+                 y="{energyClassCodeLabel.y}"
                  source="@Embed('/pl/znr/heatmaster/assets/images/icons/Passivelogo.png')"/>
 
         <!--<s:Label id="mainPlotLabel" y="0" height="10%" x="{chart.x + gutterLeft}" width="{chart.width - gutterLeft - gutterRight}"
                  text="" textAlign="center" verticalAlign="middle" fontSize="16" fontWeight="bold"/>-->
 
-        <mx:ColumnChart id="chart" y="{plotContainer.height * 0.15}" gutterLeft="{gutterLeft}" gutterRight="{gutterRight}"
+        <mx:ColumnChart id="chart" y="{plotContainer.height * 0.15}" gutterLeft="{gutterLeft}"
+                        gutterRight="{gutterRight}"
                         gutterTop="0" gutterBottom="{gutterBottom}" dataProvider="{plotDataProvider}"
-                        showAllDataTips="false" width="{this.width - 180}" height="75%" >
+                        showAllDataTips="false" width="{this.width - 180}" height="75%">
             <mx:horizontalAxis>
-                <mx:CategoryAxis id="monthAxis" />
+                <mx:CategoryAxis id="monthAxis"/>
             </mx:horizontalAxis>
 
             <mx:verticalAxis>
-                <mx:LinearAxis  id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}" >
+                <mx:LinearAxis id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}">
                 </mx:LinearAxis>
             </mx:verticalAxis>
 
             <mx:verticalAxisRenderers>
-                <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none" minorTickPlacement="none">
+                <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none"
+                                 minorTickPlacement="none">
                     <mx:axisStroke>
                         <mx:SolidColorStroke
                                 color="0x78838F"
@@ -798,19 +835,21 @@
                 <mx:ColumnSeries
                         yField="enLosses"
                         minField="enGains"
-                        labelField="{unitName}" itemRenderer="pl.znr.heatmaster.ui.components.CustomPlotColumnRenderer"/>
+                        labelField="{unitName}"
+                        itemRenderer="pl.znr.heatmaster.ui.components.CustomPlotColumnRenderer"/>
 
 
-                <mx:LineSeries yField="netLoss" interpolateValues="true"   dataProvider="{lineSeriesDataProvider}" visible="{bluePlotLineVisible}">
+                <mx:LineSeries yField="netLoss" interpolateValues="true" dataProvider="{lineSeriesDataProvider}"
+                               visible="{bluePlotLineVisible}">
                     <mx:lineStroke>
                         <mx:SolidColorStroke color="blue" weight="2"/>
                     </mx:lineStroke>
                     <mx:horizontalAxis>
-                        <mx:LinearAxis minimum="0" maximum="24" />
+                        <mx:LinearAxis minimum="0" maximum="24"/>
                     </mx:horizontalAxis>
                 </mx:LineSeries>
 
-                <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}" >
+                <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}">
                     <mx:lineStroke>
                         <mx:SolidColorStroke color="red" weight="2"/>
 
@@ -833,7 +872,7 @@
                     </components:horizontalAlternateFill>
                 </components:DistinguishedGridLines>-->
 
-                <mx:GridLines >
+                <mx:GridLines>
                     <mx:horizontalFill>
                         <mx:SolidColor color="white"/>
                     </mx:horizontalFill>
@@ -847,19 +886,20 @@
             </mx:backgroundElements>
         </mx:ColumnChart>
 
-        <s:Group visible="false" y="{plotContainer.height * 0.15}" x = "{chart.x + chart.width + 5}"
+        <s:Group visible="false" y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}"
                  width="12%" id="legendCostGroup" styleName="reportLegendVerticalLabel">
             <s:layout>
                 <s:VerticalLayout/>
             </s:layout>
 
-            <s:RichText id="costEmissionLegendText" fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.monthly_cost')}"/>
+            <s:RichText id="costEmissionLegendText" fontWeight="bold" fontSize="13"
+                        text="{resourceManager.getString('hm','hm.label.monthly_cost')}"/>
 
             <s:Group width="100%">
                 <s:layout>
                     <s:HorizontalLayout paddingTop="3" paddingBottom="3"/>
                 </s:layout>
-                <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                     <s:fill>
                         <s:SolidColor color="0xF24848"/>
                     </s:fill>
@@ -867,16 +907,18 @@
                         <s:SolidColorStroke weight="1"/>
                     </s:stroke>
                 </s:Rect>
-                <s:Label id="costEmissionLegendItemText" text="{resourceManager.getString('hm','hm.label.costs')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                <s:Label id="costEmissionLegendItemText" text="{resourceManager.getString('hm','hm.label.costs')}"
+                         paddingTop="{legendRectLabelPaddingTop}"/>
             </s:Group>
 
         </s:Group>
 
 
-        <s:Group y="{plotContainer.height * 0.15}" x = "{chart.x + chart.width + 5}" width="12%" id="legendEnergyEmissionGroup"
+        <s:Group y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
+                 id="legendEnergyEmissionGroup"
                  styleName="reportLegendVerticalLabel">
             <s:layout>
-                <s:VerticalLayout id="legendVerticalLayout" gap="12" />
+                <s:VerticalLayout id="legendVerticalLayout" gap="12"/>
             </s:layout>
 
             <s:Group width="100%" id="legendEnergyLossGroup">
@@ -884,7 +926,8 @@
                     <s:VerticalLayout gap="{legendItemGap}"/>
                 </s:layout>
 
-                <s:RichText id="energyLegendText" fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}">
+                <s:RichText id="energyLegendText" fontWeight="bold" fontSize="13"
+                            text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}">
 
                 </s:RichText>
 
@@ -892,7 +935,7 @@
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFF0000"/>
                         </s:fill>
@@ -900,14 +943,15 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
 
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xF24848"/>
                         </s:fill>
@@ -915,13 +959,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.walls')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.walls')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFF6464"/>
                         </s:fill>
@@ -929,13 +974,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.roof')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.roof')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFF8A8A"/>
                         </s:fill>
@@ -943,13 +989,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.floor')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFFC6C6"/>
                         </s:fill>
@@ -957,13 +1004,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.windows')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFFECEC"/>
                         </s:fill>
@@ -971,7 +1019,8 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
             </s:Group>
 
@@ -980,13 +1029,14 @@
                     <s:VerticalLayout gap="{legendItemGap}"/>
                 </s:layout>
 
-                <s:RichText fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.ventilation')}"/>
+                <s:RichText fontWeight="bold" fontSize="13"
+                            text="{resourceManager.getString('hm','hm.label.ventilation')}"/>
 
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFFE88C"/>
                         </s:fill>
@@ -994,13 +1044,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFDD65E"/>
                         </s:fill>
@@ -1008,13 +1059,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.airing')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.airing')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xFFBC79"/>
                         </s:fill>
@@ -1022,7 +1074,8 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
             </s:Group>
 
@@ -1031,13 +1084,14 @@
                     <s:VerticalLayout gap="{legendItemGap}"/>
                 </s:layout>
 
-                <s:RichText fontWeight="bold" fontSize="13" text="{resourceManager.getString('hm','hm.label.energy_gain')}"/>
+                <s:RichText fontWeight="bold" fontSize="13"
+                            text="{resourceManager.getString('hm','hm.label.energy_gain')}"/>
 
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xADE7A3"/>
                         </s:fill>
@@ -1045,13 +1099,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group>
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0xD3F1CD"/>
                         </s:fill>
@@ -1059,13 +1114,14 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
                 <s:Group id="collectorsLegendGroup">
                     <s:layout>
                         <s:HorizontalLayout/>
                     </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}" >
+                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
                         <s:fill>
                             <s:SolidColor color="0x00FF00"/>
                         </s:fill>
@@ -1073,20 +1129,17 @@
                             <s:SolidColorStroke weight="1"/>
                         </s:stroke>
                     </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}" paddingTop="{legendRectLabelPaddingTop}"/>
+                    <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}"
+                             paddingTop="{legendRectLabelPaddingTop}"/>
                 </s:Group>
             </s:Group>
 
         </s:Group>
 
 
-
-
         <!--<s:Group id="monthLabels" y="{chart.y + chart.height}" x="{chart.x + gutterLeft}" width="{chart.width - gutterLeft - gutterRight}"/>-->
-        <components:HorizontaAxisLabelPanel id="panelLabel" y="{chart.y + chart.height}"  x="{chart.x + gutterLeft}"
-                                            width="{7* (chart.width - gutterLeft)/6}" visible="true" />
-
-
+        <panel:HorizontaAxisLabelPanel id="panelLabel" y="{chart.y + chart.height}" x="{chart.x + gutterLeft}"
+                                            width="{7* (chart.width - gutterLeft)/6}" visible="true"/>
 
 
         <mx:Button right="5" top="2" buttonMode="true"

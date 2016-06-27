@@ -76,6 +76,8 @@
         private var regionList:ArrayCollection;
         private var selectedCountry:CountryItem;
         private var stationsConfig:StationsConfig;
+        private var selectedStation:StationItem;
+
 
         private var defaultItemCode:String;
 
@@ -84,6 +86,10 @@
 
         [Bindable]
         private var stationsVisible:Boolean = false;
+
+        [Bindable]
+        private var stationName:String;
+
 
         public function populateCountryRegionDropDownList(configItems:ArrayCollection, regionItem:RegionItem, countryItem:CountryItem, defaultItemCode:String):void {
             countryList = configItems;
@@ -105,8 +111,8 @@
             if (countryItem.stationsConfig != null) {
                 stationsVisible = true;
                 stationsConfig = countryItem.stationsConfig;
-                stationDropDownList.dataProvider = stationsConfig.stations;
-                stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationsConfig.defaultStation.code);
+                selectedStation = stationsConfig.defaultStation;
+                stationName = selectedStation.name;
             }
             else {
                 stationsVisible = false;
@@ -151,8 +157,8 @@
                 stationsVisible = dataContext.selectedStation != null;
                 if (stationsVisible) {
                     stationsConfig = countryItem.stationsConfig;
-                    stationDropDownList.dataProvider = stationsConfig.stations;
-                    stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, dataContext.selectedStation);
+                    selectedStation = getSelectedStation(stationsConfig.stations, dataContext.selectedStation);
+                    stationName = selectedStation.name;
                 }
             }
             else {
@@ -206,7 +212,8 @@
         }
 
         public function notifyStationChanged(stationItem:StationItem):void {
-            stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationItem.code);
+            selectedStation = stationItem;
+            stationName = selectedStation.name;
         }
 
         private function comboStandardChanged():void {
@@ -243,8 +250,8 @@
             return selectedIdx;
         }
 
-        private function getSelectedStationIndex(configItems:ArrayCollection, code:String) {
-            return CollectionHelper.getSelectedIndexByProperty(configItems, "code", code);
+        private function getSelectedStation(configItems:ArrayCollection, code:String):StationItem {
+            return CollectionHelper.getItemByProperty(configItems, "code", code);
         }
 
 
@@ -345,8 +352,6 @@
                 if (countryItem.stationsConfig != null) {
                     stationsVisible = true;
                     stationsConfig = countryItem.stationsConfig;
-                    stationDropDownList.dataProvider = stationsConfig.stations;
-                    stationDropDownList.selectedIndex = getSelectedStationIndex(stationsConfig.stations, stationsConfig.defaultStation.code);
                 }
                 else {
                     stationsVisible = false;
@@ -361,12 +366,8 @@
             heatMasterListener.regionChanged(regionItem);
         }
 
-        private function stationChanged():void {
-            heatMasterListener.stationChanged(stationDropDownList.selectedItem);
-        }
-
         private function showMap():void {
-            HeatMaster.getInstance().showStationsMap(stationsConfig);
+            HeatMaster.getInstance().showStationsMap(stationsConfig, selectedStation);
         }
 
         private function inHouseTempChanged():void {
@@ -508,6 +509,7 @@
             }
         }
 
+
         override public function langChanged(lang:String):void {
             var oldIdx:int = houseDropDownList.selectedIndex;
             houseList.refresh();
@@ -610,11 +612,8 @@
 
 
         <s:Label y="35" right="202" id="stationLabel" styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.location')}" visible="{stationsVisible}"/>
-        <s:DropDownList id="stationDropDownList" x="116" y="30" width="129"
-                        labelField="name" change="stationChanged()" visible="{stationsVisible}">
-        </s:DropDownList>
-        <s:Button y="30" x="250" width="25" click="showMap()" label="Map"  visible="{stationsVisible}"/>
-
+        <s:Button id="stationButton" y="30" x="116" width="169" color="gray" fontSize="10" fontWeight="bold"  click="showMap()" label="{stationName}"  visible="{stationsVisible}"
+                skinClass="pl.znr.heatmaster.ui.components.skins.LeftAlignTextButtonSkin"/>
 
 
 

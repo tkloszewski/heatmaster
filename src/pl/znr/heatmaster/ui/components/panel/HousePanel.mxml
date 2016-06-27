@@ -62,6 +62,7 @@
         import pl.znr.heatmaster.core.model.InsulationElement;
         import pl.znr.heatmaster.core.model.SolarCollectorData;
         import pl.znr.heatmaster.core.model.WindowElement;
+        import pl.znr.heatmaster.ui.components.*;
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         private var heatMaster:HeatMaster = FlexGlobals.topLevelApplication as HeatMaster;

@@ -8,8 +8,24 @@
 package pl.znr.heatmaster.core {
 import mx.controls.Alert;
 
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
+
 public class BalanceValueHelper {
     public function BalanceValueHelper() {
+    }
+
+
+    public static function calcBaseBalanceValue(energyData:MonthEnergyData):Number {
+        var energyBalance:Number = (energyData.enWalls + energyData.enRoof + energyData.enFloor + energyData.enWindows +
+                energyData.enVent + energyData.enAir + energyData.enFoundations + energyData.enTightness)
+                -
+                (energyData.enPersonGain + energyData.enSolGain + energyData.enElectricityGain);
+
+        return energyBalance;
+    }
+
+    public static function calcBaseNormalizedBalanceValue(energyData:MonthEnergyData):Number {
+        return Math.max(calcBaseBalanceValue(energyData),0);
     }
 
     public static function calcYearBalanceValue(resultData:ProcessingResult):Number {

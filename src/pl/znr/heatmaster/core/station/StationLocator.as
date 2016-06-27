@@ -35,7 +35,7 @@ public class StationLocator {
         return result;
     }
 
-    public function doFindNearestStations(position:Position):ArrayCollection {
+    private function doFindNearestStations(position:Position):ArrayCollection {
         var result:ArrayCollection = new ArrayCollection();
         var stationDistances:Array = calcDistances(position).toArray();
 
@@ -43,7 +43,7 @@ public class StationLocator {
 
         for(var i:int = 0; i < stationDistances.length; i++){
             var stationDistance:StationDistance = stationDistances[i] as StationDistance;
-            result.addItem(stationDistance.station);
+            result.addItem(stationDistance);
         }
         return result;
     }
