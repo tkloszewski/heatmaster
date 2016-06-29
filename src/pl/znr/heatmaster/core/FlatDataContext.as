@@ -18,7 +18,6 @@ public class FlatDataContext {
     private var _currencyLocaleCode:String;
     private var _localCurrency:Boolean;
 
-
     private var _selectedMonth:int;
 
     //conversionData
@@ -41,6 +40,7 @@ public class FlatDataContext {
     private var _heatingTypeId:String;
     private var _heatingEfficiency:Number;
     private var _pricePerkWh:Number;
+    private var _naturalUnitPrice:Number;
     private var _waterHeatingTypeId:String;
     private var _waterHeatingEfficiency:Number;
     private var _priceWaterPerkWh:Number;
@@ -245,6 +245,14 @@ public class FlatDataContext {
 
     public function set pricePerkWh(value:Number):void {
         _pricePerkWh = value;
+    }
+
+    public function get naturalUnitPrice():Number {
+        return _naturalUnitPrice;
+    }
+
+    public function set naturalUnitPrice(value:Number):void {
+        _naturalUnitPrice = value;
     }
 
     public function get waterHeatingTypeId():String {
@@ -887,7 +895,6 @@ public class FlatDataContext {
     public function set conversionElectricityPricePerkWh(value:Number):void {
         _conversionElectricityPricePerkWh = value;
     }
-
 
     public function get selectedStation():String {
         return _selectedStation;

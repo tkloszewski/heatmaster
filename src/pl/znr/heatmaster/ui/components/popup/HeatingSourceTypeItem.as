@@ -12,7 +12,7 @@ public class HeatingSourceTypeItem {
 
     private var _type:HeatingSourceType;
     private var _pricePerKwh:Number;
-
+    private var _naturalUnitPrice:Number;
 
     public function HeatingSourceTypeItem(type:HeatingSourceType, pricePerKwh:Number = -1) {
         _type = type;
@@ -22,6 +22,16 @@ public class HeatingSourceTypeItem {
         else {
          _pricePerKwh = pricePerKwh;
         }
+        _naturalUnitPrice = type.naturalUnitPrice;
+    }
+
+    public function resetOriginalPrice():void{
+        _pricePerKwh = type.pricePerkWh;
+        _naturalUnitPrice = type.naturalUnitPrice;
+    }
+
+    public function get naturalUnitPrice():Number {
+        return _naturalUnitPrice;
     }
 
     public function get type():HeatingSourceType {

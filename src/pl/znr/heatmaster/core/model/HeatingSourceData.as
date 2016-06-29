@@ -13,6 +13,7 @@ public class HeatingSourceData {
     private var _heatingType:HeatingSourceType;
     private var _heatingEfficiency:Number;
     private var _pricePerkWh:Number;
+    private var _naturalUnitPrice:Number;
 
     private var _waterHeatingType:HeatingSourceType;
     private var _waterHeatingEfficiency:Number;
@@ -94,7 +95,6 @@ public class HeatingSourceData {
         _warmWaterFinalToPrimaryCoefficient = value;
     }
 
-
     public function get emissionCoefficient():Number {
         return _emissionCoefficient;
     }
@@ -109,6 +109,15 @@ public class HeatingSourceData {
 
     public function set waterEmissionCoefficient(value:Number):void {
         _waterEmissionCoefficient = value;
+    }
+
+
+    public function get naturalUnitPrice():Number {
+        return _naturalUnitPrice;
+    }
+
+    public function set naturalUnitPrice(value:Number):void {
+        _naturalUnitPrice = value;
     }
 }
 }

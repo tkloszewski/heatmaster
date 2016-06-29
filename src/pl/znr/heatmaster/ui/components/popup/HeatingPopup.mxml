@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+<hm:HeatMasterResultComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
                         xmlns:fx="http://ns.adobe.com/mxml/2009"
                         xmlns:mx="library://ns.adobe.com/flex/mx"
                         xmlns:s="library://ns.adobe.com/flex/spark"
@@ -73,8 +73,6 @@
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
         </s:ArrayCollection>
 
-
-
         <s:ArrayCollection id="detachedWarmWaterDistributionList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_not_insulated')}" data="{WarmWaterDistribution.NOT_ISOLATED_PIPES}"/>
@@ -112,6 +110,7 @@
         import pl.znr.heatmaster.HeatMaster;
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.constants.NaturalUnit;
         import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.constants.combo.HouseType;
         import pl.znr.heatmaster.constants.combo.SolarCollectorType;
@@ -121,6 +120,7 @@
         import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
+        import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.model.HeatingSourceData;
         import pl.znr.heatmaster.constants.combo.HeatingSourceType;
@@ -145,7 +145,6 @@
 
         [Bindable]
         private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
-
 
         private var localCurrency:Boolean = false;
         private var selectedCountry:CountryItem;
@@ -211,6 +210,10 @@
             return dataContext;
         }
 
+        override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+            maxPowerRichText.text = formatHMValue(resultData.wattsEnergyResult.heatingSourceMaxPower);
+        }
+
         public function configChanged(configItem:CountryItem, localCurrency:Boolean):void {
             applyConfigPrices(detachedHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
             applyConfigPrices(multiFamilyHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
@@ -227,6 +230,10 @@
             this.localCurrency = localCurrency;
 
             applyCurrencyToLabels(configItem, localCurrency);
+
+            priceNS.enabled = !configItem.ignoreConfigPrices;
+            priceWarmWaterNS.enabled = !configItem.ignoreConfigPrices;
+            naturalUnitPriceNS.enabled = configItem.ignoreConfigPrices;
         }
 
         private function applyCurrencyToLabels(country:CountryItem, localCurrency:Boolean):void {
@@ -246,39 +253,46 @@
         }
 
         private function applyConfigPrices(heatingTypes:ArrayCollection, configItem:CountryItem, dropDownList:DropDownList, localCurrency:Boolean):void {
-            var rate:Number = localCurrency ? configItem.currencyExchangeRate : 1.0;
-            for each(var item:Object in heatingTypes) {
-                var heatingSourceTypeItem:HeatingSourceTypeItem = item.data;
-                if (HeatingSourceType.isOfCoalType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.coalPrice * rate;
+            if (configItem.ignoreConfigPrices) {
+                for each(var item:Object in heatingTypes) {
+                    var heatingSourceTypeItem:HeatingSourceTypeItem = item.data;
+                    heatingSourceTypeItem.resetOriginalPrice();
                 }
-                else if (HeatingSourceType.isOfGasType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.gasPrice * rate;
-                }
-                else if (HeatingSourceType.isOfOilType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.heatingOilPrice * rate;
-                }
-                else if (HeatingSourceType.isOfPelletsType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.pelletsPrice * rate;
-                }
-                else if (HeatingSourceType.isOfWoodType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.firewoodPrice * rate;
-                }
-                else if (HeatingSourceType.isOfElectricType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.electricityPrice * rate;
-                }
-                else if (HeatingSourceType.isOfCombinedType(heatingSourceTypeItem.type)) {
-                    heatingSourceTypeItem.pricePerKwh = configItem.combinedPrice * rate;
-                }
-                else {
-                    trace("No proper heatingType: " + configItem.code);
+            }
+            else {
+                var rate:Number = localCurrency ? configItem.currencyExchangeRate : 1.0;
+                for each(var item:Object in heatingTypes) {
+                    var heatingSourceTypeItem:HeatingSourceTypeItem = item.data;
+                    if (HeatingSourceType.isOfCoalType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.coalPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfGasType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.gasPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfOilType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.heatingOilPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfPelletsType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.pelletsPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfWoodType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.firewoodPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfElectricType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.electricityPrice * rate;
+                    }
+                    else if (HeatingSourceType.isOfCombinedType(heatingSourceTypeItem.type)) {
+                        heatingSourceTypeItem.pricePerKwh = configItem.combinedPrice * rate;
+                    }
+                    else {
+                        trace("No proper heatingType: " + configItem.code);
+                    }
                 }
             }
 
             var oldIdx:int = dropDownList.selectedIndex;
             heatingTypes.refresh();
             dropDownList.selectedIndex = oldIdx;
-
         }
 
         override public function setupView(dataContext:DataContext):void {
@@ -286,6 +300,8 @@
             var heatingData:HeatingSourceData = dataContext.heatingData;
             var warmWaterData:WarmWaterData = dataContext.houseData.warmWaterData;
             var collectorData:SolarCollectorData = dataContext.solarCollectorData;
+
+            previousHouseType = houseType;
 
             applyHeatingDataToControls(houseType, heatingData);
             applyWarmWaterDataToControls(houseType, heatingData, warmWaterData);
@@ -299,7 +315,12 @@
                 heatingCostRichText.text = currencyName;
                 warmWaterHeatingCostRichText.text = currencyName;
             }
+            if (selectedCountry.ignoreConfigPrices && !isNaN(heatingData.naturalUnitPrice)) {
+                naturalUnitPriceNS.value = heatingData.naturalUnitPrice;
+            }
 
+            var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
+            naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             setWarmWaterVisibility(false);
         }
 
@@ -311,10 +332,6 @@
 
             var heatIdx:int = getComboItemIndexForCollectionOfHeatingItems(heatingSourceType, heatingTypeDropDownList.dataProvider);
             var warmWaterIdx:int = getComboItemIndexForCollectionOfHeatingItems(warmWaterHeatingSourceType, warmWaterHeatingTypeDropDownList.dataProvider);
-
-            trace("heatIdx: " + heatIdx + " warmWaterIdx: " + warmWaterIdx);
-
-
             heatingTypeDropDownList.selectedIndex = heatIdx;
 
             var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
@@ -359,10 +376,6 @@
             conversionData.warmWaterFinalToPrimaryCoefficient = heatingSourceData.warmWaterFinalToPrimaryCoefficient;
             conversionData.emissionCoefficient = heatingSourceData.emissionCoefficient;
             conversionData.waterEmissionCoefficient = heatingSourceData.waterEmissionCoefficient;
-
-
-            // trace("conversionData: " + conversionData.toString());
-
         }
 
         public function getOrder():int {
@@ -379,81 +392,72 @@
             var heatingTypeChanged:Boolean = false;
 
             if (houseType == HouseType.DETACHED) {
-                try {
-                    var heatingIndex:int = getIndexOfHeatingItem(currentHeatingSourceType, detachedHeatingSourceList);
-                    if (heatingIndex < 0) {
-                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.heatingSourceType, detachedHeatingSourceList);
-                        if (heatingIndex < 0) {
-                            heatingIndex = 0;
-                        }
-                        heatingTypeChanged = true;
-                    }
-
-                    heatingTypeDropDownList.dataProvider = detachedHeatingSourceList;
-                    heatingTypeDropDownList.selectedIndex = heatingIndex;
-
-                    heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
-                    if (heatingIndex < 0) {
-                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
-                        if (heatingIndex < 0) {
-                            heatingIndex = 0;
-                        }
-                        heatingTypeChanged = true;
-                    }
-
-                    warmWaterHeatingTypeDropDownList.dataProvider = warmWaterDetachedHeatingSourceList;
-                    warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
-
-                    var distributionIdx:int = getComboItemIndexForCollection(warmWaterDistribution, detachedWarmWaterDistributionList);
-                    if (distributionIdx < 0) {
-                        heatingTypeChanged = true;
-                        distributionIdx = 0;
-                    }
-
-                    warmWaterDistributionDropDownList.dataProvider = detachedWarmWaterDistributionList;
-                    warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
-                } catch (e:Error) {
-                    Alert.show("Error in houseType changed detached: " + e.message);
-                }
-            }
-            else if (previousHouseType == HouseType.DETACHED) {
-                try {
-                    heatingIndex = getIndexOfHeatingItem(currentHeatingSourceType, multiFamilyHeatingSourceList);
-                    if (heatingIndex < 0) {
-                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyHeatingSourceType, multiFamilyHeatingSourceList);
-                        if (heatingIndex < 0) {
-                            heatingIndex = 0;
-                        }
-                        heatingTypeChanged = true;
-                    }
-
-                    heatingTypeDropDownList.dataProvider = multiFamilyHeatingSourceList;
-                    heatingTypeDropDownList.selectedIndex = heatingIndex;
-
-                    heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+                var heatingIndex:int = getIndexOfHeatingItem(currentHeatingSourceType, detachedHeatingSourceList);
+                if (heatingIndex < 0) {
+                    heatingIndex = getIndexOfHeatingItem(houseStandardModel.heatingSourceType, detachedHeatingSourceList);
                     if (heatingIndex < 0) {
                         heatingIndex = 0;
-                        if (heatingIndex < 0) {
-                            heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyWarmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
-                        }
-                        heatingTypeChanged = true;
                     }
-
-                    warmWaterHeatingTypeDropDownList.dataProvider = warmWaterMultiFamilyHeatingSourceList;
-                    warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
-
-
-                    distributionIdx = getComboItemIndexForCollection(warmWaterDistribution, multiFamilyWarmWaterDistributionList);
-                    if (distributionIdx < 0) {
-                        heatingTypeChanged = true;
-                        distributionIdx = 0;
-                    }
-
-                    warmWaterDistributionDropDownList.dataProvider = multiFamilyWarmWaterDistributionList;
-                    warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
-                } catch (e:Error) {
-                    Alert.show("Error in hheatingPopup: " + e.message);
+                    heatingTypeChanged = true;
                 }
+
+                heatingTypeDropDownList.dataProvider = detachedHeatingSourceList;
+                heatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
+                if (heatingIndex < 0) {
+                    heatingIndex = getIndexOfHeatingItem(houseStandardModel.warmWaterHeatingSourceType, warmWaterDetachedHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = 0;
+                    }
+                    heatingTypeChanged = true;
+                }
+
+                warmWaterHeatingTypeDropDownList.dataProvider = warmWaterDetachedHeatingSourceList;
+                warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                var distributionIdx:int = getComboItemIndexForCollection(warmWaterDistribution, detachedWarmWaterDistributionList);
+                if (distributionIdx < 0) {
+                    heatingTypeChanged = true;
+                    distributionIdx = 0;
+                }
+
+                warmWaterDistributionDropDownList.dataProvider = detachedWarmWaterDistributionList;
+                warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
+            }
+            else if (previousHouseType == HouseType.DETACHED) {
+                heatingIndex = getIndexOfHeatingItem(currentHeatingSourceType, multiFamilyHeatingSourceList);
+                if (heatingIndex < 0) {
+                    heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyHeatingSourceType, multiFamilyHeatingSourceList);
+                    if (heatingIndex < 0) {
+                        heatingIndex = 0;
+                    }
+                    heatingTypeChanged = true;
+                }
+
+                heatingTypeDropDownList.dataProvider = multiFamilyHeatingSourceList;
+                heatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                heatingIndex = getIndexOfHeatingItem(warmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+                if (heatingIndex < 0) {
+                    heatingIndex = 0;
+                    if (heatingIndex < 0) {
+                        heatingIndex = getIndexOfHeatingItem(houseStandardModel.multiFamilyWarmWaterHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+                    }
+                    heatingTypeChanged = true;
+                }
+
+                warmWaterHeatingTypeDropDownList.dataProvider = warmWaterMultiFamilyHeatingSourceList;
+                warmWaterHeatingTypeDropDownList.selectedIndex = heatingIndex;
+
+                distributionIdx = getComboItemIndexForCollection(warmWaterDistribution, multiFamilyWarmWaterDistributionList);
+                if (distributionIdx < 0) {
+                    heatingTypeChanged = true;
+                    distributionIdx = 0;
+                }
+
+                warmWaterDistributionDropDownList.dataProvider = multiFamilyWarmWaterDistributionList;
+                warmWaterDistributionDropDownList.selectedIndex = distributionIdx;
             }
 
             previousHouseType = houseType;
@@ -506,15 +510,6 @@
             setControlsVisibility(false);
         }
 
-        public function personNumberChanged(personNumber:int):void {
-            /*this.personCount = personNumber;
-             if (!solarSurfaceChanged) {
-             var solarCollectorData:SolarCollectorData = createSolarCollectorData();
-             solarSurfaceNS.value = calcSolarSurfaceByPersonCount(solarCollectorData.collectorType, personCount);
-             }*/
-        }
-
-
         private function heatingPopupInitialized():void {
             currentImg = heatPopupMainSmallImg;
 
@@ -523,6 +518,9 @@
 
             efficiencyNS.value = heatingSourceType.efficiency;
             priceNS.value = heatingSourceType.pricePerkWh;
+            calorificValInput.text = heatingSourceType.heatingValueMJ.toString();
+            naturalUnitPriceNS.value = heatingSourceType.naturalUnitPrice;
+            naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
 
             efficiencyWarmWaterNS.value = warmWaterHeatingSourceType.efficiency;
             priceWarmWaterNS.value = warmWaterHeatingSourceType.pricePerkWh;
@@ -539,13 +537,10 @@
                 heatingTypeDropDownList.dataProvider = multiFamilyHeatingSourceList;
             }
 
-            if (heatingIdx == -1) {
-                Alert.show("heatingData type not match: " + heatingData.heatingType.getId());
-            }
-
             heatingTypeDropDownList.selectedIndex = heatingIdx;
             efficiencyNS.value = heatingData.heatingEfficiency;
             priceNS.value = heatingData.pricePerkWh;
+            naturalUnitPriceNS.value = (heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem).naturalUnitPrice;
         }
 
         private function applyWarmWaterDataToControls(houseType:int, heatingData:HeatingSourceData, warmWaterData:WarmWaterData):void {
@@ -649,14 +644,35 @@
 
         private function heatingTypeChanged():void {
             var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var changed:Boolean = forceChangeWarmWaterHeatingType(heatingSourceType.type);
             applyHeatingValuesToControls(heatingSourceType.type, heatingSourceType.pricePerKwh);
+            if (changed) {
+                applyWarmWaterValuesToControls(heatingSourceType.type, heatingSourceType.pricePerKwh);
+            }
             var heatingData:HeatingSourceData = createHeatingData();
             heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function forceChangeWarmWaterHeatingType(heatingSourceType:HeatingSourceType):Boolean {
+            var heatingIdx:int = -1;
+            if (previousHouseType == HouseType.DETACHED) {
+                heatingIdx = getComboItemIndexForCollectionOfHeatingItems(heatingSourceType, warmWaterDetachedHeatingSourceList);
+            }
+            else {
+                heatingIdx = getComboItemIndexForCollectionOfHeatingItems(heatingSourceType, warmWaterMultiFamilyHeatingSourceList);
+            }
+            if (heatingIdx != -1) {
+                warmWaterHeatingTypeDropDownList.selectedIndex = heatingIdx;
+            }
+            return heatingIdx != -1;
         }
 
         private function applyHeatingValuesToControls(heatingSourceType:HeatingSourceType, pricePerkWh:Number):void {
             efficiencyNS.value = heatingSourceType.efficiency;
             priceNS.value = pricePerkWh;
+            calorificValInput.text = heatingSourceType.heatingValueMJ.toString();
+            naturalUnitPriceNS.value = heatingSourceType.naturalUnitPrice;
+            naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
         }
 
         private function applyWarmWaterValuesToControls(warmWaterHeatingSourceType:HeatingSourceType, pricePerkWh:Number):void {
@@ -690,6 +706,23 @@
         private function priceChanged():void {
             var heatingData:HeatingSourceData = createHeatingData();
             heatingData.pricePerkWh = priceNS.value;
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function naturalUnitPriceChanged():void {
+            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem as HeatingSourceTypeItem;
+            var pricePerKWh:Number = HeatingSourceType.toPricePerKWh(naturalUnitPriceNS.value, heatingSourceType.type.heatingValueMJ);
+            priceNS.value = pricePerKWh;
+            if (heatingSourceType.type == warmWaterHeatingSourceType.type) {
+                priceWarmWaterNS.value = pricePerKWh;
+            }
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatingData.pricePerkWh = pricePerKWh;
+            heatingData.naturalUnitPrice = naturalUnitPriceNS.value;
+            if (heatingSourceType.type == warmWaterHeatingSourceType.type) {
+                heatingData.priceWaterPerkWh = pricePerKWh;
+            }
             heatMasterListener.heatingDataChanged(heatingData);
         }
 
@@ -859,10 +892,14 @@
 
             return -1;
         }
+
+        private function getNaturalUnitPriceLabelText(naturalUnit:NaturalUnit):String {
+            return resourceManager.getString("hm", "hm.label.natural-unit.price.prefix") + " " + resourceManager.getString("hm", naturalUnit.code);
+        }
         ]]></fx:Script>
 
-    <mx:Image x="6"  y="2"  id="heatPopupMainSmallImg" scaleY="1.12" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_heat_small.png')" />
-    <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.12" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
+    <mx:Image x="6"  y="2"  id="heatPopupMainSmallImg" scaleY="1.35" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_heat_small.png')" />
+    <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.25" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
     <s:Image x="12" y="6"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
 
     <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
@@ -885,12 +922,12 @@
 
     </s:Group>
 
-    <mx:Button id="heatPopupOkBtn" visible="false" x="25" y="108" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_heat.png')">
+    <mx:Button id="heatPopupOkBtn" visible="false" x="25" y="158" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_heat.png')">
 
     </mx:Button>
 
     <s:Group x="1" y="0" id="mainGroup" visible="false">
-        <s:Group id="heatPopupMainGroup" x="17" y="50" width="278" height="60" >
+        <s:Group id="heatPopupMainGroup" x="17" y="50" width="278" height="100" >
             <s:Label right="200" y="5" color="#FF6600" fontSize="12" fontWeight="bold"
                      text="{resourceManager.getString('hm','hm.label.heating.source')}" verticalAlign="middle"/>
 
@@ -898,26 +935,41 @@
                             dataProvider="{detachedHeatingSourceList}" labelField="name" change="heatingTypeChanged()"
                             skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
 
+            <!--Natural unit price-->
             <s:Label right="200" y="35"  color="#FF6600" fontSize="12"
-                     fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.efficiency')}" verticalAlign="middle"/>
+                     fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.heating_value')}" verticalAlign="middle"/>
+            <s:TextInput id="calorificValInput" x="81" y="30" width="44" height="20" editable="false"  enabled="false" />
+            <s:RichText x="126" y="36" fontSize="7" text="MJ" verticalAlign="middle"/>
 
-            <s:RichText x="126" y="34" fontSize="11" fontWeight="bold" paddingTop="3"
+            <s:Label id="naturalUnitCostLabel" x="137" y="35" color="#FF6600" fontSize="12"
+                     fontWeight="bold"  verticalAlign="middle"/>
+            <s:NumericStepper x="210" y="30" width="44" height="20" id="naturalUnitPriceNS" minimum="0"  maximum="1000" stepSize="1" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
+                              change="naturalUnitPriceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            <s:RichText x="258" y="33" id="heatingNaturalUnitCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
+
+
+
+            <s:Label right="200" y="65"  color="#FF6600" fontSize="12"
+                     fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.efficiency')}" verticalAlign="middle"/>
+            <s:NumericStepper x="81" y="60" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="1" maximum="400" id="efficiencyNS" change="efficiencyChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            <s:RichText x="126" y="64" fontSize="11" fontWeight="bold" paddingTop="3"
                         text="%" verticalAlign="middle"/>
 
-            <s:Label x="137" y="35" color="#FF6600" fontSize="12"
+            <s:Label x="137" y="65" color="#FF6600" fontSize="12"
                      fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
+            <s:NumericStepper x="210" y="60" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
+                              change="priceChanged()" enabled="false" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            <s:RichText x="258" y="63" id="heatingCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
 
-            <s:NumericStepper x="81" y="30" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="1" maximum="400" id="efficiencyNS" change="efficiencyChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+            <s:Label right="200" y="95" color="#FF6600" fontSize="12"
+                     fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.heating.source.max-power')}" verticalAlign="middle"/>
+            <s:RichText id="maxPowerRichText" x="81" y="95" width="100"/>
 
-            <s:NumericStepper x="210" y="30" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
-                              change="priceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="258" y="33" id="heatingCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
-
-            <s:CheckBox id="includeWarmWaterCheckBox" visible="false" x="10" y="53" click="setWarmWaterVisibility()"
+            <s:CheckBox id="includeWarmWaterCheckBox" visible="false" x="10" y="113" click="setWarmWaterVisibility()"
                         label="{resourceManager.getString('hm','hm.label.warm_water.include')}"/>
         </s:Group>
 
-        <s:BorderContainer id="warmWaterBorderContainer" visible="false" x="17" y="{heatPopupMainGroup.y + heatPopupMainGroup.height + 11}" borderVisible="false" width="273" height="175" borderColor="red" borderWeight="1" backgroundAlpha="0.0">
+        <s:BorderContainer id="warmWaterBorderContainer" visible="false" x="17" y="{heatPopupMainGroup.y + heatPopupMainGroup.height + 41}" borderVisible="false" width="273" height="175" borderColor="red" borderWeight="1" backgroundAlpha="0.0">
 
             <mx:HRule id="hRule" x="0" y="0" width="270" height="1"/>
 
@@ -942,7 +994,7 @@
 
                 <s:NumericStepper x="210" y="33" width="44" height="20" id="priceWarmWaterNS" minimum="0.01" value = "0.45" stepSize="0.01"
                                   valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
-                                  change="warmWaterPriceChanged()"
+                                  change="warmWaterPriceChanged()" enabled="false"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
 
                 <s:RichText x="258" y="35" width="18" height="17" id="warmWaterHeatingCostRichText" fontSize="8" text="" verticalAlign="middle" textAlign="left"/>
@@ -986,4 +1038,4 @@
         </s:BorderContainer>
 
     </s:Group>
-</hm:HeatMasterComponent>
+</hm:HeatMasterResultComponent>

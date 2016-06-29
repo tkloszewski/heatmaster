@@ -7,36 +7,38 @@
  */
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
-import mx.controls.Alert;
 
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.constants.NaturalUnit;
 
 public class HeatingSourceType extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
 
-    public static var BIOMASS_PELLETS:HeatingSourceType = new HeatingSourceType("1",75,0.22,0.03,0.2,true,false,true,true);
-    public static var BIOMASS_WOOD:HeatingSourceType = new HeatingSourceType("2",70,0.12,0.03,0.2,true,false,true,true);
-    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3",97,0.22,0.4,1.3,true,true,true,true);
-    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",97,0.22,0.08,0.8,true,true,true,true);
-    public static var FURNACE:HeatingSourceType = new HeatingSourceType("5",40,0.12,0.38,1.1,true,false,false,false);
-    public static var COAL_OLD:HeatingSourceType = new HeatingSourceType("6",60,0.12,0.38,1.1,true,false,false,false);
-    public static var COAL_MODERN:HeatingSourceType = new HeatingSourceType("7",80,0.12,0.38,1.1,true,false,false,false);
-    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8",65,0.18,0.201,1.1,true,true,true,true);
-    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9",85,0.18,0.201,1.1,true,true,true,true);
-    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10",95,0.18,0.201,1.1,true,true,true,true);
-    public static var BOILER_PROPAN_STANDARD:HeatingSourceType = new HeatingSourceType("11",85,0.32,0.225,1.1,true,true,true,true);
-    public static var BOILER_PROPAN_CONDENSING:HeatingSourceType = new HeatingSourceType("12",95,0.32,0.225,1.1,true,true,true,true);
-    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13",90,0.18,0.9,1.1,false,false,true,false);
-    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14",70,0.18,0.201,1.1,false,false,true,false);
-    public static var BOILER_OIL:HeatingSourceType = new HeatingSourceType("15",85,0.4,0.276,1.1,true,true,true,true);
-    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16",100,0.58,0.9,3.0,true,true,true,true);
-    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",350,0.58,0.9,3.0,true,true,true,true);
+    public static var BIOMASS_PELLETS:HeatingSourceType = new HeatingSourceType("1", NaturalUnit.TONNE, 500, 17500, 75, 0.403, 0.2, true,false,true,true);
+    public static var BIOMASS_WOOD:HeatingSourceType = new HeatingSourceType("2", NaturalUnit.TONNE, 360, 15600, 70, 0.403, 0.2, true,false,true,true);
+    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3", NaturalUnit.GJ, 50, 1000, 97, 0.449, 1.3, true,true,true,true);
+    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",NaturalUnit.GJ, 50, 1000, 97, 0.247, 0.8,true,true,true,true);
+    public static var FURNACE:HeatingSourceType = new HeatingSourceType("5", NaturalUnit.TONNE, 750, 26010, 40, 0.338, 1.1, true,false,false,false);
+    public static var COAL_OLD:HeatingSourceType = new HeatingSourceType("6", NaturalUnit.TONNE, 313.08, 21670, 60, 0.339, 1.1, true,false,false,false);
+    public static var COAL_MODERN:HeatingSourceType = new HeatingSourceType("7", NaturalUnit.TONNE, 322.42, 22030, 80, 0.341, 1.1, true,false,false,false);
+    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8", NaturalUnit.KG, 2, 47.3, 65, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_PROPAN_STANDARD:HeatingSourceType = new HeatingSourceType("11", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_PROPAN_CONDENSING:HeatingSourceType = new HeatingSourceType("12", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true,true,true,true);
+    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13", NaturalUnit.KG, 2, 47.3, 90, 0.227, 1.1, false,false,true,false);
+    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14", NaturalUnit.KG, 2, 47.3, 70, 0.227, 1.1, false,false,true,false);
+    public static var BOILER_OIL:HeatingSourceType = new HeatingSourceType("15", NaturalUnit.KG, 4.75, 43, 85, 0.266, 1.1, true,true,true,true);
+    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16", NaturalUnit.KWH, 0.6, 3.6, 100, 0.890, 3.0, true,true,true,true);
+    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",NaturalUnit.KWH, 0.6, 3.6, 350, 0.890, 3.0, true,true,true,true);
 
     private var _efficiency:Number = 1;
-    private var _pricePerkWh:Number;
+    private var _naturalUnit:NaturalUnit;
+    private var _naturalUnitPrice:Number;
+    private var _heatingValueMJ:Number;
     private var _emissionPerKWh:Number;
     private var _finalToPrimaryCoefficient:Number;
+    private var _pricePerKWh:Number;
 
     private var _detachedAirHeatType:Boolean;
     private var _multiFamilyAirHeatType:Boolean;
@@ -83,17 +85,27 @@ public class HeatingSourceType extends BaseComboObject{
         return heatingType == BIOMASS_WOOD;
     }
 
-    function HeatingSourceType(_id:String,efficiency:Number, pricePerkWh:Number, emissionPerKWh:Number, finalToPrimaryCoefficient:Number, detachedAirHeatType:Boolean, multiFamilyAirHeatType:Boolean, detachedWarmHeatType:Boolean, multiFamilyHeatType:Boolean) {
+    public static function toPricePerKWh(naturalUnitPrice:Number,heatingValueMJ:Number):Number{
+        return naturalUnitPrice/heatingValueMJ * 3.6;
+    }
+
+    public static function toNaturalPrice(pricePerKWh:Number,heatingValueMJ:Number){
+        return heatingValueMJ/3.6 * pricePerKWh;
+    }
+
+    function HeatingSourceType(_id:String,naturalUnit:NaturalUnit,naturalUnitPrice:Number,heatingValueMJ:Number, efficiency:Number,emissionPerKWh:Number, finalToPrimaryCoefficient:Number, detachedAirHeatType:Boolean, multiFamilyAirHeatType:Boolean, detachedWarmHeatType:Boolean, multiFamilyHeatType:Boolean) {
         super(_id);
+        _naturalUnit = naturalUnit;
+        _naturalUnitPrice = naturalUnitPrice;
+        _heatingValueMJ= heatingValueMJ;
         _efficiency = efficiency;
-        _pricePerkWh = pricePerkWh;
         _emissionPerKWh = emissionPerKWh;
         _finalToPrimaryCoefficient = finalToPrimaryCoefficient;
         _detachedAirHeatType = detachedAirHeatType;
         _multiFamilyAirHeatType = multiFamilyAirHeatType;
         _detachedWarmHeatType = detachedWarmHeatType;
         _multiFamilyHeatType = multiFamilyHeatType;
-
+        _pricePerKWh = toPricePerKWh(naturalUnitPrice,heatingValueMJ);
         items.addItem(this);
     }
 
@@ -106,7 +118,7 @@ public class HeatingSourceType extends BaseComboObject{
     }
 
     public function get pricePerkWh():Number {
-        return _pricePerkWh;
+        return _pricePerKWh;
     }
 
     public function get finalToPrimaryCoefficient():Number {
@@ -127,6 +139,18 @@ public class HeatingSourceType extends BaseComboObject{
 
     public function get multiFamilyHeatType():Boolean {
         return _multiFamilyHeatType;
+    }
+
+    public function get naturalUnitPrice():Number {
+        return _naturalUnitPrice;
+    }
+
+    public function get heatingValueMJ():Number {
+        return _heatingValueMJ;
+    }
+
+    public function get naturalUnit():NaturalUnit {
+        return _naturalUnit;
     }
 }
 }

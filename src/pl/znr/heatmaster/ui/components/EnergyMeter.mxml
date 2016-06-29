@@ -75,6 +75,7 @@
         }
 
         override public function initData(dataContext:DataContext):DataContext {
+            environmentalData = dataContext.environmentalData;
             tempSE.value = dataContext.environmentalData.temperatures[monthDropDownList.selectedIndex];
 
             var conversionData:ConversionData = dataContext.conversionData;

@@ -50,7 +50,6 @@ public class CountryConfigurationReader {
 
             trace("Reading configuration for country: " + countryCode);
 
-
             var electricityPrice:Number = getPrice(country.prices.electricity,GlobalValues.PRICE_ELECTRICITY_KWH_DEFAULT);
             var gasPrice:Number = getPrice(country.prices.gas,GlobalValues.PRICE_ELECTRICITY_KWH_DEFAULT);
             var heatingOilPrice:Number = getPrice(country.prices.heating_oil,GlobalValues.PRICE_OIL_KWH_DEFAULT);

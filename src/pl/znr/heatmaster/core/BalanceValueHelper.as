@@ -8,6 +8,8 @@
 package pl.znr.heatmaster.core {
 import mx.controls.Alert;
 
+import pl.znr.heatmaster.core.calc.util.CalcUtils;
+
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
 public class BalanceValueHelper {
@@ -16,10 +18,12 @@ public class BalanceValueHelper {
 
 
     public static function calcBaseBalanceValue(energyData:MonthEnergyData):Number {
-        var energyBalance:Number = (energyData.enWalls + energyData.enRoof + energyData.enFloor + energyData.enWindows +
-                energyData.enVent + energyData.enAir + energyData.enFoundations + energyData.enTightness)
+        var energyBalance:Number = (CalcUtils.floorZero(energyData.enWalls) + CalcUtils.floorZero(energyData.enRoof) +
+                CalcUtils.floorZero(energyData.enFloor) + CalcUtils.floorZero(energyData.enWindows) +
+                CalcUtils.floorZero(energyData.enVent) + CalcUtils.floorZero(energyData.enAir) +
+                CalcUtils.floorZero(energyData.enFoundations) + CalcUtils.floorZero(energyData.enTightness))
                 -
-                (energyData.enPersonGain + energyData.enSolGain + energyData.enElectricityGain);
+                (CalcUtils.floorZero(energyData.enPersonGain) + CalcUtils.floorZero(energyData.enSolGain) + CalcUtils.floorZero(energyData.enElectricityGain));
 
         return energyBalance;
     }

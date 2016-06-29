@@ -147,7 +147,9 @@
       return result;
     }
 
-
+    private function formatTemperature(val:Number):String{
+       return formatHMValue(val,1);
+    }
 
     ]]>
 </fx:Script>
@@ -180,8 +182,11 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t1}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst1" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30" maximum="30"  value="{stationModel.t1}" valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t1)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst1" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
+                                  maximum="30"  value="{stationModel.t1}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}"
+                                  visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
             </mx:GridItem>
           </mx:GridRow>
@@ -192,8 +197,11 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t2}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst2" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30" maximum="30" value="{stationModel.t2}" valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t2)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst2" styleName="labelStyle" height="20" width="36"  stepSize="0.1" minimum="-30"
+                                  maximum="30" value="{stationModel.t2}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}"
+                                  visible="{stationClicked}" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
             </mx:GridItem>
           </mx:GridRow>
@@ -204,10 +212,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t3}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst3" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t3)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst3" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t3}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -220,10 +228,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t4}" visible="{!stationClicked}"/>
-                <s:NumericStepper id="nst4" y="-3" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t4)}" visible="{!stationClicked}"/>
+                <s:NumericStepper id="nst4" y="-3" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t4}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -236,10 +244,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t5}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst5" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t5)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst5" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t5}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -252,10 +260,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t6}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst6" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t6)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst6" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t6}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -268,10 +276,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t7}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst7" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t7)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst7" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t7}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}"  valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -285,10 +293,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t8}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst8" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t8)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst8" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t8}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -302,10 +310,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t9}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst9" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t9)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst9" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t9}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -319,10 +327,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t10}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst10" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t10)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst10" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t10}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -336,10 +344,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t11}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst11" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t11)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst11" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t11}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 
@@ -353,10 +361,10 @@
             </mx:GridItem>
             <mx:GridItem>
               <s:Group>
-                <s:Label styleName="labelStyle" text="{stationModel.t12}" visible="{!stationClicked}"/>
-                <s:NumericStepper y="-3" id="nst12" styleName="labelStyle" height="20" width="36" stepSize="1" minimum="-30"
+                <s:Label styleName="labelStyle" text="{formatTemperature(stationModel.t12)}" visible="{!stationClicked}"/>
+                <s:NumericStepper y="-3" id="nst12" styleName="labelStyle" height="20" width="36" stepSize="0.1" minimum="-30"
                                   maximum="30" value="{stationModel.t12}"
-                                  valueParseFunction="{GlobalValues.parseFloatValue}" visible="{stationClicked}"
+                                  valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="{formatTemperature}" visible="{stationClicked}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
               </s:Group>
 

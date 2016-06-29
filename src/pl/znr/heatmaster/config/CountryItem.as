@@ -51,6 +51,8 @@ public class CountryItem implements IEnvironmentalDataConfig{
 
     private var _stationsConfig:StationsConfig;
 
+    //if true ignore local country item prices
+    private var _ignoreConfigPrices:Boolean;
 
     public function CountryItem() {
     }
@@ -256,6 +258,15 @@ public class CountryItem implements IEnvironmentalDataConfig{
 
     public function set currencyExchangeRate(value:Number):void {
         _currencyExchangeRate = value;
+    }
+
+
+    public function get ignoreConfigPrices():Boolean {
+        return _ignoreConfigPrices;
+    }
+
+    public function set ignoreConfigPrices(value:Boolean):void {
+        _ignoreConfigPrices = value;
     }
 }
 }

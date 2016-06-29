@@ -13,9 +13,11 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
     private var month:int;
     private var calculator:IMonthEnergyCalculator;
 
-    var monthInput:MonthInputData;
+    private var monthInput:MonthInputData;
 
-    var currentResult:MonthEnergyData = new MonthEnergyData();
+    private var currentResult:MonthEnergyData = new MonthEnergyData();
+
+    private var ratioSum:Number = 0;
 
     public function MonthlyEnergyResultProvider(dataContext:DataContext, month:int,calculator:IMonthEnergyCalculator) {
         this.dataContext = dataContext;
@@ -47,11 +49,15 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
         currentResult.enAir = currentResult.enAir + energyData.enAir * ratio;
         currentResult.enTightness = currentResult.enTightness + energyData.enTightness * ratio;
         currentResult.enRecuperator = currentResult.enRecuperator + energyData.enRecuperator * ratio;
+        currentResult.enWarmWater = currentResult.enWarmWater + energyData.enWarmWater * ratio;
 
 
         currentResult.enPersonGain = currentResult.enPersonGain + energyData.enPersonGain * ratio;
         currentResult.enElectricityGain = currentResult.enElectricityGain + energyData.enElectricityGain * ratio;
         currentResult.enSolGain = currentResult.enSolGain + energyData.enSolGain * ratio;
+        currentResult.enCollectorSolarGain = currentResult.enCollectorSolarGain + energyData.enCollectorSolarGain * ratio;
+
+        ratioSum = ratioSum + ratio;
     }
 
 }

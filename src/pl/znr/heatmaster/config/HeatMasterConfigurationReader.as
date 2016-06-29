@@ -66,7 +66,7 @@ public class HeatMasterConfigurationReader {
                 countryItem.optimalInsolation = stationConfig.defaultStation.optimalInsolation;
 
                 countryItem.regions = new ArrayCollection();
-
+                countryItem.ignoreConfigPrices = true;
             }
         }
         return config;

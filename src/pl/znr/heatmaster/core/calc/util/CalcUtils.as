@@ -34,5 +34,9 @@ public class CalcUtils {
         avgValue = avgValue / temperatures.length;
         return avgValue;
     }
+
+    public static function floorZero(value:Number):Number {
+        return Math.max(value,0);
+    }
 }
 }

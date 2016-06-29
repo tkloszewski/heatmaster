@@ -78,6 +78,7 @@ public class FlatDataContextBuilder {
             flatDataContext.heatingTypeId = heatingData.heatingType.getId();
             flatDataContext.heatingEfficiency = heatingData.heatingEfficiency;
             flatDataContext.pricePerkWh = heatingData.pricePerkWh;
+            flatDataContext.naturalUnitPrice = heatingData.naturalUnitPrice;
             flatDataContext.waterHeatingTypeId = heatingData.waterHeatingType.getId();
             flatDataContext.waterHeatingEfficiency = heatingData.waterHeatingEfficiency;
             flatDataContext.priceWaterPerkWh = heatingData.priceWaterPerkWh;
@@ -279,6 +280,7 @@ public class FlatDataContextBuilder {
             heatingData.heatingType = HeatingSourceType.getHeatingSourceTypeById(flatDataContext.heatingTypeId);
             heatingData.heatingEfficiency = flatDataContext.heatingEfficiency;
             heatingData.pricePerkWh = flatDataContext.pricePerkWh;
+            heatingData.naturalUnitPrice = flatDataContext.naturalUnitPrice;
             heatingData.waterHeatingType = HeatingSourceType.getHeatingSourceTypeById(flatDataContext.waterHeatingTypeId);
             heatingData.waterHeatingEfficiency = flatDataContext.waterHeatingEfficiency;
             heatingData.priceWaterPerkWh = flatDataContext.priceWaterPerkWh;

@@ -2,7 +2,7 @@
 <!--
   Created by Dom on 2016-06-26.
 -->
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark">
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" close="handleCancel()">
 
 
   <fx:Script>
@@ -38,7 +38,7 @@
     </s:layout>
     <s:Button label="OK"
               click="handleOk();" />
-    <s:Button label="Cancel"
+    <s:Button label="{resourceManager.getString('hm','hm.button.cancel')}"
               click="handleCancel();"/>
   </s:Group>
 
