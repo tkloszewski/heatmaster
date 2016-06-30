@@ -42,7 +42,6 @@ public class CachedDataContextManager {
        registerClassAliases();
     }
 
-
     public function clearCache():void {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
         so.clear();
@@ -59,7 +58,6 @@ public class CachedDataContextManager {
             }
             else if(hmData is Array){
                 var array:Array = hmData as Array;
-                //Alert.show("Got array: " + array);
             }
             else if(hmData is FlatDataContext){
                 var flatDataContext:FlatDataContext = hmData as FlatDataContext;
@@ -97,28 +95,7 @@ public class CachedDataContextManager {
     }
 
     private function registerClassAliases():void {
-        /*
-        registerClassAlias("pl.znr.heatmaster.core.DataContext",DataContext);
-        registerClassAlias("pl.znr.heatmaster.core.converter.ConversionData",ConversionData);
-        registerClassAlias("pl.znr.heatmaster.core.model.HouseData",HouseData);
-        registerClassAlias("pl.znr.heatmaster.core.model.SurfaceData",SurfaceData);
-        registerClassAlias("pl.znr.heatmaster.core.model.InsulationElement",InsulationElement);
-        registerClassAlias("pl.znr.heatmaster.core.model.WindowElement",WindowElement);
-        registerClassAlias("pl.znr.heatmaster.core.model.VentilationData",VentilationData);
-        registerClassAlias("pl.znr.heatmaster.core.model.WarmWaterData",WarmWaterData);
-        registerClassAlias("pl.znr.heatmaster.core.model.HeatingSourceData",HeatingSourceData);
-        registerClassAlias("pl.znr.heatmaster.core.model.EnvironmentalData",EnvironmentalData);
-        registerClassAlias("pl.znr.heatmaster.core.model.InsolationData",InsolationData);
-        registerClassAlias("pl.znr.heatmaster.core.model.SolarCollectorData",SolarCollectorData);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.SolarCollectorType",SolarCollectorType);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.HeatingSourceType",HeatingSourceType);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.WarmWaterDistribution",WarmWaterDistribution);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.WarmWaterStorage",WarmWaterStorage);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.BuildingAge",BuildingAge);
-        registerClassAlias("pl.znr.heatmaster.constants.combo.DoorType",DoorType);
-        */
         registerClassAlias("pl.znr.heatmaster.core.FlatDataContext",FlatDataContext);
-
     }
 
 }

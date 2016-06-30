@@ -75,7 +75,7 @@ public class HeatMasterChangeListener {
     private var buildingAgeChangeListeners:ArrayList = new ArrayList();
     private var houseStandardChangeListeners:ArrayList = new ArrayList();
 
-    private var cacheReady:Boolean = false;
+    private var cacheEnabled:Boolean = false;
 
     public function HeatMasterChangeListener() {
     }
@@ -225,8 +225,6 @@ public class HeatMasterChangeListener {
             dataContext.currencyLocaleCode = countryItem.currencyLocaleCode;
         }
 
-        trace("shortUnitName: " + conversionData.shortUnitName);
-
         heatingPopup.configChanged(countryItem,dataContext.localCurrency);
         energyMeter.countryChanged(countryItem);
         energyMeter.environmentalDataChanged(dataContext.environmentalData);
@@ -236,7 +234,6 @@ public class HeatMasterChangeListener {
         conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,localCurrency);
 
         conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
-
 
         heatMasterController.calculate();
         writeCache(dataContext);
@@ -344,7 +341,6 @@ public class HeatMasterChangeListener {
         heatMasterController.calculate();
         writeCache(dataContext);
     }
-
 
     public function ventilationMethodChanged(ventMethod:VentilationMethod,carbonDioxideSensorEnabled:Boolean):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
@@ -528,22 +524,22 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    private function writeCache(dataContext:DataContext):void {
-        if(cacheReady){
-            cacheManager.writeCache(dataContext);
-        }
-    }
-
     public function setCacheManager(value:CachedDataContextManager):void {
         this.cacheManager = value;
     }
 
-    public function setCacheReady(cacheReady:Boolean):void {
-        this.cacheReady = cacheReady;
+    public function setCacheEnabled(cacheReady:Boolean):void {
+        this.cacheEnabled = cacheReady;
     }
 
     public function getDataContext():DataContext {
         return heatMasterController.getDataContext();
+    }
+
+    private function writeCache(dataContext:DataContext):void {
+        if(cacheEnabled){
+            cacheManager.writeCache(dataContext);
+        }
     }
 }
 }

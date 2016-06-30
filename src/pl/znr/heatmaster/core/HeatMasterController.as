@@ -54,6 +54,10 @@ public class HeatMasterController {
         return processResult;
     }
 
+    public function resetDataContext(dataContext:DataContext):void {
+        this.dataContext = dataContext;
+    }
+
     public function startCalculationWithConfig(dataContext:DataContext):void {
         this.dataContext = dataContext;
         doStartCalculation();
@@ -65,15 +69,6 @@ public class HeatMasterController {
             dataContext = dataContextListener.initData(dataContext);
         }
         return dataContext;
-    }
-
-    private function doStartCalculation():void{
-        started = true;
-        try {
-            doCalculationAndPropagateResult();
-        } catch (e:Error) {
-            Alert.show("Error in calculation " + e.message);
-        }
     }
 
     public function setViewState(dataContext:DataContext,processingResult:ProcessingResult){
@@ -114,6 +109,15 @@ public class HeatMasterController {
                 this.processResult = reportDataCalculator.calcReportValues(this.dataContext,this.processResult,dataContext.conversionData);
             }
             propagateResult();
+        }
+    }
+
+    private function doStartCalculation():void{
+        started = true;
+        try {
+            doCalculationAndPropagateResult();
+        } catch (e:Error) {
+            Alert.show("Error in calculation " + e.message);
         }
     }
 

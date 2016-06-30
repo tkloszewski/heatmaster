@@ -154,7 +154,7 @@
             }
         }
 
-        public function showStationsMap(stationsConfig:StationsConfig,selectedStation:StationItem):void {
+        public function showStationsMap(stationsConfig:StationsConfig, selectedStation:StationItem):void {
             if (stationsPanel.visible) {
                 stationsPanel.visible = false;
                 heatMasterContainer.removeElement(stationsPanel);
@@ -164,7 +164,7 @@
             var bitmapImg:BitmapImage = new BitmapImage();
             bitmapImg.source = stationsConfig.mapImage;
 
-            stationsPanel.setStations(stationsConfig.stations,selectedStation);
+            stationsPanel.setStations(stationsConfig.stations, selectedStation);
             stationsPanel.width = bitmapImg.sourceWidth + 0.25 * bitmapImg.sourceWidth;
             stationsPanel.height = bitmapImg.sourceHeight + 1;
             stationsPanel.mapImage = stationsConfig.mapImage;
@@ -400,7 +400,7 @@
                 heatMasterContainer.removeElement(blurringImg);
 
                 heatMasterContainer.addElement(housePopup);
-                heatMasterListener.setCacheReady(true);
+                heatMasterListener.setCacheEnabled(true);
                 heatMasterListener.languageChanged(selectedLang);
             }
             notifyLangChangeListeners(selectedLang);
@@ -456,7 +456,7 @@
             var dataContext:DataContext = heatMasterController.getDataContext();
             if (dataContext != null) {
                 cachedDataContextManager.writeCache(dataContext);
-                heatMasterListener.setCacheReady(true);
+                heatMasterListener.setCacheEnabled(true);
             }
         }
 
