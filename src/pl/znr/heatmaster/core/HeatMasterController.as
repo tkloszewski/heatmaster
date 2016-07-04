@@ -13,6 +13,8 @@ import pl.znr.heatmaster.config.CountryItem;
 
 import pl.znr.heatmaster.constants.GlobalValues;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
+import pl.znr.heatmaster.core.calc.HeatMasterWattsCalculator;
+import pl.znr.heatmaster.core.calc.ReportDataCalculator;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.converter.ConverterService;
 import pl.znr.heatmaster.core.converter.RatioCluster;

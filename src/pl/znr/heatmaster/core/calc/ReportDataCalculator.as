@@ -5,15 +5,17 @@
  * Time: 23:04
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.calc {
+import pl.znr.heatmaster.core.*;
+
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.core.BalanceValueHelper;
-import pl.znr.heatmaster.core.BalanceValueHelper;
+import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
+import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.converter.ConverterService;
 import pl.znr.heatmaster.core.converter.RatioClusterFactory;

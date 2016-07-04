@@ -1,8 +1,9 @@
 /**
  * Created by Dom on 2016-06-25.
  */
-package pl.znr.heatmaster.core {
-import pl.znr.heatmaster.core.calc.IMonthEnergyCalculator;
+package pl.znr.heatmaster.core.calc {
+import pl.znr.heatmaster.core.*;
+import pl.znr.heatmaster.core.calc.monthly.IMonthEnergyCalculator;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.calc.util.ICalculatedResultProvider;

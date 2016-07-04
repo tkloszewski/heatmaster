@@ -5,10 +5,10 @@ package pl.znr.heatmaster.core.state {
 import mx.collections.ArrayCollection;
 import mx.utils.ObjectUtil;
 
-import pl.znr.heatmaster.core.CachedDataContextManager;
+import pl.znr.heatmaster.core.cache.CachedDataContextManager;
 import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.FlatDataContextBuilder;
-import pl.znr.heatmaster.core.FlatDataContextBuilder;
+import pl.znr.heatmaster.core.cache.FlatDataContextBuilder;
+import pl.znr.heatmaster.core.cache.FlatDataContextBuilder;
 import pl.znr.heatmaster.core.HeatMasterController;
 
 import pl.znr.heatmaster.core.state.CalculationState;

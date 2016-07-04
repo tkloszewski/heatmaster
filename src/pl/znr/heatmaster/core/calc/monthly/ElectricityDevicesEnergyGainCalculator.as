@@ -5,10 +5,11 @@
  * Time: 22:18
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core.calc {
+package pl.znr.heatmaster.core.calc.monthly {
+import pl.znr.heatmaster.core.calc.*;
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
 import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.calc.EnergyCalcHelper;
+import pl.znr.heatmaster.core.calc.monthly.EnergyCalcHelper;
 import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;

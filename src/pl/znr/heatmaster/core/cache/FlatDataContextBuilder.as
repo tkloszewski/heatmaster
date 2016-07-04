@@ -5,7 +5,9 @@
  * Time: 20:04
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.cache {
+import pl.znr.heatmaster.core.*;
+
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.constants.combo.BuildingAge;

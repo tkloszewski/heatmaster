@@ -5,7 +5,9 @@
  * Time: 21:35
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core.calc {
+package pl.znr.heatmaster.core.calc.monthly {
+import pl.znr.heatmaster.core.calc.*;
+
 import mx.utils.NameUtil;
 
 import pl.znr.heatmaster.constants.combo.DropDownType;

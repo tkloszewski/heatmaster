@@ -10,7 +10,7 @@
         import mx.controls.Alert;
 
         import pl.znr.heatmaster.constants.ArrowOrientation;
-        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
@@ -49,7 +49,7 @@
                 this.calculatedValue = valueChosen;
 
                 this.scaleArrow(collectorSolarImg, value, yearValue, resultData.conversionData);
-                this.displayNewValue(valueChosen,conversionData.selectedUnit,conversionData.shortUnitName);
+                this.displayNewValue(valueChosen, conversionData.selectedUnit, conversionData.shortUnitName);
             } catch (e:Error) {
                 Alert.show("Collector gain error " + e.message);
             }

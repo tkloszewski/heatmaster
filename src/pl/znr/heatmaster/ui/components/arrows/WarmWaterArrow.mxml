@@ -8,7 +8,7 @@
 
     <fx:Script><![CDATA[
         import pl.znr.heatmaster.constants.ArrowOrientation;
-        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
 
         override protected function getArrowOrientation():int {

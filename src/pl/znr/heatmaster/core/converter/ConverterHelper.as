@@ -9,7 +9,7 @@ package pl.znr.heatmaster.core.converter {
 import mx.rpc.mxml.Concurrency;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
-import pl.znr.heatmaster.core.ConvertedResult;
+import pl.znr.heatmaster.core.converter.ConvertedResult;
 import pl.znr.heatmaster.core.ProcessingResult;
 
 public class ConverterHelper {

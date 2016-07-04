@@ -5,7 +5,9 @@
  * Time: 23:06
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.cache {
+import pl.znr.heatmaster.core.*;
+
 import flash.net.SharedObject;
 import flash.net.registerClassAlias;
 
@@ -18,7 +20,7 @@ import pl.znr.heatmaster.constants.combo.HeatingSourceType;
 import pl.znr.heatmaster.constants.combo.SolarCollectorType;
 import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
 import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-import pl.znr.heatmaster.core.FlatDataContext;
+import pl.znr.heatmaster.core.cache.FlatDataContext;
 
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
@@ -95,7 +97,7 @@ public class CachedDataContextManager {
     }
 
     private function registerClassAliases():void {
-        registerClassAlias("pl.znr.heatmaster.core.FlatDataContext",FlatDataContext);
+        registerClassAlias("pl.znr.heatmaster.core.cache.FlatDataContext",FlatDataContext);
     }
 
 }

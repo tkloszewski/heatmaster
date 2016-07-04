@@ -5,23 +5,25 @@
  * Time: 21:16
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
-import pl.znr.heatmaster.core.calc.AiringEnergyCalculator;
-import pl.znr.heatmaster.core.calc.CompositeEnergyCalculator;
-import pl.znr.heatmaster.core.calc.ElectricityDevicesEnergyGainCalculator;
-import pl.znr.heatmaster.core.calc.FloorEnergyCalculator;
-import pl.znr.heatmaster.core.calc.FoundationsEnergyCalculator;
-import pl.znr.heatmaster.core.calc.PersonEnergyGainCalculator;
-import pl.znr.heatmaster.core.calc.RoofEnergyCalculator;
-import pl.znr.heatmaster.core.calc.SolarCollectorEnergyGainCalculator;
-import pl.znr.heatmaster.core.calc.SolarEnergyGainCalculator;
-import pl.znr.heatmaster.core.calc.TightnessEnergyCalculator;
-import pl.znr.heatmaster.core.calc.VentilationEnergyCalculator;
-import pl.znr.heatmaster.core.calc.WallEnergyCalculator;
-import pl.znr.heatmaster.core.calc.WarmWaterEnergyCalculator;
-import pl.znr.heatmaster.core.calc.WindowsEnergyCalculator;
+package pl.znr.heatmaster.core.calc {
+import pl.znr.heatmaster.core.*;
+import pl.znr.heatmaster.core.calc.monthly.AiringEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.CompositeEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.ElectricityDevicesEnergyGainCalculator;
+import pl.znr.heatmaster.core.calc.monthly.FloorEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.FoundationsEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.PersonEnergyGainCalculator;
+import pl.znr.heatmaster.core.calc.monthly.RoofEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.SolarCollectorEnergyGainCalculator;
+import pl.znr.heatmaster.core.calc.monthly.SolarEnergyGainCalculator;
+import pl.znr.heatmaster.core.calc.monthly.TightnessEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.VentilationEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.WallEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.WarmWaterEnergyCalculator;
+import pl.znr.heatmaster.core.calc.monthly.WindowsEnergyCalculator;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.calc.model.MonthInputData;
+import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
 import pl.znr.heatmaster.core.calc.util.CalcUtils;
 import pl.znr.heatmaster.core.calc.util.GaussianDistributor;
 import pl.znr.heatmaster.core.calc.util.ICalculatedResultProvider;

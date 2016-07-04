@@ -90,7 +90,7 @@
         import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
         import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
 
-        import pl.znr.heatmaster.core.CachedDataContextManager;
+        import pl.znr.heatmaster.core.cache.CachedDataContextManager;
         import pl.znr.heatmaster.core.DataContext;
 
         import pl.znr.heatmaster.core.HeatMasterController;
@@ -228,7 +228,7 @@
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
-            calculationStateController = new CalculationStateController(heatMasterController,heatMasterListener,cachedDataContextManager);
+            calculationStateController = new CalculationStateController(heatMasterController, heatMasterListener, cachedDataContextManager);
 
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
@@ -360,8 +360,8 @@
             if (component is LangChangeListener) {
                 langChangeListeners.addItem(component as LangChangeListener);
             }
-            if(component is ICalculationStateListener){
-               calculationStateController.addCalculationStateListener(component as ICalculationStateListener);
+            if (component is ICalculationStateListener) {
+                calculationStateController.addCalculationStateListener(component as ICalculationStateListener);
             }
             if (component is IVisualElementContainer) {
                 var visualElementContainer:IVisualElementContainer = component as IVisualElementContainer;

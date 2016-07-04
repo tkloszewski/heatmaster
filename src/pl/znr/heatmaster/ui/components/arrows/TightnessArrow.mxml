@@ -9,7 +9,7 @@
     <fx:Script><![CDATA[
         import pl.znr.heatmaster.constants.ArrowOrientation;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
-        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
@@ -42,7 +42,7 @@
             var regularArrowVisible:Boolean = value > 0;
             tightnessImgArrow.visible = regularArrowVisible;
             tightnessImgGainArrow.visible = !regularArrowVisible;
-            return regularArrowVisible ? tightnessImgArrow :tightnessImgGainArrow;
+            return regularArrowVisible ? tightnessImgArrow : tightnessImgGainArrow;
         }
         ]]></fx:Script>
 

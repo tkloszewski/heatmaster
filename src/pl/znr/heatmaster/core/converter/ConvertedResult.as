@@ -5,7 +5,7 @@
  * Time: 08:19
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.converter {
 
 public class ConvertedResult {
 

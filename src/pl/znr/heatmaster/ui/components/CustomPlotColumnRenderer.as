@@ -15,7 +15,7 @@ import mx.skins.ProgrammaticSkin;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
-import pl.znr.heatmaster.core.ConvertedResult;
+import pl.znr.heatmaster.core.converter.ConvertedResult;
 
 import spark.primitives.Graphic;
 

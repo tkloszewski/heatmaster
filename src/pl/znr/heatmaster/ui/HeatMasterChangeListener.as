@@ -32,7 +32,7 @@ import pl.znr.heatmaster.constants.combo.InsulationElementType;
 import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
 import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.core.CachedDataContextManager;
+import pl.znr.heatmaster.core.cache.CachedDataContextManager;
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.HeatMasterController;
 import pl.znr.heatmaster.core.HouseStandardTypeContext;

@@ -13,7 +13,7 @@
         import pl.znr.heatmaster.constants.ArrowOrientation;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
-        import pl.znr.heatmaster.core.ConvertedResult;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
 
@@ -57,9 +57,9 @@
 
         override protected function adjustPercentageLabel(percentageLabel:Label):void {
             /*
-            percentageLabel.x = percentageLabel.x + percentageLabel.width * 0.4;
-            percentageLabel.width = percentageLabel.width * 0.6;
-            */
+             percentageLabel.x = percentageLabel.x + percentageLabel.width * 0.4;
+             percentageLabel.width = percentageLabel.width * 0.6;
+             */
             super.adjustPercentageLabel(percentageLabel);
         }
 
@@ -75,7 +75,6 @@
         override protected function setValueLabelWithUnitsInlinePosition():void {
             airValueLabel.y = unitsInlineValueLabelY;
         }
-
         ]]></fx:Script>
 
 

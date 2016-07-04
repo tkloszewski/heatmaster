@@ -6,7 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core {
+import pl.znr.heatmaster.core.calc.WattsEnergyResult;
 import pl.znr.heatmaster.core.converter.ConversionData;
+import pl.znr.heatmaster.core.converter.ConvertedResult;
 
 public class ProcessingResult {
 

@@ -5,7 +5,7 @@
  * Time: 11:09
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.calc {
 public class WattsEnergyResult {
 
     private var _monthlyEnergyConsumption:Array = [];

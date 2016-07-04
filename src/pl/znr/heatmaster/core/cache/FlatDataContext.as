@@ -5,7 +5,7 @@
  * Time: 18:26
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.core {
+package pl.znr.heatmaster.core.cache {
 public class FlatDataContext {
     public function FlatDataContext() {
     }
