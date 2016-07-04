@@ -10,7 +10,7 @@
                xmlns:tooltip="pl.znr.heatmaster.ui.components.tooltip.*"
                creationComplete="appInitialized()"
                initialize="initHeatMaster()"
-               preinitialize=""
+               preinitialize="preinitialize()"
                pageTitle="HeatMaster"
                preloader="pl.znr.heatmaster.CustomPreloader"
 
@@ -77,15 +77,37 @@
         import pl.znr.heatmaster.config.RegionItem;
         import pl.znr.heatmaster.config.StationItem;
         import pl.znr.heatmaster.config.StationsConfig;
+        import pl.znr.heatmaster.constants.combo.BaseComboObject;
+        import pl.znr.heatmaster.constants.combo.BuildingAge;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
+        import pl.znr.heatmaster.constants.combo.DoorType;
+        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+        import pl.znr.heatmaster.constants.combo.HouseStandardType;
+        import pl.znr.heatmaster.constants.combo.InsulationQuality;
+        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
+        import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
+        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
+        import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
 
         import pl.znr.heatmaster.core.CachedDataContextManager;
         import pl.znr.heatmaster.core.DataContext;
 
         import pl.znr.heatmaster.core.HeatMasterController;
         import pl.znr.heatmaster.core.IBuildingAgeChangeListener;
+        import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
+        import pl.znr.heatmaster.core.model.HeatingSourceData;
+        import pl.znr.heatmaster.core.model.HouseData;
         import pl.znr.heatmaster.core.model.InsolationData;
+        import pl.znr.heatmaster.core.model.InsulationElement;
+        import pl.znr.heatmaster.core.model.SolarCollectorData;
+        import pl.znr.heatmaster.core.model.SurfaceData;
+        import pl.znr.heatmaster.core.model.VentilationData;
+        import pl.znr.heatmaster.core.model.WarmWaterData;
+        import pl.znr.heatmaster.core.model.WindowElement;
+        import pl.znr.heatmaster.core.state.CalculationStateController;
+        import pl.znr.heatmaster.core.state.ICalculationStateListener;
         import pl.znr.heatmaster.locale.HeatMasterLocaleManager;
         import pl.znr.heatmaster.locale.LangHelper;
         import pl.znr.heatmaster.ui.HeatMasterChangeListener;
@@ -113,6 +135,7 @@
         private var environmentalDataPreparer:EnvironmentalDataPreparer = new EnvironmentalDataPreparer();
         private var configurationReader:HeatMasterConfigurationReader;
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
+        private var calculationStateController:CalculationStateController;
 
         private var stationsPanel:StationsPanel;
 
@@ -205,6 +228,8 @@
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
+            calculationStateController = new CalculationStateController(heatMasterController,heatMasterListener,cachedDataContextManager);
+
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
             configItems = configurationReader.readConfig();
@@ -277,6 +302,10 @@
             return richText;
         }
 
+        private function preinitialize():void {
+
+        }
+
         private function appInitialized():void {
             BrowserManager.getInstance().setFragment("HeatMaster");
             BrowserManager.getInstance().setTitle("HeatMaster");
@@ -295,6 +324,7 @@
             heatingPopup.configChanged(countryItem, true);
             housePanel.energyMeter.countryChanged(countryItem);
             housePanel.energyMeter.setConfigurationReader(configurationReader);
+            housePanel.energyMeter.setCalculationStateController(calculationStateController);
 
             startButtonVisible = cachedData == null;
 
@@ -329,6 +359,9 @@
             }
             if (component is LangChangeListener) {
                 langChangeListeners.addItem(component as LangChangeListener);
+            }
+            if(component is ICalculationStateListener){
+               calculationStateController.addCalculationStateListener(component as ICalculationStateListener);
             }
             if (component is IVisualElementContainer) {
                 var visualElementContainer:IVisualElementContainer = component as IVisualElementContainer;

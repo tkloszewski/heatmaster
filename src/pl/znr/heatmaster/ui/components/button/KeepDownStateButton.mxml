@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-03.
+-->
+<s:Button xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark">
+
+  <fx:Script><![CDATA[
+    private var _isKeyDown:Boolean = false;
+
+    public function get isKeyDown():Boolean {
+      return _isKeyDown;
+    }
+
+    public function set isKeyDown(b:Boolean):void {
+      _isKeyDown = b;
+      this.invalidateSkinState();
+    }
+
+    // Add handlers in here to set isKeyDown to true/false appropriately
+
+    override protected function getCurrentSkinState():String {
+      if (isKeyDown)
+        return "down";
+      else
+        return super.getCurrentSkinState();
+    }
+    ]]></fx:Script>
+
+
+
+</s:Button>

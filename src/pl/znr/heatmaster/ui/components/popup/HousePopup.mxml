@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+<hm:HeatMasterComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
                         xmlns:fx="http://ns.adobe.com/mxml/2009"
                         xmlns:mx="library://ns.adobe.com/flex/mx"
                         xmlns:s="library://ns.adobe.com/flex/spark"
@@ -65,11 +65,7 @@
         private var houseDataChangeListener:HouseSurfaceDataChangeListener = new HouseSurfaceDataChangeListener();
         private var surfaceData:SurfaceData;
 
-        [Bindable]
-        private var rolledUp:Boolean = true;
-
         private var detailsVisible:Boolean = false;
-
         private var currentImg:mx.controls.Image;
 
         private var countryList:ArrayCollection;
@@ -77,9 +73,10 @@
         private var selectedCountry:CountryItem;
         private var stationsConfig:StationsConfig;
         private var selectedStation:StationItem;
-
-
         private var defaultItemCode:String;
+
+        [Bindable]
+        private var rolledUp:Boolean = true;
 
         [Bindable]
         private var regionsVisible:Boolean = false;
@@ -189,14 +186,14 @@
             return 0;
         }
 
+        public function calculationStateSwitched(stateFrozen:Boolean):void {
+            housePopupUpperGroup.enabled = !stateFrozen;
+            lowerBorderContainer.enabled = !stateFrozen;
+        }
+
         public function rollDownStartupPopup():void {
             housePopupMainSmallImg.visible = true;
             housePopupUpperGroup.visible = true;
-
-            /*
-             housePopupLowerGroup.visible = true;
-             housePopupLowerLeftGroup.visible = true;
-             */
             housePopupOkBtn.visible = true;
         }
 
@@ -204,7 +201,6 @@
             housePopupOkBtn.visible = false;
             detailsCheckBox.visible = true;
             tabClickGroup.visible = true;
-            //countryDropDownList.enabled = false;
             rolledUp = false;
             setComponentsVisibility(false);
             housePopupMainSmallImg.visible = false;
@@ -224,7 +220,6 @@
                 trace("Error while changing standard type: " + e.getStackTrace());
             }
         }
-
 
         private function getSelectedCountryIndex(configItems:ArrayCollection, code:String):int {
             var selectedIdx:int = 0;
@@ -254,25 +249,12 @@
             return CollectionHelper.getItemByProperty(configItems, "code", code);
         }
 
-
         private function setDetailsVisibility():void {
             detailsVisible = detailsCheckBox.selected;
             housePopupMainImg.visible = detailsVisible;
             housePopupMainSmallImg.visible = !detailsVisible;
             currentImg = detailsVisible ? housePopupMainImg : housePopupMainSmallImg;
-            setEnableFloorHeightAndCountNS(detailsVisible);
             doSetDetailsVisibility(detailsVisible);
-        }
-
-        private function setEnableFloorHeightAndCountNS(enable:Boolean):void {
-            /*
-             floorHeightNS.enabled = enable;
-             floorsCountNS.enabled = enable;
-             floorHeightNS.skin.setCurrentState(enable ? "normal" : "disabled");
-             floorHeightNS.skin.invalidateDisplayList();
-             floorsCountNS.skin.setCurrentState(enable ? "normal" : "disabled");
-             floorsCountNS.skin.invalidateDisplayList();
-             */
         }
 
         private function doSetDetailsVisibility(visible:Boolean):void {
@@ -442,7 +424,6 @@
 
         private function housePopupCreated():void {
             currentImg = housePopupMainSmallImg;
-            setEnableFloorHeightAndCountNS(false);
             hideRolledIcons();
         }
 
@@ -662,7 +643,7 @@
 
     <s:BorderContainer x="15" y="240" width="270" height="88" id="lowerBorderContainer" visible="false" borderVisible="false" borderColor="red" borderWeight="1" backgroundAlpha="0.0">
 
-        <s:Group x="-17" y="3" id="housePopupLowerLeftGroup" >
+        <s:Group x="-17" y="3" id="housePopupLowerLeftGroup">
             <s:RichText x="20" y="14" styleName="pupupPanelGrayFontStyle" fontSize="11">
                 <s:textFlow>
                     <s:TextFlow>

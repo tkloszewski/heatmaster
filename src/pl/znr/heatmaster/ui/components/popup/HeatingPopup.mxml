@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<hm:HeatMasterResultComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener"
+<hm:HeatMasterResultComponent implements="pl.znr.heatmaster.ui.components.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
                         xmlns:fx="http://ns.adobe.com/mxml/2009"
                         xmlns:mx="library://ns.adobe.com/flex/mx"
                         xmlns:s="library://ns.adobe.com/flex/spark"
@@ -324,7 +324,6 @@
             setWarmWaterVisibility(false);
         }
 
-
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
             var houseType:int = dataContext.houseData.houseType;
             var heatingSourceType:HeatingSourceType = houseType == HouseTypeHelper.isDetachedType(houseType) ? context.model.heatingSourceType : context.model.multiFamilyHeatingSourceType;
@@ -478,16 +477,15 @@
                 }
             }
 
-            var result:WarmWaterData = null;
-            try {
-                var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
-                collectorTypeDropDownList.enabled = regularRoof;
-                setNumericStepperEnable(regularRoof, solarSurfaceNS);
-                result = createWarmWaterData();
-            } catch (e:Error) {
-                Alert.show("Error creating warmWater data: " + e.message);
-            }
-            return result;
+            var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
+            collectorTypeDropDownList.enabled = regularRoof;
+            setNumericStepperEnable(regularRoof, solarSurfaceNS);
+            return createWarmWaterData();
+        }
+
+        public function calculationStateSwitched(stateFrozen:Boolean):void {
+            includeWarmWaterCheckBox.enabled = !stateFrozen;
+            warmWaterBorderContainer.enabled = !stateFrozen;
         }
 
         public function rollDownStartupPopup():void {
@@ -900,7 +898,7 @@
 
     <mx:Image x="6"  y="2"  id="heatPopupMainSmallImg" scaleY="1.35" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_heat_small.png')" />
     <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.25" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
-    <s:Image x="12" y="6"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
+    <s:Image x="12"  y="6"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
 
     <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
 

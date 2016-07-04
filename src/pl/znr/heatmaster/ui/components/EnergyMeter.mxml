@@ -3,7 +3,8 @@
                               xmlns:s="library://ns.adobe.com/flex/spark"
                               xmlns:mx="library://ns.adobe.com/flex/mx"
                               xmlns:hm="pl.znr.heatmaster.ui.components.*"
-        creationComplete="energyMeterInitialized()">
+                              xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
+                              creationComplete="energyMeterInitialized()">
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Script><![CDATA[
@@ -25,12 +26,15 @@
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
+        import pl.znr.heatmaster.core.state.CalculationStateController;
         import pl.znr.heatmaster.ui.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyMeterToolTip;
 
         private var configuratioReader:HeatMasterConfigurationReader;
-        private var environmentalData:EnvironmentalData
+        private var calculationStateController:CalculationStateController;
+        private var environmentalData:EnvironmentalData;
+
 
         [Bindable]
         private var selectedMonth:int = 0;
@@ -38,15 +42,14 @@
         private var calculatedValue:Number;
 
         [Bindable]
-        private var formattedValue:String;
+        private var formattedReferenceValue:String;
+
+        [Bindable]
+        private var formattedNewValue:String;
 
         private var unit:int;
         private var value:Number = NaN;
         private var selectedCountry:CountryItem;
-
-        private function energyMeterInitialized():void {
-            formattedValue = resourceManager.getString('hm', 'hm.labels.energy');
-        }
 
         override public function langChanged(lang:String):void {
             doLangChanged(false);
@@ -54,24 +57,6 @@
 
         override public function initialLangChanged(lang:String):void {
             doLangChanged(true);
-        }
-
-        private function doLangChanged(initial:Boolean):void {
-            var oldIdx:int = monthDropDownList.selectedIndex;
-            monthList.refresh();
-            monthDropDownList.selectedIndex = oldIdx;
-
-            if (selectedCountry != null) {
-                var currencyName:String = resourceManager.getString('hm', selectedCountry.currencyLocaleCode);
-                setUnitNames(currencyName);
-            }
-
-            if (!initial) {
-                setCalculatedValue(value, unit);
-            }
-            else {
-                formattedValue = resourceManager.getString('hm', 'hm.labels.energy');
-            }
         }
 
         override public function initData(dataContext:DataContext):DataContext {
@@ -109,24 +94,19 @@
         }
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
-            //Alert.show("Result calculated for month: " + month + " .Result = " + resultData.monthlyEnergyBalance[month]);
-            try {
-                unit = resultData.conversionData.selectedUnit;
-                value = 0;
-                var convertedResult:ConvertedResult;
-                if (ConversionUnits.isYearUnit(unit)) {
-                    value = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
-                }
-                else {
-                    convertedResult = resultData.monthlyConvertedData[month];
-                    value = convertedResult.getEfficiencyAwareBalanceValue();
-                }
-
-
-                setCalculatedValue(value, unit);
-            } catch (e:Error) {
-                Alert.show("Energy meter error" + e.message);
+            unit = resultData.conversionData.selectedUnit;
+            value = 0;
+            var convertedResult:ConvertedResult;
+            if (ConversionUnits.isYearUnit(unit)) {
+                value = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
             }
+            else {
+                convertedResult = resultData.monthlyConvertedData[month];
+                value = convertedResult.getEfficiencyAwareBalanceValue();
+            }
+
+
+            setCalculatedValue(value, unit);
         }
 
         public function countryChanged(country:CountryItem):void {
@@ -138,21 +118,63 @@
             setUnitNames(currencyName);
         }
 
-        private function setUnitNames(currencyName:String):void {
-            trace("Setting unit names: " + currencyName)
-            for each (var obj:Object in unitList) {
-                var unit:int = obj.data;
-                if (ConversionUnits.isLocalCurrencyCostUnit(unit)) {
-                    obj.name = StringUtil.substitute(resourceManager.getString('hm', obj.localeCode), currencyName);
-                }
-                else {
-                    obj.name = resourceManager.getString('hm', obj.localeCode);
-                }
-            }
+        public function environmentalDataChanged(envData:EnvironmentalData):void {
+            this.environmentalData = envData;
+            tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
+        }
 
-            var oldIdx:int = unitDropDownList.selectedIndex;
-            unitList.refresh();
-            unitDropDownList.selectedIndex = oldIdx;
+        public function setCalculatedValue(value:Number, unit:int):void {
+            this.calculatedValue = value;
+            if (calculationStateController.isReferenceValueCalculated()) {
+                formattedReferenceValue = createFormattedValue(value, unit);
+            }
+            else {
+                formattedNewValue = createFormattedValue(value, unit);
+            }
+        }
+
+        public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
+            this.configuratioReader = confReader;
+        }
+
+        override public function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void {
+            super.setHeatMasterListener(heatMasterListener);
+        }
+
+        public function setCalculationStateController(calculationStateController:CalculationStateController):void {
+            this.calculationStateController = calculationStateController;
+        }
+
+        private function showReport():void {
+
+        }
+
+        private function freezeReferenceState():void {
+            freezeStateButton.visible = false;
+            switchToRefStateButton.visible = true;
+            switchToNewStateButton.visible = true;
+            reportCompareButton.visible = true;
+
+            switchToRefStateButton.isKeyDown = false;
+            switchToNewStateButton.isKeyDown = true;
+
+            newValueLabel.visible = true;
+
+            formattedNewValue = formattedReferenceValue.substr(0);
+
+            calculationStateController.freezeReferenceState();
+        }
+
+        private function switchToNewState():void {
+            switchToRefStateButton.isKeyDown = false;
+            switchToNewStateButton.isKeyDown = true;
+            calculationStateController.switchToNewState();
+        }
+
+        private function switchToReferenceState():void {
+            switchToRefStateButton.isKeyDown = true;
+            switchToNewStateButton.isKeyDown = false;
+            calculationStateController.switchToReferenceState();
         }
 
         private function unitUIChanged():void {
@@ -195,20 +217,6 @@
             }
         }
 
-        public function environmentalDataChanged(envData:EnvironmentalData):void {
-            this.environmentalData = envData;
-            tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
-        }
-
-        public function setCalculatedValue(value:Number, unit:int):void {
-            this.calculatedValue = value;
-            formattedValue = createFormattedValue(value, unit);
-        }
-
-        public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
-            this.configuratioReader = confReader;
-        }
-
         private function createFormattedValue(value:Number, unit:int):String {
             var format:NumberFormatter = new NumberFormatter();
             format.precision = 0;
@@ -242,6 +250,24 @@
             }
         }
 
+        private function doLangChanged(initial:Boolean):void {
+            var oldIdx:int = monthDropDownList.selectedIndex;
+            monthList.refresh();
+            monthDropDownList.selectedIndex = oldIdx;
+
+            if (selectedCountry != null) {
+                var currencyName:String = resourceManager.getString('hm', selectedCountry.currencyLocaleCode);
+                setUnitNames(currencyName);
+            }
+
+            if (!initial) {
+                setCalculatedValue(value, unit);
+            }
+            else {
+                formattedReferenceValue = resourceManager.getString('hm', 'hm.labels.energy');
+            }
+        }
+
         private function setMonthComponentsVisibility(conversionUnit:int):void {
             monthGroup.visible = !ConversionUnits.isYearUnit(conversionUnit);
             hRule.visible = !ConversionUnits.isYearUnit(conversionUnit);
@@ -254,8 +280,25 @@
             HeatMaster.getInstance().addToolTip(x, y, toolTip);
         }
 
-        override public function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void {
-            super.setHeatMasterListener(heatMasterListener);
+        private function energyMeterInitialized():void {
+            formattedReferenceValue = resourceManager.getString('hm', 'hm.labels.energy');
+        }
+
+        private function setUnitNames(currencyName:String):void {
+            trace("Setting unit names: " + currencyName)
+            for each (var obj:Object in unitList) {
+                var unit:int = obj.data;
+                if (ConversionUnits.isLocalCurrencyCostUnit(unit)) {
+                    obj.name = StringUtil.substitute(resourceManager.getString('hm', obj.localeCode), currencyName);
+                }
+                else {
+                    obj.name = resourceManager.getString('hm', obj.localeCode);
+                }
+            }
+
+            var oldIdx:int = unitDropDownList.selectedIndex;
+            unitList.refresh();
+            unitDropDownList.selectedIndex = oldIdx;
         }
         ]]></fx:Script>
 
@@ -266,13 +309,13 @@
             <fx:Object name="" localeCode = "hm.dropdown.heat_loss.watts" data="{ConversionUnits.ENERGY_WATTS}" labelUnit="Waty" shortUnit="hm.unit.watts"/>
             <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.kwh.year" data="{ConversionUnits.ENERGY_KWH_PER_YEAR}" labelUnit="kWh/rok" shortUnit="hm.unit.kwh.year"/>
             <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.gj.year" data="{ConversionUnits.ENERGY_GJ_PER_YEAR}" labelUnit="GJ/rok" shortUnit="hm.unit.gj.year"/>
-            <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.kwh.month" data="{ConversionUnits.ENERGY_KWH_PER_MONTH}" labelUnit="kWh/mc" shortUnit="hm.unit.kwh.month"/>
-            <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.gj.month" data="{ConversionUnits.ENERGY_GJ_PER_MONTH}" labelUnit="GJ/mc" shortUnit="hm.unit.gj.month"/>
+            <!--<fx:Object name="" localeCode = "hm.dropdown.energy.consumption.kwh.month" data="{ConversionUnits.ENERGY_KWH_PER_MONTH}" labelUnit="kWh/mc" shortUnit="hm.unit.kwh.month"/>-->
+            <!--<fx:Object name="" localeCode = "hm.dropdown.energy.consumption.gj.month" data="{ConversionUnits.ENERGY_GJ_PER_MONTH}" labelUnit="GJ/mc" shortUnit="hm.unit.gj.month"/>-->
             <fx:Object name="" localeCode = "hm.dropdown.emission.year" data="{ConversionUnits.EMISSIONS_PER_YEAR}" labelUnit="CO2 kg/rok" shortUnit="hm.unit.kg.year"/>
             <fx:Object name="" localeCode = "hm.dropdown.energy.cost.year" data="{ConversionUnits.COST_PER_YEAR}" labelUnit="zł/rok" shortUnit="hm.currency.euro.year_cost"/>
             <fx:Object name="" localeCode = "hm.dropdown.energy.cost.local-currency.year" data="{ConversionUnits.LOCAL_CURRENCY_COTS_PER_YEAR}" labelUnit="zł/rok" shortUnit="hm.currency.euro.year_cost"/>
-            <fx:Object name="" localeCode = "hm.dropdown.energy.cost.month" data="{ConversionUnits.COST_PER_MONTH}" labelUnit="zł/mc" shortUnit="hm.currency.euro.month_cost"/>
-            <fx:Object name="" localeCode = "hm.dropdown.energy.cost.local-currency.month" data="{ConversionUnits.LOCAL_CURRENCY_COST_PER_MONTH}" labelUnit="zł/mc" shortUnit="hm.currency.euro.month_cost"/>
+            <!--<fx:Object name="" localeCode = "hm.dropdown.energy.cost.month" data="{ConversionUnits.COST_PER_MONTH}" labelUnit="zł/mc" shortUnit="hm.currency.euro.month_cost"/>-->
+            <!--<fx:Object name="" localeCode = "hm.dropdown.energy.cost.local-currency.month" data="{ConversionUnits.LOCAL_CURRENCY_COST_PER_MONTH}" labelUnit="zł/mc" shortUnit="hm.currency.euro.month_cost"/>-->
         </s:ArrayCollection>
 
         <s:ArrayCollection id="monthList">
@@ -292,14 +335,21 @@
     </fx:Declarations>
 
 
-    <s:Image x="0" y="0" source="@Embed('/pl/znr/heatmaster/assets/images/licznik.png')"/>
-    <s:DropDownList x="24" y="30" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="7" change="unitUIChanged()"
+    <s:Image x="0" y="0" scaleY="1.20" source="@Embed('/pl/znr/heatmaster/assets/images/licznik.png')"/>
+    <s:DropDownList x="24" y="30" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="5" change="unitUIChanged()"
                     fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
-    <s:Label x="20" y="59" width="168" text="{formattedValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>
+
+    <s:Label id="refValueLabel" x="20" y="59"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToRefStateButton" visible="false" y="55" x="{refValueLabel.x + refValueLabel.width}" width="20" click="switchToReferenceState()"/>
+
+    <s:Label x="20" y="79" id="newValueLabel" visible="false" width="138" text="{formattedNewValue}" styleName="popupPanelHeader" color="yellow" fontSize="16" textAlign="center" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToNewStateButton" visible="false" y="75" x="{newValueLabel.x + newValueLabel.width}" width="20" click="switchToNewState()"/>
+
+
 
     <mx:HRule id="hRule" x="28" y="79" width="151" height="1"/>
 
-    <s:Group x="0" y="86" id="monthGroup">
+    <s:Group x="0" y="86" id="monthGroup" visible="false">
         <s:DropDownList id="monthDropDownList" x="24" y="1" width="86" dataProvider="{monthList}" selectedIndex="0" change="monthChanged()"
                         fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
         <s:NumericStepper id="tempSE" x="114" y="1" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="-20" maximum="40" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin" change="tempChanged()"/>
@@ -307,6 +357,9 @@
             <s:span>C</s:span><s:span baselineShift="superscript">0</s:span>
         </s:RichText>
     </s:Group>
+
+    <s:Button id="freezeStateButton" y="100" x="24" width="155" color="gray" fontSize="10" fontWeight="bold"  click="freezeReferenceState()" label="{resourceManager.getString('hm','hm.button.compare.houses')}" />
+    <s:Button id="reportCompareButton" y="100" x="24" width="155" color="gray" fontSize="10" fontWeight="bold"  click="showReport()" label="{resourceManager.getString('hm','hm.button.compare.report')}" visible="false"/>
 
     <mx:Button top="1" right="1" buttonMode="true"
                skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
