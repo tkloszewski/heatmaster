@@ -16,10 +16,14 @@ import mx.utils.StringUtil;
 
 import org.osmf.utils.OSMFStrings;
 
+import pl.znr.heatmaster.constants.StateConstants;
+
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.StateDataContext;
 
 import pl.znr.heatmaster.ui.HeatMasterChangeListener;
 import pl.znr.heatmaster.ui.IDataContextAware;
+import pl.znr.heatmaster.util.HeatMasterFormatter;
 
 import spark.components.Group;
 
@@ -28,10 +32,6 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
     protected var heatMasterListener:HeatMasterChangeListener;
 
     public function HeatMasterComponent() {
-    }
-
-    protected function componentCreated():void {
-
     }
 
     public function langChanged(lang:String):void {
@@ -47,29 +47,17 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
     public function setupView(dataContext:DataContext):void {
     }
 
+    public function setupReferenceView(stateDataContext:StateDataContext):void {
+        var currentDataContext:DataContext = stateDataContext.getCurrentDataContext();
+        setupView(currentDataContext);
+    }
+
     public function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void {
-        // Alert.show(id  + " has injected hm listener");
         this.heatMasterListener = heatMasterListener;
     }
 
     protected function formatHMValue(value:Number,precision:int = 0,useThousandSeparator:Boolean = false):String{
-        var formatter:NumberFormatter = createNearestPrecisionFormatter(precision);
-        formatter.useThousandsSeparator = false;
-        if (useThousandSeparator) {
-            if (value >= 10000) {
-                formatter.useThousandsSeparator = true;
-                formatter.thousandsSeparatorTo = " ";
-                formatter.thousandsSeparatorFrom = " ";
-            }
-        }
-        return formatter.format(value);
-    }
-
-    protected function createNearestPrecisionFormatter(precision:int = 0):NumberFormatter {
-        var format:NumberFormatter = new NumberFormatter();
-        format.precision = precision;
-        format.rounding = NumberBaseRoundType.NEAREST;
-        return format;
+        return HeatMasterFormatter.formatHMValue(value,precision,useThousandSeparator);
     }
 
     protected function getComboItemIndex(dataObject:Object,dataItemList:ArrayList):int {
@@ -79,7 +67,6 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
                 return i;
             }
         }
-        //Alert.show("Not found idx...");
         return -1;
     }
 
@@ -90,7 +77,6 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
                 return i;
             }
         }
-        //Alert.show("Not found idx...");
         return -1;
     }
 

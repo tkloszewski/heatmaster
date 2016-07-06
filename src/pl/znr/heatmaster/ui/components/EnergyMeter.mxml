@@ -19,11 +19,14 @@
         import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
-        import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
-        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.ProcessingResult;
+        import pl.znr.heatmaster.core.StateDataContext;
+        import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
+        import pl.znr.heatmaster.core.comparator.ComparatorResult;
+        import pl.znr.heatmaster.core.comparator.ProcessingResultComparator;
         import pl.znr.heatmaster.core.converter.ConversionData;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
         import pl.znr.heatmaster.core.state.CalculationStateController;
@@ -50,6 +53,9 @@
         private var unit:int;
         private var value:Number = NaN;
         private var selectedCountry:CountryItem;
+
+        private var refProcessingResult:ProcessingResult;
+        private var newProcessingResult:ProcessingResult;
 
         override public function langChanged(lang:String):void {
             doLangChanged(false);
@@ -93,6 +99,29 @@
             tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
         }
 
+
+        override public function setupReferenceView(stateDataContext:StateDataContext):void {
+            var currentDataContext:DataContext = stateDataContext.getCurrentDataContext();
+            var prevDataContext:DataContext = stateDataContext.getPreviousDataContext();
+
+            setupView(currentDataContext);
+
+            if (stateDataContext.newDataContext != null) {
+                var prevProcessingResult:ProcessingResult = calculationStateController.calculateStateless(prevDataContext);
+                var prevValue:Number = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(prevProcessingResult);
+                setCalculatedValue(prevValue, prevProcessingResult.conversionData.selectedUnit, true);
+
+                if (calculationStateController.isNewValueCalculated()) {
+                    refProcessingResult = prevProcessingResult;
+                    initNewStateView();
+                }
+                else {
+                    newProcessingResult = prevProcessingResult;
+                    initReferenceStateView();
+                }
+            }
+        }
+
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
             unit = resultData.conversionData.selectedUnit;
             value = 0;
@@ -105,6 +134,12 @@
                 value = convertedResult.getEfficiencyAwareBalanceValue();
             }
 
+            if (calculationStateController.isReferenceValueCalculated()) {
+                refProcessingResult = resultData;
+            }
+            else {
+                newProcessingResult = resultData;
+            }
 
             setCalculatedValue(value, unit);
         }
@@ -123,13 +158,23 @@
             tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
         }
 
-        public function setCalculatedValue(value:Number, unit:int):void {
+        public function setCalculatedValue(value:Number, unit:int, previousMode:Boolean = false):void {
             this.calculatedValue = value;
             if (calculationStateController.isReferenceValueCalculated()) {
-                formattedReferenceValue = createFormattedValue(value, unit);
+                if (!previousMode) {
+                    formattedReferenceValue = createFormattedValue(value, unit);
+                }
+                else {
+                    formattedNewValue = createFormattedValue(value, unit);
+                }
             }
             else {
-                formattedNewValue = createFormattedValue(value, unit);
+                if (!previousMode) {
+                    formattedNewValue = createFormattedValue(value, unit);
+                }
+                else {
+                    formattedReferenceValue = createFormattedValue(value, unit);
+                }
             }
         }
 
@@ -145,36 +190,57 @@
             this.calculationStateController = calculationStateController;
         }
 
-        private function showReport():void {
 
+        private function showReport():void {
+            var comparatorResult:ComparatorResult = new ProcessingResultComparator().compare(refProcessingResult, newProcessingResult);
+            HeatMaster.getInstance().showBalanceReport(comparatorResult);
         }
 
         private function freezeReferenceState():void {
-            freezeStateButton.visible = false;
-            switchToRefStateButton.visible = true;
-            switchToNewStateButton.visible = true;
-            reportCompareButton.visible = true;
-
-            switchToRefStateButton.isKeyDown = false;
-            switchToNewStateButton.isKeyDown = true;
-
-            newValueLabel.visible = true;
+            initNewStateView();
 
             formattedNewValue = formattedReferenceValue.substr(0);
+            newProcessingResult = refProcessingResult;
 
             calculationStateController.freezeReferenceState();
         }
 
         private function switchToNewState():void {
-            switchToRefStateButton.isKeyDown = false;
-            switchToNewStateButton.isKeyDown = true;
+            switchToNewStateView();
             calculationStateController.switchToNewState();
         }
 
         private function switchToReferenceState():void {
+            switchToReferenceStateView();
+            calculationStateController.switchToReferenceState();
+        }
+
+        private function initReferenceStateView():void {
+            showReferenceStateComponents();
+            switchToReferenceStateView();
+        }
+
+        private function initNewStateView():void {
+            showReferenceStateComponents();
+            switchToNewStateView();
+        }
+
+        private function switchToReferenceStateView():void {
             switchToRefStateButton.isKeyDown = true;
             switchToNewStateButton.isKeyDown = false;
-            calculationStateController.switchToReferenceState();
+        }
+
+        private function switchToNewStateView():void {
+            switchToRefStateButton.isKeyDown = false;
+            switchToNewStateButton.isKeyDown = true;
+        }
+
+        private function showReferenceStateComponents():void {
+            freezeStateButton.visible = false;
+            switchToRefStateButton.visible = true;
+            switchToNewStateButton.visible = true;
+            reportCompareButton.visible = true;
+            newValueLabel.visible = true;
         }
 
         private function unitUIChanged():void {

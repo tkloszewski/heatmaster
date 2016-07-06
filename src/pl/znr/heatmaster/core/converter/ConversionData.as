@@ -25,6 +25,15 @@ public class ConversionData {
     public function ConversionData() {
     }
 
+    public static function buildConversionDataFromConversionData(conversionData:ConversionData,unit:int){
+        var result:ConversionData = buildConversionData(unit,conversionData.pricePerKwh);
+        result.waterPricePerkWh = conversionData.waterPricePerkWh;
+        result.houseHeatingEfficiency = conversionData.houseHeatingEfficiency;
+        result.warmWaterHeatingEfficiency = conversionData.warmWaterHeatingEfficiency;
+        result.electricityPricePerKwh = conversionData.electricityPricePerKwh;
+        return result;
+    }
+
     public static function buildConversionData(selectedUnit:int,privePerkWh:Number):ConversionData {
         var conversionData:ConversionData = new ConversionData();
         conversionData.selectedUnit = selectedUnit;

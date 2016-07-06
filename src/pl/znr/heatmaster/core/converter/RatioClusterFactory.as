@@ -16,11 +16,15 @@ public class RatioClusterFactory {
     public function RatioClusterFactory() {
     }
 
+    public static function fromWattsToKwhRatio(){
+        return (24 * 30)/1000;
+    }
+
     public static function getMonthlyWattsRatioCluster(conversionData:ConversionData):RatioCluster {
         var x:XML = new XML();
         var ratioCluster:RatioCluster = new RatioCluster();
         ratioCluster.toWattsRatio = 1;
-        ratioCluster.tokWhRatio = (24 * 30)/1000;
+        ratioCluster.tokWhRatio = fromWattsToKwhRatio();
         ratioCluster.toCostRatio = ratioCluster.tokWhRatio * conversionData.pricePerKwh;
         ratioCluster.toGJRatio = (24 * 3600 * 30) / 1000000000;
         //ratioCluster.toEmissionRatio = ratioCluster.tokWhRatio / conversionData.houseHeatingEfficiency * conversionData.emissionCoefficient;

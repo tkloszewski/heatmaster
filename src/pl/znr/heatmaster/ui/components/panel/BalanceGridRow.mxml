@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-05.
+-->
+<mx:GridRow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:s="library://ns.adobe.com/flex/spark">
+
+
+  <fx:Script>
+        <![CDATA[
+    import pl.znr.heatmaster.core.comparator.ComparatorResultItem;
+    import pl.znr.heatmaster.util.HeatMasterFormatter;
+
+    [Bindable]
+    public var lp:String;
+    [Bindable]
+    public var elementName:String;
+    [Bindable]
+    private var refValueInWatts:String;
+    [Bindable]
+    private var refValueInKwh:String;
+    [Bindable]
+    private var valueChanged:String;
+    [Bindable]
+    private var valueSavedInWatts:String;
+    [Bindable]
+    private var valueSavedInKwh:String;
+
+    public function set balanceItem(balanceItem:ComparatorResultItem):void {
+      refValueInWatts = formatValue(balanceItem.refValueInWatts);
+      refValueInKwh = formatValue(balanceItem.refValueInKwh);
+      valueSavedInWatts = formatValue(balanceItem.valueSavedInWatts);
+      valueSavedInKwh = formatValue(balanceItem.valueSavedInKwh);
+
+      valueChanged = balanceItem.valueChanged ? resourceManager.getString('hm', 'hm.label.yes') : resourceManager.getString('hm', 'hm.label.no');
+    }
+
+
+    private function formatValue(val:Number):String {
+      return HeatMasterFormatter.formatHMValue(val,2);
+    }
+    ]]>
+    </fx:Script>
+
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="25" >
+    <s:Label styleName="labelStyle" text="{lp}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="150" >
+    <s:Label styleName="labelStyle" text="{elementName}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center" verticalAlign="middle">
+      <s:Label styleName="labelStyle" text="{refValueInWatts}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center" verticalAlign="middle">
+    <s:Label styleName="labelStyle" text="{refValueInKwh}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center" verticalAlign="middle">
+    <s:Label styleName="labelStyle" text="{valueChanged}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center" verticalAlign="middle">
+    <s:Label styleName="labelStyle" text="{valueSavedInWatts}" paddingTop="2"/>
+  </mx:GridItem>
+  <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center" verticalAlign="middle">
+    <s:Label styleName="labelStyle" text="{valueSavedInKwh}" paddingTop="2"/>
+  </mx:GridItem>
+
+
+</mx:GridRow>

@@ -89,12 +89,14 @@
         import pl.znr.heatmaster.constants.combo.VentilationMethod;
         import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
         import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
+        import pl.znr.heatmaster.core.StateDataContext;
 
         import pl.znr.heatmaster.core.cache.CachedDataContextManager;
         import pl.znr.heatmaster.core.DataContext;
 
         import pl.znr.heatmaster.core.HeatMasterController;
         import pl.znr.heatmaster.core.IBuildingAgeChangeListener;
+        import pl.znr.heatmaster.core.comparator.ComparatorResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
         import pl.znr.heatmaster.core.model.HeatingSourceData;
@@ -116,6 +118,7 @@
         import pl.znr.heatmaster.ui.components.HeatMasterResultComponent;
         import pl.znr.heatmaster.ui.components.HouseStandardChangeListener;
         import pl.znr.heatmaster.ui.components.LangChangeListener;
+        import pl.znr.heatmaster.ui.components.panel.BalanceReportPanel;
         import pl.znr.heatmaster.ui.components.panel.StationsPanel;
 
         import spark.primitives.BitmapImage;
@@ -131,15 +134,16 @@
 
         private var heatMasterListener:HeatMasterChangeListener = new HeatMasterChangeListener();
         private var heatMasterController:HeatMasterController = new HeatMasterController();
-        private var cachedDataContextManager:CachedDataContextManager = new CachedDataContextManager();
         private var environmentalDataPreparer:EnvironmentalDataPreparer = new EnvironmentalDataPreparer();
+        private var cachedDataContextManager:CachedDataContextManager;
         private var configurationReader:HeatMasterConfigurationReader;
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
         private var calculationStateController:CalculationStateController;
 
         private var stationsPanel:StationsPanel;
+        private var balanceReportPanel:BalanceReportPanel;
 
-        private var cachedData:DataContext;
+        private var cachedData:StateDataContext;
 
         [Bindable]
         private var startButtonVisible:Boolean = true;
@@ -193,7 +197,7 @@
             stationsPanel.mapImage = stationsConfig.mapImage;
             stationsPanel.visible = true;
 
-            this.addElement(stationsPanel);
+            heatMasterContainer.addElement(stationsPanel);
         }
 
         public function groundBackgroundVisible(visible:Boolean):void {
@@ -217,21 +221,46 @@
 
         public function hideMap():void {
             stationsPanel.visible = false;
+            heatMasterContainer.removeElement(stationsPanel);
+        }
+
+        public function showBalanceReport(comparatorResult:ComparatorResult):void {
+            if(balanceReportPanel.visible){
+               hideBalanceReport();
+               return;
+            }
+            balanceReportPanel.visible = true;
+            heatMasterContainer.addElement(balanceReportPanel);
+            balanceReportPanel.showBalanceReport(comparatorResult);
+        }
+
+        public function hideBalanceReport():void {
+            balanceReportPanel.visible = false;
+            heatMasterContainer.removeElement(balanceReportPanel);
         }
 
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
 
             stationsPanel = new StationsPanel();
+            stationsPanel.id = "stationPanelId"
             stationsPanel.x = housePanel.x + 200;
             stationsPanel.y = 80;
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
-            calculationStateController = new CalculationStateController(heatMasterController, heatMasterListener, cachedDataContextManager);
+            balanceReportPanel = new BalanceReportPanel();
+            balanceReportPanel.id = "balanceReportPanelId";
+            balanceReportPanel.x = housePanel.x + 200;
+            balanceReportPanel.y = 80;
+            balanceReportPanel.visible = false;
 
+            calculationStateController = new CalculationStateController(heatMasterController);
+            cachedDataContextManager = new CachedDataContextManager(calculationStateController);
+            calculationStateController.setCacheManager(cachedDataContextManager);
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
+
             configItems = configurationReader.readConfig();
         }
 
@@ -328,7 +357,7 @@
 
             startButtonVisible = cachedData == null;
 
-            var language:String = cachedData != null ? cachedData.lang : null;
+            var language:String = cachedData != null ? cachedData.getCurrentDataContext().lang : null;
             if (language == null) {
                 language = heatMasterLocaleManager.getLang();
             }
@@ -416,14 +445,21 @@
         private function continueCalculation():void {
             setStartViewState();
             if (cachedData != null) {
+                var currentDataContext:DataContext = cachedData.getCurrentDataContext();
 
-                var regionItem:RegionItem = CountryItemHelper.getInitialOrCachedRegionItem(true, cachedData, configItems);
-                var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getInitialOrCachedCountryItem(true, cachedData, configItems);
+                var regionItem:RegionItem = CountryItemHelper.getInitialOrCachedRegionItem(true, currentDataContext, configItems);
+                var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getInitialOrCachedCountryItem(true, currentDataContext, configItems);
 
-                heatingPopup.configChanged(countryItem, cachedData.localCurrency);
+                heatingPopup.configChanged(countryItem, currentDataContext.localCurrency);
                 housePanel.energyMeter.countryChanged(countryItem);
 
-                heatMasterController.calculateAndSetViewState(cachedData);
+                if(cachedData.newDataContext != null && cachedData.referenceDataContext != null){
+                    calculationStateController.initStateController(cachedData);
+                    heatMasterController.calculateAndSetViewReferenceState(cachedData);
+                }
+                else {
+                    heatMasterController.calculateAndSetViewState(currentDataContext);
+                }
 
                 heatMasterContainer.removeElement(introGroup);
                 heatMasterContainer.removeElement(housePopup);
@@ -697,6 +733,12 @@
             color: red;
         }
 
+        .labelStyle {
+            fontSize: 12px;
+            color: black;
+            fontWeight: bold;
+        }
+
 
     </fx:Style>
 
@@ -733,7 +775,7 @@
                 <panel:PlotPanel x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90"
                                  height="560"
                                  width="{Math.min(Math.max(1000 * 1200/1280,1200/1280 * this.width),1200)}"
-                                 id="plotPanel" visible="{plotVisible}"/>
+                                 id="plotPanel" visible="{plotVisible}" />
 
                 <popup:HousePopup id="housePopup" y="18" x="{housePanel.x + 200}" height="400" visible="false"/>
                 <popup:HeatingPopup id="heatingPopup" y="18" x="{housePopup.x + housePopup.width}" visible="false"/>

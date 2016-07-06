@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-05.
+-->
+<components:HeatMasterComponent xmlns:fx="http://ns.adobe.com/mxml/2009"
+                                xmlns:components="pl.znr.heatmaster.ui.components.*"
+                                xmlns:hmpanel="pl.znr.heatmaster.ui.components.panel.*"
+                                xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:s="library://ns.adobe.com/flex/spark" width="750" height="400">
+
+    <fx:Script>
+        <![CDATA[
+        import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.core.comparator.ComparatorResult;
+        import pl.znr.heatmaster.ui.components.panel.model.ComparatorRowModel;
+
+        [Bindable]
+        private var balanceRowModel:ComparatorRowModel;
+
+        public function showBalanceReport(comparatorResult:ComparatorResult):void {
+            wallsGridRow.balanceItem = comparatorResult.walls;
+            doorsGridRow.balanceItem = comparatorResult.doors;
+            windowsGridRow.balanceItem = comparatorResult.windows;
+            roofGridRow.balanceItem = comparatorResult.roof;
+            floorGridRow.balanceItem = comparatorResult.floor;
+            ventGridRow.balanceItem = comparatorResult.vent;
+            tightnessGridRow.balanceItem = comparatorResult.tightness;
+            solarGainsGridRow.balanceItem = comparatorResult.solarGains;
+            personGainsGridRow.balanceItem = comparatorResult.personGains;
+
+            balanceRowModel = new ComparatorRowModel(formatValue(comparatorResult.refBalanceValueInWatts), formatValue(comparatorResult.refBalanceValueInKwh),
+                    formatValue(comparatorResult.savedBalancedValueInWatts), formatValue(comparatorResult.savedBalancedValueInKwh));
+
+        }
+
+        private function hideReport(): void {
+            HeatMaster.getInstance().hideBalanceReport();
+        }
+
+        private function formatValue(val:Number):String {
+            return formatHMValue(val,2)
+        }
+
+
+        ]]>
+    </fx:Script>
+
+    <s:TitleWindow id="balanceReportPanelWindow" height="100%" width="100%" close="hideReport()">
+        <s:BorderContainer id="balanceReportContainer" borderVisible="true" color="0xf5f5dc" width="100%" height="100%">
+            <mx:Grid id="myBalanceReportGrid" width="100%" height="100%" x="12.5" y="50" >
+
+                <mx:GridRow id="row1" >
+                    <mx:GridItem  width="25"/>
+                    <mx:GridItem  borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="150">
+                        <s:Label styleName="labelStyle" verticalAlign="middle" text="{resourceManager.getString('hm','hm.grid.header.element')}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem  colSpan="2" borderVisible="true" borderStyle="solid"  horizontalAlign="center" verticalAlign="middle" width="200">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.header.reference_state')}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem  borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.header.change')}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem  colSpan="2" borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.header.savings')}" paddingTop="2"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+
+               <mx:GridRow id="row2" >
+                    <mx:GridItem width="25"/>
+                    <mx:GridItem width="150"/>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.cell.power') + ' W'}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.cell.consumption') + ' kWh'}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid"  width="100"/>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.cell.power') + ' W'}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" horizontalAlign="center" verticalAlign="middle" width="100">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.grid.cell.consumption') + ' kWh'}" paddingTop="2"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+
+                <hmpanel:BalanceGridRow id="wallsGridRow"  lp="1" elementName="{resourceManager.getString('hm','hm.label.walls')}"/>
+                <hmpanel:BalanceGridRow id="doorsGridRow"  lp="1a" elementName="{resourceManager.getString('hm','hm.label.door')}"/>
+                <hmpanel:BalanceGridRow id="windowsGridRow"  lp="2" elementName="{resourceManager.getString('hm','hm.label.windows')}"/>
+                <hmpanel:BalanceGridRow id="roofGridRow" lp="3" elementName="{resourceManager.getString('hm','hm.label.roof')}"/>
+                <hmpanel:BalanceGridRow id="floorGridRow"  lp="4" elementName="{resourceManager.getString('hm','hm.label.floor')}"/>
+                <hmpanel:BalanceGridRow id="ventGridRow"  lp="5" elementName="{resourceManager.getString('hm','hm.label.ventilation')}"/>
+                <hmpanel:BalanceGridRow id="tightnessGridRow"  lp="6" elementName="{resourceManager.getString('hm','hm.label.tightness')}"/>
+                <hmpanel:BalanceGridRow id="solarGainsGridRow"  lp="7" elementName="{resourceManager.getString('hm','hm.label.solar_gains')}"/>
+                <hmpanel:BalanceGridRow id="personGainsGridRow" lp="8" elementName="{resourceManager.getString('hm','hm.label.person_gains')}"/>
+
+                <mx:GridRow id="balanceRow" >
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="25"/>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" horizontalAlign="right" width="150">
+                        <s:Label styleName="labelStyle" text="{resourceManager.getString('hm','hm.label.balance')}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center">
+                        <s:Label styleName="labelStyle" text="{balanceRowModel.refBalanceValueInWatts}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center">
+                        <s:Label styleName="labelStyle" text="{balanceRowModel.refBalanceValueInKwh}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="100"/>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center">
+                        <s:Label styleName="labelStyle" text="{balanceRowModel.savedBalancedValueInWatts}" paddingTop="2"/>
+                    </mx:GridItem>
+                    <mx:GridItem borderVisible="true" borderStyle="solid" width="100" horizontalAlign="center">
+                        <s:Label styleName="labelStyle" text="{balanceRowModel.savedBalancedValueInKwh}" paddingTop="2"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Grid>
+
+
+        </s:BorderContainer>
+    </s:TitleWindow>
+
+
+</components:HeatMasterComponent>

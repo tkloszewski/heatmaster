@@ -6,11 +6,7 @@
 
 
   <fx:Style>
-    .labelStyle {
-      fontSize: 12px;
-      color: black;
-      fontWeight: bold;
-    }
+
 
   </fx:Style>
 
@@ -27,6 +23,7 @@
     import pl.znr.heatmaster.core.station.StationDistance;
     import pl.znr.heatmaster.core.station.StationLocator;
     import pl.znr.heatmaster.ui.components.*;
+    import pl.znr.heatmaster.ui.components.panel.model.StationModel;
 
     import spark.components.DropDownList;
 
@@ -154,7 +151,7 @@
     ]]>
 </fx:Script>
 
-  <s:TitleWindow id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false" close="hideMap()">
+  <s:TitleWindow id="stationPanelWindow" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false" close="hideMap()">
 
     <s:BorderContainer x="0" y="0" id="mapContainer" backgroundAlpha="0.0" borderVisible="true">
       <s:Image x="0" y="0" id="map" source="{_mapImage}" click="mapClicked(event)" mouseMove="handleMouseOver(event)"/>

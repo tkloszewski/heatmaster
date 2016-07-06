@@ -11,6 +11,7 @@ import mx.utils.NameUtil;
 public class MonthEnergyData {
 
     private var _enWalls:Number = 0;
+    private var _enDoor:Number = 0;
     private var _enRoof:Number = 0;
     private var _enFloor:Number = 0;
     private var _enFoundations:Number = 0;
@@ -46,6 +47,14 @@ public class MonthEnergyData {
 
     public function set enWalls(value:Number):void {
         _enWalls = value;
+    }
+
+    public function get enDoor():Number {
+        return _enDoor;
+    }
+
+    public function set enDoor(value:Number):void {
+        _enDoor = value;
     }
 
     public function get enRoof():Number {

@@ -7,11 +7,14 @@
  */
 package pl.znr.heatmaster.ui {
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.StateDataContext;
 
 public interface IDataContextAware {
 
     function initData(dataContext:DataContext):DataContext;
 
     function setupView(dataContext:DataContext):void;
+
+    function setupReferenceView(stateDataContext:StateDataContext):void;
 }
 }

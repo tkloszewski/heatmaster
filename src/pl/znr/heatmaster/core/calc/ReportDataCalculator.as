@@ -38,7 +38,7 @@ public class ReportDataCalculator {
         else {
             costConvertedResult = new ProcessingResult();
             costConvertedResult.wattsEnergyResult = processingResult.wattsEnergyResult;
-            var costConversionData:ConversionData = buildConversionData(conversionData,ConversionUnits.COST_PER_MONTH);
+            var costConversionData:ConversionData = ConversionData.buildConversionDataFromConversionData(conversionData,ConversionUnits.COST_PER_MONTH);
             costConvertedResult = converterService.convert(costConvertedResult,costConversionData,RatioClusterFactory.getMonthlyWattsRatioCluster(costConversionData));
         }
         if(ConversionUnits.isEnergyUnit(conversionData.selectedUnit)){
@@ -47,13 +47,13 @@ public class ReportDataCalculator {
         else {
             energyConvertedResult = new ProcessingResult();
             energyConvertedResult.wattsEnergyResult = processingResult.wattsEnergyResult;
-            var energyConversionData:ConversionData = buildConversionData(conversionData,ConversionUnits.ENERGY_KWH_PER_MONTH);
+            var energyConversionData:ConversionData = ConversionData.buildConversionDataFromConversionData(conversionData,ConversionUnits.ENERGY_KWH_PER_MONTH);
             energyConvertedResult = converterService.convert(energyConvertedResult,energyConversionData,RatioClusterFactory.getMonthlyWattsRatioCluster(energyConversionData));
         }
 
         var classAwareEnergyConvertedResult:ProcessingResult = new ProcessingResult();
         classAwareEnergyConvertedResult.wattsEnergyResult = processingResult.classAwareWattsEnergyResult;
-        energyConversionData = buildConversionData(conversionData,ConversionUnits.ENERGY_KWH_PER_MONTH);
+        energyConversionData = ConversionData.buildConversionDataFromConversionData(conversionData,ConversionUnits.ENERGY_KWH_PER_MONTH);
         classAwareEnergyConvertedResult = converterService.convert(classAwareEnergyConvertedResult,energyConversionData,RatioClusterFactory.getMonthlyWattsRatioCluster(energyConversionData));
 
         var totalSurface:Number = dataContext.houseData.surfaceData.totalSurface;

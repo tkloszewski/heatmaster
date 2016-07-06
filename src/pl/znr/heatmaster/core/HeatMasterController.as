@@ -12,6 +12,7 @@ import mx.controls.Alert;
 import pl.znr.heatmaster.config.CountryItem;
 
 import pl.znr.heatmaster.constants.GlobalValues;
+import pl.znr.heatmaster.constants.StateConstants;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 import pl.znr.heatmaster.core.calc.HeatMasterWattsCalculator;
 import pl.znr.heatmaster.core.calc.ReportDataCalculator;
@@ -73,15 +74,6 @@ public class HeatMasterController {
         return dataContext;
     }
 
-    public function setViewState(dataContext:DataContext,processingResult:ProcessingResult){
-        this.dataContext = dataContext;
-        this.selectedMonth = dataContext.selectedMonth;
-        this.processResult = processingResult;
-
-        setUpView(dataContext);
-        propagateResult();
-    }
-
     public function calculateAndSetViewState(dataContext:DataContext):void{
         this.dataContext = dataContext;
         this.selectedMonth = dataContext.selectedMonth;
@@ -91,10 +83,30 @@ public class HeatMasterController {
         doCalculationAndPropagateResult();
     }
 
+    public function calculateAndSetViewReferenceState(stateDataContext:StateDataContext):void{
+        this.dataContext = stateDataContext.getCurrentDataContext();
+        this.selectedMonth = dataContext.selectedMonth;
+        this.started = true;
+
+        setUpReferenceView(stateDataContext);
+        doCalculationAndPropagateResult();
+    }
+
+    /**
+     * Stateful calculation with result propagation
+     */
     public function calculate():void{
         if(started){
             doCalculationAndPropagateResult();
         }
+    }
+
+    /**
+     * Stateless calculation with no result
+     * propagation
+     */
+    public function calculateStateless(dataContext:DataContext):ProcessingResult{
+        return performActualCalculation(dataContext);
     }
 
     public function monthChanged(month:int):void{
@@ -135,26 +147,10 @@ public class HeatMasterController {
         }
     }
 
-    private function doCalculation():void {
-        try {
-            this.processResult = new ProcessingResult();
-            this.processResult.dataContext = this.dataContext;
-            processResult.wattsEnergyResult = wattsEnergyCalculator.calcEnergyDataWithGaussianBlurring(dataContext);
-            this.processResult = convertResult(this.processResult,dataContext.conversionData);
-
-            var tOriginal:Number = dataContext.houseData.tIn;
-            dataContext.houseData.tIn = 20;
-            processResult.classAwareWattsEnergyResult = wattsEnergyCalculator.calcEnergyDataWithGaussianBlurring(dataContext);
-            dataContext.houseData.tIn = tOriginal;
-
-            try {
-                this.processResult = reportDataCalculator.calcReportValues(this.dataContext, this.processResult, dataContext.conversionData);
-            } catch (e:Error) {
-                Alert.show("ReportDataCalculator error: " );
-            }
-
-        } catch (e:Error) {
-            Alert.show("Calculation error", e.message);
+    private function setUpReferenceView(stateDataContext:StateDataContext):void {
+        for (var i:int = 0; i < dataContextListeners.length; i++) {
+            var dataContextListener:IDataContextAware = dataContextListeners.getItemAt(i) as IDataContextAware;
+            dataContextListener.setupReferenceView(stateDataContext);
         }
     }
 
@@ -163,10 +159,34 @@ public class HeatMasterController {
         propagateResult();
     }
 
+    private function doCalculation():void {
+        try {
+            this.processResult = performActualCalculation(this.dataContext);
+        } catch (e:Error) {
+            Alert.show("Calculation error", e.message);
+        }
+    }
+
+    private function performActualCalculation(dataContext:DataContext):ProcessingResult {
+        var processingResult:ProcessingResult = new ProcessingResult();
+        processingResult.dataContext = dataContext;
+        processingResult.wattsEnergyResult = wattsEnergyCalculator.calcEnergyDataWithGaussianBlurring(dataContext);
+        processingResult = convertResult(processingResult,dataContext.conversionData);
+
+        var tOriginal:Number = dataContext.houseData.tIn;
+        dataContext.houseData.tIn = 20;
+        processingResult.classAwareWattsEnergyResult = wattsEnergyCalculator.calcEnergyDataWithGaussianBlurring(dataContext);
+        dataContext.houseData.tIn = tOriginal;
+
+        processingResult = reportDataCalculator.calcReportValues(dataContext, processingResult, dataContext.conversionData);
+
+        return processingResult;
+    }
+
     private function convertResult(processResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {
         try {
             var ratioCluster:RatioCluster = RatioClusterFactory.getMonthlyWattsRatioCluster(conversionData);
-            this.processResult.conversionData = conversionData;
+            processResult.conversionData = conversionData;
             return converterService.convert(processResult, conversionData, ratioCluster);
         } catch (e:Error) {
             Alert.show("Conversion error: " + e.message);

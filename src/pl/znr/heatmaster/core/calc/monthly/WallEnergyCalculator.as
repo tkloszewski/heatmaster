@@ -36,6 +36,7 @@ public class WallEnergyCalculator implements IMonthEnergyCalculator{
 
         var enDoor:Number = EnergyCalcHelper.calcHeatTransfer(doorType.uValue,doorSurface,houseData.tIn,monthInputData.tOut);
         energyData.enWalls = energyData.enWalls + enDoor;
+        energyData.enDoor = enDoor;
         return energyData;
     }
 

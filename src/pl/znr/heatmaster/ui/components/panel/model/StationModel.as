@@ -1,7 +1,7 @@
 /**
  * Created by Dom on 2016-06-26.
  */
-package pl.znr.heatmaster.ui.components.panel {
+package pl.znr.heatmaster.ui.components.panel.model {
 import pl.znr.heatmaster.core.calc.util.TemperatureCalculator;
 
 public class StationModel {

@@ -322,6 +322,7 @@
             var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             setWarmWaterVisibility(false);
+            mainGroup.visible = true;
         }
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {

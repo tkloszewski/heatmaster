@@ -3,27 +3,20 @@
  */
 package pl.znr.heatmaster.core.state {
 import mx.collections.ArrayCollection;
-import mx.utils.ObjectUtil;
 
-import pl.znr.heatmaster.core.cache.CachedDataContextManager;
+import pl.znr.heatmaster.constants.StateConstants;
 import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.cache.FlatDataContextBuilder;
-import pl.znr.heatmaster.core.cache.FlatDataContextBuilder;
 import pl.znr.heatmaster.core.HeatMasterController;
-
-import pl.znr.heatmaster.core.state.CalculationState;
-import pl.znr.heatmaster.ui.HeatMasterChangeListener;
+import pl.znr.heatmaster.core.ProcessingResult;
+import pl.znr.heatmaster.core.StateDataContext;
+import pl.znr.heatmaster.core.cache.CachedDataContextManager;
+import pl.znr.heatmaster.core.cache.FlatDataContextBuilder;
 
 public class CalculationStateController {
 
-    private static var INITIAL_STATE:int = 1;
-    private static var NEW_SWITCHED:int = 2;
-    private static var REFERENCE_SWITCHED:int = 3;
-
-    private var state:int = INITIAL_STATE;
+    private var state:int = StateConstants.INITIAL_STATE;
 
     private var heatMasterController:HeatMasterController;
-    private var heatMasterChangeListener:HeatMasterChangeListener;
     private var cacheManager:CachedDataContextManager;
 
     private var calculationStateListeners:ArrayCollection = new ArrayCollection();
@@ -31,45 +24,48 @@ public class CalculationStateController {
     private var referenceDataContext:DataContext;
     private var newStateDataContext:DataContext;
 
-    public function CalculationStateController(heatMasterController:HeatMasterController,heatMasterChangeListener:HeatMasterChangeListener,cacheManager:CachedDataContextManager) {
+    public function CalculationStateController(heatMasterController:HeatMasterController) {
         this.heatMasterController = heatMasterController;
-        this.heatMasterChangeListener = heatMasterChangeListener;
-        this.cacheManager = cacheManager;
+    }
+
+    public function initStateController(stateDataContext:StateDataContext):void {
+        referenceDataContext = stateDataContext.referenceDataContext;
+        newStateDataContext = stateDataContext.newDataContext;
+        setStateAndPropagateStateSwitch(stateDataContext.state);
+    }
+
+    public function calculateStateless(dataContext:DataContext):ProcessingResult {
+        return heatMasterController.calculateStateless(dataContext);
     }
 
     public function freezeReferenceState():void {
-        state = NEW_SWITCHED;
         referenceDataContext = heatMasterController.getDataContext();
         newStateDataContext = copyDataContext(referenceDataContext);
-        heatMasterChangeListener.setCacheEnabled(false);
         heatMasterController.resetDataContext(newStateDataContext);
+        if(!cacheManager.isCacheWritten()){
+            cacheManager.writeCache(referenceDataContext);
+        }
+        state = StateConstants.NEW_SWITCHED;
+        cacheManager.writeState(state);
         propagateStateSwitched(true);
     }
 
-    public function unFreezeState():void{
-        var resetDataContext:DataContext = cacheManager.readCache();
-        if(resetDataContext == null){
-           resetDataContext = referenceDataContext;
-        }
-        propagateStateSwitched(false);
-        heatMasterChangeListener.setCacheEnabled(true);
-        heatMasterController.calculateAndSetViewState(resetDataContext);
-    }
-
     public function switchToReferenceState():void {
-        if(state == REFERENCE_SWITCHED){
-           return;
+        if(state == StateConstants.REFERENCE_SWITCHED){
+            return;
         }
-        state = REFERENCE_SWITCHED;
+        state = StateConstants.REFERENCE_SWITCHED;
+        cacheManager.writeState(state);
         propagateStateSwitched(false);
         heatMasterController.calculateAndSetViewState(referenceDataContext);
     }
 
     public function switchToNewState():void {
-        if(state == NEW_SWITCHED){
-           return;
+        if(state == StateConstants.NEW_SWITCHED){
+            return;
         }
-        state = NEW_SWITCHED;
+        state = StateConstants.NEW_SWITCHED;
+        cacheManager.writeState(state);
         propagateStateSwitched(true);
         heatMasterController.calculateAndSetViewState(newStateDataContext);
     }
@@ -79,16 +75,26 @@ public class CalculationStateController {
     }
 
     public function isReferenceValueCalculated():Boolean{
-       return state == INITIAL_STATE || state == REFERENCE_SWITCHED;
+        return StateConstants.isInitialOrReference(state);
+    }
+
+    public function getCurrentState():int {
+        return state;
     }
 
     public function isNewValueCalculated():Boolean {
-        return state == NEW_SWITCHED;
+        return state == StateConstants.NEW_SWITCHED;
     }
 
-    private function copyDataContext(dataContext:DataContext):DataContext {
-        var copied:DataContext = FlatDataContextBuilder.buildDataContext(FlatDataContextBuilder.buildFlatDataContext(dataContext));
-        return copied;
+    public function setCacheManager(cacheManager:CachedDataContextManager): void {
+        this.cacheManager = cacheManager;
+    }
+
+    private function setStateAndPropagateStateSwitch(state:int):void{
+        this.state = state;
+        if(this.state == StateConstants.NEW_SWITCHED){
+            propagateStateSwitched(true);
+        }
     }
 
     private function propagateStateSwitched(stateFrozen:Boolean):void {
@@ -97,6 +103,12 @@ public class CalculationStateController {
             listener.calculationStateSwitched(stateFrozen)
         }
     }
+
+    private function copyDataContext(dataContext:DataContext):DataContext {
+        var copied:DataContext = FlatDataContextBuilder.buildDataContext(FlatDataContextBuilder.buildFlatDataContext(dataContext));
+        return copied;
+    }
+
 
 }
 }

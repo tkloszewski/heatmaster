@@ -6,42 +6,25 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.cache {
-import pl.znr.heatmaster.core.*;
-
 import flash.net.SharedObject;
 import flash.net.registerClassAlias;
 
-import mx.controls.Alert;
-
-import pl.znr.heatmaster.constants.combo.BuildingAge;
-import pl.znr.heatmaster.constants.combo.DoorType;
-
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-import pl.znr.heatmaster.core.cache.FlatDataContext;
-
-import pl.znr.heatmaster.core.converter.ConversionData;
-import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.model.HeatingSourceData;
-import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.model.InsolationData;
-import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.model.SolarCollectorData;
-import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.model.VentilationData;
-import pl.znr.heatmaster.core.model.WarmWaterData;
-import pl.znr.heatmaster.core.model.WindowElement;
+import pl.znr.heatmaster.constants.StateConstants;
+import pl.znr.heatmaster.core.*;
+import pl.znr.heatmaster.core.state.CalculationStateController;
 
 public class CachedDataContextManager {
 
-    private static var UNIQUE_NAME:String = "pl.znr.heatmaster.cookie"
+    private static var UNIQUE_NAME:String = "pl.znr.heatmaster.cookie";
 
+    private var cacheWritten:Boolean = false;
+
+    private var calculationStateController:CalculationStateController;
     private var dataContextValidator:DataContextValidator = new DataContextValidator();
 
-    public function CachedDataContextManager() {
-       registerClassAliases();
+    public function CachedDataContextManager(calculationStateController:CalculationStateController) {
+        this.calculationStateController = calculationStateController;
+        registerClassAliases();
     }
 
     public function clearCache():void {
@@ -49,51 +32,78 @@ public class CachedDataContextManager {
         so.clear();
     }
 
-    public function readCache():DataContext {
-        var result:DataContext = null;
-
+    public function readCache():StateDataContext {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
+
+        var refDataContext:DataContext = null;
+        var newDataContext:DataContext = null;
+        var state:int = StateConstants.INITIAL_STATE;
+
         if(so.data.hasOwnProperty("hmData")){
             var hmData:Object = so.data.hmData;
-            if(hmData is DataContext){
-                return hmData as DataContext;
-            }
-            else if(hmData is Array){
-                var array:Array = hmData as Array;
-            }
-            else if(hmData is FlatDataContext){
-                var flatDataContext:FlatDataContext = hmData as FlatDataContext;
-                var cachedDataContext:DataContext = null;
-                try {
-                    cachedDataContext = FlatDataContextBuilder.buildDataContext(flatDataContext);
-                    dataContextValidator.validate(cachedDataContext);
-                } catch (e:Error) {
-                    cachedDataContext = null;
-                    //Alert.show("Error building-validating flashDataContext: " + e.message);
-                    trace("Error building-validating flashDataContext: " + e.message);
-                }
-                result = cachedDataContext;
+            var flatDataContextRef:FlatDataContext = hmData as FlatDataContext;
+            try {
+                refDataContext = validateAndGetDataContext(flatDataContextRef);
+            } catch (e:Error) {
+                trace("Error building-validating ref flashDataContext: " + e.message);
             }
         }
-        if (result == null) {
-            trace("No hmData in sharedObject");
+        if(so.data.hasOwnProperty("hmDataNew")){
+            var hmDataNew:Object = so.data.hmDataNew;
+            var flatDataContextNew:FlatDataContext = hmDataNew as FlatDataContext;
+            try {
+                newDataContext = validateAndGetDataContext(flatDataContextNew);
+            } catch (e:Error) {
+                trace("Error building-validating new flashDataContext: " + e.message);
+            }
         }
+
+        if(refDataContext == null && newDataContext == null){
+           return null;
+        }
+
+        if(so.data.hasOwnProperty("state")){
+            state = so.data.state;
+        }
+
+        var result:StateDataContext = new StateDataContext();
+        result.referenceDataContext = refDataContext;
+        result.newDataContext = newDataContext;
+        result.state = state;
+
         return result;
     }
 
     public function writeCache(dataContext:DataContext):void {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
-        var flatDataContext:FlatDataContext = new FlatDataContext();
+        var flatDataContext:FlatDataContext = FlatDataContextBuilder.buildFlatDataContext(dataContext);
 
-        try {
-            flatDataContext = FlatDataContextBuilder.buildFlatDataContext(dataContext);
-        } catch (e:Error) {
-            Alert.show("Error building flatDataContext: " + e.message);
+        if(calculationStateController.isReferenceValueCalculated()){
+            so.data.hmData = flatDataContext;
         }
-        //flatDataContext.groundTemperatures = dataContext.environmentalData.groundTemperatures.slice();
-        so.data.hmData = flatDataContext;
-        var result:String = so.flush();
+        else {
+            so.data.hmDataNew = flatDataContext;
+        }
+        so.data.state = calculationStateController.getCurrentState();
+
+        so.flush();
+        cacheWritten = true;
         trace("Written to cache...")
+    }
+
+    public function writeState(state:int):void {
+        var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
+        so.data.state = state;
+    }
+
+    public function isCacheWritten():Boolean {
+        return cacheWritten;
+    }
+
+    private function validateAndGetDataContext(flatDataContext:FlatDataContext):DataContext {
+        var cachedDataContext:DataContext = FlatDataContextBuilder.buildDataContext(flatDataContext);
+        dataContextValidator.validate(cachedDataContext);
+        return cachedDataContext;
     }
 
     private function registerClassAliases():void {
