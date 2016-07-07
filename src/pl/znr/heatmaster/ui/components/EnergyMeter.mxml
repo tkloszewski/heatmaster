@@ -208,13 +208,13 @@
         private function switchToNewState():void {
             switchToNewStateView();
             calculationStateController.switchToNewState();
-            HeatMaster.getInstance().rollbackPopups();
+            HeatMaster.getInstance().showProperPopupsVisibility();
         }
 
         private function switchToReferenceState():void {
             switchToReferenceStateView();
             calculationStateController.switchToReferenceState();
-            HeatMaster.getInstance().rollbackPopups();
+            HeatMaster.getInstance().showProperPopupsVisibility();
         }
 
         private function initReferenceStateView():void {
@@ -374,7 +374,7 @@
 
 
         <s:ArrayCollection id="unitList">
-            <fx:Object name="" localeCode = "hm.dropdown.heat_loss.watts" data="{ConversionUnits.ENERGY_WATTS}" labelUnit="Waty" shortUnit="hm.unit.watts"/>
+            <!--<fx:Object name="" localeCode = "hm.dropdown.heat_loss.watts" data="{ConversionUnits.ENERGY_WATTS}" labelUnit="Waty" shortUnit="hm.unit.watts"/>-->
             <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.kwh.year" data="{ConversionUnits.ENERGY_KWH_PER_YEAR}" labelUnit="kWh/rok" shortUnit="hm.unit.kwh.year"/>
             <fx:Object name="" localeCode = "hm.dropdown.energy.consumption.gj.year" data="{ConversionUnits.ENERGY_GJ_PER_YEAR}" labelUnit="GJ/rok" shortUnit="hm.unit.gj.year"/>
             <!--<fx:Object name="" localeCode = "hm.dropdown.energy.consumption.kwh.month" data="{ConversionUnits.ENERGY_KWH_PER_MONTH}" labelUnit="kWh/mc" shortUnit="hm.unit.kwh.month"/>-->
@@ -404,7 +404,7 @@
 
 
     <s:Image x="0" y="0" scaleY="1.20" source="@Embed('/pl/znr/heatmaster/assets/images/licznik.png')"/>
-    <s:DropDownList x="24" y="30" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="5" change="unitUIChanged()"
+    <s:DropDownList x="24" y="30" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="4" change="unitUIChanged()"
                     fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
 
     <s:Label id="refValueLabel" x="20" y="59"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>

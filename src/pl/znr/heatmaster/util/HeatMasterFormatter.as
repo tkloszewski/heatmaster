@@ -22,10 +22,19 @@ public class HeatMasterFormatter {
         return formatter.format(value);
     }
 
+    public static function formatHMValueRoundUp(value:Number,precision:int = 0){
+        var formatter:NumberFormatter = createFormatter(precision,NumberBaseRoundType.UP);
+        return formatter.format(value);
+    }
+
     private static function createNearestPrecisionFormatter(precision:int = 0):NumberFormatter {
+        return createFormatter(precision,NumberBaseRoundType.NEAREST);
+    }
+
+    private static function createFormatter(precision:int = 0,rounding:String = NumberBaseRoundType.NEAREST):NumberFormatter {
         var format:NumberFormatter = new NumberFormatter();
         format.precision = precision;
-        format.rounding = NumberBaseRoundType.NEAREST;
+        format.rounding = rounding;
         return format;
     }
 }

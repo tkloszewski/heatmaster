@@ -192,7 +192,7 @@
             bitmapImg.source = stationsConfig.mapImage;
 
             stationsPanel.setStations(stationsConfig.stations, selectedStation);
-            stationsPanel.width = bitmapImg.sourceWidth + 0.25 * bitmapImg.sourceWidth;
+            stationsPanel.width = bitmapImg.sourceWidth + 0.33 * bitmapImg.sourceWidth;
             stationsPanel.height = bitmapImg.sourceHeight + 1;
             stationsPanel.mapImage = stationsConfig.mapImage;
             stationsPanel.visible = true;
@@ -225,9 +225,9 @@
         }
 
         public function showBalanceReport(comparatorResult:ComparatorResult):void {
-            if(balanceReportPanel.visible){
-               hideBalanceReport();
-               return;
+            if (balanceReportPanel.visible) {
+                hideBalanceReport();
+                return;
             }
             balanceReportPanel.visible = true;
             heatMasterContainer.addElement(balanceReportPanel);
@@ -239,23 +239,20 @@
             heatMasterContainer.removeElement(balanceReportPanel);
         }
 
-        public function rollbackPopups():void {
-            housePopup.setRolledBackState();
-            heatingPopup.setRolledBackState();
+        public function showProperPopupsVisibility():void {
+            heatingPopup.setPreviousVisibilityState();
         }
 
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
 
             stationsPanel = new StationsPanel();
-            stationsPanel.id = "stationPanelId"
             stationsPanel.x = housePanel.x + 200;
             stationsPanel.y = 80;
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
             balanceReportPanel = new BalanceReportPanel();
-            balanceReportPanel.id = "balanceReportPanelId";
             balanceReportPanel.x = housePanel.x + 200;
             balanceReportPanel.y = 80;
             balanceReportPanel.visible = false;
@@ -458,7 +455,7 @@
                 heatingPopup.configChanged(countryItem, currentDataContext.localCurrency);
                 housePanel.energyMeter.countryChanged(countryItem);
 
-                if(cachedData.newDataContext != null && cachedData.referenceDataContext != null){
+                if (cachedData.newDataContext != null && cachedData.referenceDataContext != null) {
                     calculationStateController.initStateController(cachedData);
                     heatMasterController.calculateAndSetViewReferenceState(cachedData);
                 }

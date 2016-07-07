@@ -1368,8 +1368,8 @@
 		   <station>
                <name>hm.city.pl.kolo</name>
                <position>
-                   <img_x>380</img_x>
-                   <img_y>560</img_y>
+                   <img_x>291</img_x>
+                   <img_y>274</img_y>
                    <zone>2</zone>
                </position>
                <temperatures>

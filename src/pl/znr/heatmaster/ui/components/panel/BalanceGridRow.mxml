@@ -36,7 +36,7 @@
 
 
     private function formatValue(val:Number):String {
-      return HeatMasterFormatter.formatHMValue(val,2);
+      return HeatMasterFormatter.formatHMValue(val,0);
     }
     ]]>
     </fx:Script>

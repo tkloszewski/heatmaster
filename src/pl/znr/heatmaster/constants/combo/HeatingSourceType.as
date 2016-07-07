@@ -16,21 +16,21 @@ public class HeatingSourceType extends BaseComboObject{
 
     public static var BIOMASS_PELLETS:HeatingSourceType = new HeatingSourceType("1", NaturalUnit.TONNE, 500, 17500, 75, 0.403, 0.2, true,false,true,true);
     public static var BIOMASS_WOOD:HeatingSourceType = new HeatingSourceType("2", NaturalUnit.TONNE, 360, 15600, 70, 0.403, 0.2, true,false,true,true);
-    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3", NaturalUnit.GJ, 50, 1000, 97, 0.449, 1.3, true,true,true,true);
-    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",NaturalUnit.GJ, 50, 1000, 97, 0.247, 0.8,true,true,true,true);
+    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3", NaturalUnit.GJ, 50, 1000, 97, 0.449, 1.3, true,true,true,true, false);
+    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",NaturalUnit.GJ, 50, 1000, 97, 0.247, 0.8,true,true,true,true, false);
     public static var FURNACE:HeatingSourceType = new HeatingSourceType("5", NaturalUnit.TONNE, 750, 26010, 40, 0.338, 1.1, true,false,false,false);
     public static var COAL_OLD:HeatingSourceType = new HeatingSourceType("6", NaturalUnit.TONNE, 313.08, 21670, 60, 0.339, 1.1, true,false,false,false);
     public static var COAL_MODERN:HeatingSourceType = new HeatingSourceType("7", NaturalUnit.TONNE, 322.42, 22030, 80, 0.341, 1.1, true,false,false,false);
-    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8", NaturalUnit.KG, 2, 47.3, 65, 0.227, 1.1, true,true,true,true);
-    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true,true,true,true);
-    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8", NaturalUnit.M3, 2, 47.3, 65, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9", NaturalUnit.M3, 2, 47.3, 85, 0.227, 1.1, true,true,true,true);
+    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10", NaturalUnit.M3, 2, 47.3, 95, 0.227, 1.1, true,true,true,true);
     public static var BOILER_PROPAN_STANDARD:HeatingSourceType = new HeatingSourceType("11", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true,true,true,true);
     public static var BOILER_PROPAN_CONDENSING:HeatingSourceType = new HeatingSourceType("12", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true,true,true,true);
-    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13", NaturalUnit.KG, 2, 47.3, 90, 0.227, 1.1, false,false,true,false);
-    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14", NaturalUnit.KG, 2, 47.3, 70, 0.227, 1.1, false,false,true,false);
+    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13", NaturalUnit.M3, 2, 47.3, 90, 0.227, 1.1, false,false,true,false);
+    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14", NaturalUnit.M3, 2, 47.3, 70, 0.227, 1.1, false,false,true,false);
     public static var BOILER_OIL:HeatingSourceType = new HeatingSourceType("15", NaturalUnit.KG, 4.75, 43, 85, 0.266, 1.1, true,true,true,true);
-    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16", NaturalUnit.KWH, 0.6, 3.6, 100, 0.890, 3.0, true,true,true,true);
-    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",NaturalUnit.KWH, 0.6, 3.6, 350, 0.890, 3.0, true,true,true,true);
+    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16", NaturalUnit.KWH, 0.6, 3.6, 100, 0.890, 3.0, true,true,true,true, false);
+    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",NaturalUnit.KWH, 0.6, 3.6, 350, 0.890, 3.0, true,true,true,true, false);
 
     private var _efficiency:Number = 1;
     private var _naturalUnit:NaturalUnit;
@@ -44,6 +44,8 @@ public class HeatingSourceType extends BaseComboObject{
     private var _multiFamilyAirHeatType:Boolean;
     private var _detachedWarmHeatType:Boolean;
     private var _multiFamilyHeatType:Boolean;
+
+    private var _showNaturalUnit:Boolean;
 
     public static function getHeatingSourceTypeById(_id:String):HeatingSourceType {
         for(var i:int = 0;i < items.length;i++){
@@ -93,7 +95,8 @@ public class HeatingSourceType extends BaseComboObject{
         return heatingValueMJ/3.6 * pricePerKWh;
     }
 
-    function HeatingSourceType(_id:String,naturalUnit:NaturalUnit,naturalUnitPrice:Number,heatingValueMJ:Number, efficiency:Number,emissionPerKWh:Number, finalToPrimaryCoefficient:Number, detachedAirHeatType:Boolean, multiFamilyAirHeatType:Boolean, detachedWarmHeatType:Boolean, multiFamilyHeatType:Boolean) {
+    function HeatingSourceType(_id:String,naturalUnit:NaturalUnit,naturalUnitPrice:Number,heatingValueMJ:Number, efficiency:Number,emissionPerKWh:Number, finalToPrimaryCoefficient:Number,
+                               detachedAirHeatType:Boolean, multiFamilyAirHeatType:Boolean, detachedWarmHeatType:Boolean, multiFamilyHeatType:Boolean,showNaturalUnit:Boolean = true) {
         super(_id);
         _naturalUnit = naturalUnit;
         _naturalUnitPrice = naturalUnitPrice;
@@ -106,6 +109,7 @@ public class HeatingSourceType extends BaseComboObject{
         _detachedWarmHeatType = detachedWarmHeatType;
         _multiFamilyHeatType = multiFamilyHeatType;
         _pricePerKWh = toPricePerKWh(naturalUnitPrice,heatingValueMJ);
+        _showNaturalUnit = showNaturalUnit;
         items.addItem(this);
     }
 
@@ -151,6 +155,14 @@ public class HeatingSourceType extends BaseComboObject{
 
     public function get naturalUnit():NaturalUnit {
         return _naturalUnit;
+    }
+
+    public function get showNaturalUnit():Boolean {
+        return _showNaturalUnit;
+    }
+
+    public function set showNaturalUnit(value:Boolean):void {
+        _showNaturalUnit = value;
     }
 }
 }

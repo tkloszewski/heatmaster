@@ -37,7 +37,7 @@
         }
 
         private function formatValue(val:Number):String {
-            return formatHMValue(val,2)
+            return formatHMValue(val,0)
         }
 
 
