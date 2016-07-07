@@ -506,7 +506,8 @@
             heatPopupOkBtn.visible = false;
             includeWarmWaterCheckBox.visible = true;
             tabClickGroup.visible = true;
-            setControlsVisibility(false);
+            controlsVisible = false;
+            setControlsVisibility(controlsVisible);
         }
 
         private function heatingPopupInitialized():void {

@@ -36,16 +36,16 @@ public class ProcessingResultComparator implements IProcessingResultComparator{
     }
 
     private function calculateBalanceValueInWatts(comparatorResult:ComparatorResult):Number{
-        return  comparatorResult.walls.refValueInWatts + comparatorResult.doors.refValueInWatts +
-                comparatorResult.windows.refValueInWatts + comparatorResult.roof.refValueInWatts +
-                comparatorResult.floor.refValueInWatts + comparatorResult.vent.refValueInWatts -
+        return  comparatorResult.walls.refValueInWatts + comparatorResult.windows.refValueInWatts +
+                comparatorResult.roof.refValueInWatts + comparatorResult.floor.refValueInWatts +
+                comparatorResult.vent.refValueInWatts + comparatorResult.tightness.refValueInWatts -
                 (comparatorResult.solarGains.refValueInWatts + comparatorResult.personGains.refValueInWatts);
     }
 
     private function calculateBalanceValueSavedInWatts(comparatorResult:ComparatorResult):Number{
-        return  comparatorResult.walls.valueSavedInWatts + comparatorResult.doors.valueSavedInWatts +
-                comparatorResult.windows.valueSavedInWatts + comparatorResult.roof.valueSavedInWatts +
-                comparatorResult.floor.valueSavedInWatts + comparatorResult.vent.valueSavedInWatts +
+        return  comparatorResult.walls.valueSavedInWatts + comparatorResult.windows.valueSavedInWatts +
+                comparatorResult.roof.valueSavedInWatts + comparatorResult.floor.valueSavedInWatts +
+                comparatorResult.vent.valueSavedInWatts + comparatorResult.tightness.valueSavedInWatts +
                 comparatorResult.solarGains.valueSavedInWatts + comparatorResult.personGains.valueSavedInWatts;
     }
 

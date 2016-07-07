@@ -239,6 +239,11 @@
             heatMasterContainer.removeElement(balanceReportPanel);
         }
 
+        public function rollbackPopups():void {
+            housePopup.setRolledBackState();
+            heatingPopup.setRolledBackState();
+        }
+
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
 

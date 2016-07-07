@@ -208,11 +208,13 @@
         private function switchToNewState():void {
             switchToNewStateView();
             calculationStateController.switchToNewState();
+            HeatMaster.getInstance().rollbackPopups();
         }
 
         private function switchToReferenceState():void {
             switchToReferenceStateView();
             calculationStateController.switchToReferenceState();
+            HeatMaster.getInstance().rollbackPopups();
         }
 
         private function initReferenceStateView():void {

@@ -42,6 +42,7 @@ public class MonthlyEnergyResultProvider implements ICalculatedResultProvider{
         var energyData:MonthEnergyData = calculator.calcEnergy(new MonthEnergyData(),dataContext,monthInput);
 
         currentResult.enWalls = currentResult.enWalls + energyData.enWalls * ratio;
+        currentResult.enDoor = currentResult.enDoor + energyData.enDoor * ratio;
         currentResult.enRoof = currentResult.enRoof + energyData.enRoof * ratio;
         currentResult.enFloor = currentResult.enFloor + energyData.enFloor * ratio;
         currentResult.enFoundations = currentResult.enFoundations + energyData.enFoundations * ratio;
