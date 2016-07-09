@@ -4,6 +4,8 @@
 package pl.znr.heatmaster.config {
 public interface IEnvironmentalDataConfig {
 
+    function get minCalcTemp():Number;
+
     function get temperatures():Array;
 
     function set temperatures(value:Array):void;

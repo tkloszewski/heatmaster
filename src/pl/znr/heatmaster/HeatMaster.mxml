@@ -356,6 +356,7 @@
             housePanel.energyMeter.countryChanged(countryItem);
             housePanel.energyMeter.setConfigurationReader(configurationReader);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
+            housePanel.energyMeter.setHeatMasterController(heatMasterController);
 
             startButtonVisible = cachedData == null;
 
@@ -480,6 +481,9 @@
         private function newCalculation():void {
             setStartViewState();
 
+            cachedDataContextManager.clearCache();
+            cachedData = null;
+
             var initDataContext:DataContext = initDataContextWithConfig();
 
             initDataContext = heatMasterController.initData(initDataContext);
@@ -503,7 +507,14 @@
             var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getInitialOrCachedCountryItem(false, null, configItems);
 
             var dataContext:DataContext = new DataContext();
-            dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(new EnvironmentalData(), regionItem != null ? regionItem : countryItem);
+            var envDataConfig:IEnvironmentalDataConfig = null;
+            if(regionItem != null){
+                envDataConfig = regionItem;
+            }
+            else {
+                envDataConfig = countryItem.stationsConfig != null && countryItem.stationsConfig.defaultStation != null ? countryItem.stationsConfig.defaultStation : countryItem;
+            }
+            dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(new EnvironmentalData(), envDataConfig);
             dataContext.initialConfigItem = countryItem;
             dataContext.selectedCountryRegion = regionItem != null ? regionItem.code : countryItem.code;
             if (countryItem.stationsConfig != null) {

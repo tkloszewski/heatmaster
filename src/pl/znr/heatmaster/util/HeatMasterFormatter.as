@@ -22,6 +22,16 @@ public class HeatMasterFormatter {
         return formatter.format(value);
     }
 
+    public static function getStepSize(value:Number):Number{
+        if(value < 10.0){
+           return 0.01;
+        }
+        if(value >= 10.0 && value < 100.0){
+           return 0.1;
+        }
+        return 1.0;
+    }
+
     public static function formatHMValueRoundUp(value:Number,precision:int = 0){
         var formatter:NumberFormatter = createFormatter(precision,NumberBaseRoundType.UP);
         return formatter.format(value);

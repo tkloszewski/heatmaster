@@ -34,10 +34,6 @@ public class CalculationStateController {
         setStateAndPropagateStateSwitch(stateDataContext.state);
     }
 
-    public function calculateStateless(dataContext:DataContext):ProcessingResult {
-        return heatMasterController.calculateStateless(dataContext);
-    }
-
     public function freezeReferenceState():void {
         referenceDataContext = heatMasterController.getDataContext();
         newStateDataContext = copyDataContext(referenceDataContext);
@@ -74,15 +70,33 @@ public class CalculationStateController {
         calculationStateListeners.addItem(listener);
     }
 
-    public function isReferenceValueCalculated():Boolean{
+    public function isInReferenceState():Boolean{
         return StateConstants.isInitialOrReference(state);
+    }
+
+    public function getCurrentDataContext():DataContext {
+        if(StateConstants.isInitialOrReference(state) || newStateDataContext == null){
+           return referenceDataContext;
+        }
+        return newStateDataContext;
+    }
+
+    public function getPreviousDataContext():DataContext {
+        if(newStateDataContext == null || state == StateConstants.INITIAL_STATE || state == StateConstants.NEW_SWITCHED){
+           return referenceDataContext;
+        }
+        return newStateDataContext;
     }
 
     public function getCurrentState():int {
         return state;
     }
 
-    public function isNewValueCalculated():Boolean {
+    public function isInInitialState():Boolean {
+        return state == StateConstants.INITIAL_STATE;
+    }
+
+    public function isInNewState():Boolean {
         return state == StateConstants.NEW_SWITCHED;
     }
 

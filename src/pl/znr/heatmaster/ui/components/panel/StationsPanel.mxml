@@ -19,6 +19,7 @@
     import pl.znr.heatmaster.HeatMaster;
     import pl.znr.heatmaster.config.StationItem;
     import pl.znr.heatmaster.constants.GlobalValues;
+    import pl.znr.heatmaster.constants.GlobalValues;
     import pl.znr.heatmaster.core.calc.util.TemperatureCalculator;
     import pl.znr.heatmaster.core.station.Position;
     import pl.znr.heatmaster.core.station.StationDistance;
@@ -133,18 +134,18 @@
 
     private function getUserSetTemperatures():Array {
       var result:Array = new Array(12);
-      result[0] = nst1.value;
-      result[1] = nst2.value;
-      result[2] = nst3.value;
-      result[3] = nst4.value;
-      result[4] = nst5.value;
-      result[5] = nst6.value;
-      result[6] = nst7.value;
-      result[7] = nst8.value;
-      result[8] = nst9.value;
-      result[9] = nst10.value;
-      result[10] = nst11.value;
-      result[11] = nst12.value;
+      result[0] = GlobalValues.toPrecision(nst1.value,3);
+      result[1] = GlobalValues.toPrecision(nst2.value,3);
+      result[2] = GlobalValues.toPrecision(nst3.value,3);
+      result[3] = GlobalValues.toPrecision(nst4.value,3);
+      result[4] = GlobalValues.toPrecision(nst5.value,3);
+      result[5] = GlobalValues.toPrecision(nst6.value,3);
+      result[6] = GlobalValues.toPrecision(nst7.value,3);
+      result[7] = GlobalValues.toPrecision(nst8.value,3);
+      result[8] = GlobalValues.toPrecision(nst9.value,3);
+      result[9] = GlobalValues.toPrecision(nst10.value,3);
+      result[10] = GlobalValues.toPrecision(nst11.value,3);
+      result[11] = GlobalValues.toPrecision(nst12.value,3);
       return result;
     }
 

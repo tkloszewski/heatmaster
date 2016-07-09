@@ -268,5 +268,10 @@ public class CountryItem implements IEnvironmentalDataConfig{
     public function set ignoreConfigPrices(value:Boolean):void {
         _ignoreConfigPrices = value;
     }
+
+
+    public function get minCalcTemp():Number {
+        return Number.NaN;
+    }
 }
 }

@@ -17,7 +17,7 @@ public class GaussianDistributor {
     public function GaussianDistributor(meanVal:Number, sigmaVal:Number) {
         this.meanVal = meanVal;
         this.sigmaVal = sigmaVal;
-        this.rangeVal = 3 * sigmaVal;
+        this.rangeVal = getRange(sigmaVal);
 
         this.createDistribution();
     }
@@ -26,6 +26,10 @@ public class GaussianDistributor {
         for(var val:Number = meanVal - rangeVal;val <= meanVal + rangeVal;val++){
             resultProvider.applyRatio(val,ratios[val]);
         }
+    }
+
+    private function getRange(sigmaVal:Number):Number{
+        return 3 * sigmaVal;
     }
     
     private function createDistribution():void{

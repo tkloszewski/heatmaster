@@ -30,7 +30,7 @@ public class GlobalValues {
     public static const PRICE_HEAT_KWH_COMBINED:Number = 0.22;
 
 
-    public static function parseIntValue(value:String){
+    public static function parseIntValue(value:String):Number{
         var result:Number = parseInt(value);
         if(isNaN(result)){
             return 0;
@@ -38,7 +38,12 @@ public class GlobalValues {
         return result;
     }
 
-    public static function parseFloatValue(value:String){
+
+    public static function toPrecision(value:Number,precision:int):Number {
+        return parseFloatValue(value.toPrecision(precision));
+    }
+
+    public static function parseFloatValue(value:String):Number{
         var result:Number = parseFloat(value);
         if(isNaN(result)){
             return 0;

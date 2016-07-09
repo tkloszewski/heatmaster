@@ -82,6 +82,7 @@ public class StationConfigurationReader {
             insolationN[k] = new Number(stationXML.insolation.north.i[k]);
         }
 
+        stationItem.minCalcTemp = Number(stationXML.calc_temp);
         stationItem.temperatures = temperatures;
         stationItem.groundTemperatures = TemperatureCalculator.calcGroundTemperatures(temperatures);
         stationItem.insolationN = insolationN;

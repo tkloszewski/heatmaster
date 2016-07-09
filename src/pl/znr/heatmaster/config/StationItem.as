@@ -10,6 +10,7 @@ public class StationItem implements IEnvironmentalDataConfig{
 
     private var _defaultStation:Boolean;
 
+    private var _minCalcTemp:Number;
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
     private var _insolationS:Array;
@@ -118,6 +119,15 @@ public class StationItem implements IEnvironmentalDataConfig{
 
     public function setDefaultStation(value:Boolean):void {
         _defaultStation = value;
+    }
+
+
+    public function set minCalcTemp(value:Number):void {
+        _minCalcTemp = value;
+    }
+
+    public function get minCalcTemp():Number {
+        return _minCalcTemp;
     }
 }
 }

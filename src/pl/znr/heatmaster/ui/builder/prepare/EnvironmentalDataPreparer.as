@@ -27,6 +27,7 @@ public class EnvironmentalDataPreparer {
     }
 
     public static function prepareFromConfig(envData:EnvironmentalData,envDataConfig:IEnvironmentalDataConfig):EnvironmentalData {
+        envData.minCalcTemp = envDataConfig.minCalcTemp;
         envData.temperatures = envDataConfig.temperatures;
         envData.groundTemperatures = envDataConfig.groundTemperatures;
         envData.insolationData.groundInsolation45 = envDataConfig.optimalInsolation;

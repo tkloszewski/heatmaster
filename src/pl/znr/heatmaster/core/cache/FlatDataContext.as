@@ -127,6 +127,7 @@ public class FlatDataContext {
     private var _groundInsolation45:Array;
 
     //other environmentalData
+    private var _minCalcTemp:Number;
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
     private var _tAvg:Number;
@@ -694,6 +695,14 @@ public class FlatDataContext {
 
     public function set windowsSurfaceN(value:Number):void {
         _windowsSurfaceN = value;
+    }
+
+    public function get minCalcTemp():Number {
+        return _minCalcTemp;
+    }
+
+    public function set minCalcTemp(value:Number):void {
+        _minCalcTemp = value;
     }
 
     public function get groundTemperatures():Array {

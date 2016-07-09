@@ -334,6 +334,8 @@
                 if (countryItem.stationsConfig != null) {
                     stationsVisible = true;
                     stationsConfig = countryItem.stationsConfig;
+                    selectedStation = stationsConfig.defaultStation;
+                    stationName = selectedStation.name;
                 }
                 else {
                     stationsVisible = false;

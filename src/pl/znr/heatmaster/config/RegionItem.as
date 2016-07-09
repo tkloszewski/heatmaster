@@ -110,5 +110,10 @@ public class RegionItem implements IEnvironmentalDataConfig{
     public function set country(value:CountryItem):void {
         _country = value;
     }
+
+
+    public function get minCalcTemp():Number {
+        return Number.NaN;
+    }
 }
 }

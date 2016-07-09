@@ -11,6 +11,7 @@ public class EnvironmentalData {
     }
 
     private var _insolationData:InsolationData = new InsolationData();
+    private var _minCalcTemp:Number;
     private var _temperatures:Array;
     private var _groundTemperatures:Array;
     private var _tAvg:Number = -1;
@@ -25,6 +26,14 @@ public class EnvironmentalData {
 
     public function set insolationData(value:InsolationData):void {
         _insolationData = value;
+    }
+
+    public function get minCalcTemp():Number {
+        return _minCalcTemp;
+    }
+
+    public function set minCalcTemp(value:Number):void {
+        _minCalcTemp = value;
     }
 
     public function get temperatures():Array {

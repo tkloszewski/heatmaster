@@ -32,6 +32,7 @@ import pl.znr.heatmaster.constants.combo.InsulationElementType;
 import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
 import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.cache.CachedDataContextManager;
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.HeatMasterController;
@@ -474,6 +475,25 @@ public class HeatMasterChangeListener {
 
         heatMasterController.conversionDataChanged(!conversionNotRequired);
         writeCache(heatMasterController.getDataContext());
+    }
+
+    public function applyConversionChangesToDataContext(dataContextToChange:DataContext, newUnit:int,unitName:String,shortUnitName:String):DataContext {
+        var countryItem:CountryItem = housePopup.getSelectedCountry();
+        if(ConversionUnits.isCostUnit(newUnit)){
+            if(ConversionUnits.isLocalCurrencyCostUnit(newUnit)){
+                dataContextToChange.currencyLocaleCode = countryItem.currencyLocaleCode;
+                dataContextToChange.localCurrency = true;
+            }
+            else {
+                dataContextToChange.currencyLocaleCode = HeatMaster.CURRENCY_EURO_LOCALE_CODE;
+                dataContextToChange.localCurrency = false;
+            }
+        }
+        dataContextToChange.conversionData.selectedUnit = newUnit;
+        dataContextToChange.conversionData.unitName = unitName;
+        dataContextToChange.conversionData.shortUnitName = shortUnitName;
+        dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        return dataContextToChange;
     }
 
     public function heatingDataChanged(heatingSourceData:HeatingSourceData):void {

@@ -126,6 +126,17 @@ public class HeatMasterController {
         }
     }
 
+    public function convertResult(processResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {
+        try {
+            var ratioCluster:RatioCluster = RatioClusterFactory.getMonthlyWattsRatioCluster(conversionData);
+            processResult.conversionData = conversionData;
+            return converterService.convert(processResult, conversionData, ratioCluster);
+        } catch (e:Error) {
+            Alert.show("Conversion error: " + e.message);
+        }
+        return processResult;
+    }
+
     private function doStartCalculation():void{
         started = true;
         try {
@@ -181,17 +192,6 @@ public class HeatMasterController {
         processingResult = reportDataCalculator.calcReportValues(dataContext, processingResult, dataContext.conversionData);
 
         return processingResult;
-    }
-
-    private function convertResult(processResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {
-        try {
-            var ratioCluster:RatioCluster = RatioClusterFactory.getMonthlyWattsRatioCluster(conversionData);
-            processResult.conversionData = conversionData;
-            return converterService.convert(processResult, conversionData, ratioCluster);
-        } catch (e:Error) {
-            Alert.show("Conversion error: " + e.message);
-        }
-        return processResult;
     }
 
     private function propagateResult():void {

@@ -77,15 +77,17 @@ public class HeatMasterWattsCalculator {
 
     public function calcMaxHeatingPower(dataContext:DataContext):Number {
         var environmentalData:EnvironmentalData = dataContext.environmentalData;
-
-        var tMin:Number = environmentalData.tMin;
+        if(isNaN(environmentalData.minCalcTemp)){
+           return Number.NaN;
+        }
+        var tMinCalc:Number = environmentalData.minCalcTemp;
         var tGroundMin:Number = TemperatureCalculator.calcMinTemperature(environmentalData.groundTemperatures);
         var insolationGround45Min:Number = CalcUtils.minValue(environmentalData.insolationData.groundInsolation45);
         var insolationSouthMin:Number = CalcUtils.minValue(environmentalData.insolationData.southInsolation);
         var insolationWestEastMin:Number = CalcUtils.minValue(environmentalData.insolationData.westEastInsolation);
         var insolationNorthMin:Number = CalcUtils.minValue(environmentalData.insolationData.northInsolation);
 
-        var monthInput:MonthInputData = new MonthInputData(tMin,tGroundMin,insolationGround45Min,insolationSouthMin,insolationWestEastMin,insolationNorthMin);
+        var monthInput:MonthInputData = new MonthInputData(tMinCalc,tGroundMin,insolationGround45Min,insolationSouthMin,insolationWestEastMin,insolationNorthMin);
         var energyData:MonthEnergyData = monthEnergyCalculator.calcEnergy(new MonthEnergyData(),dataContext,monthInput);
 
         return BalanceValueHelper.calcBaseNormalizedBalanceValue(energyData);

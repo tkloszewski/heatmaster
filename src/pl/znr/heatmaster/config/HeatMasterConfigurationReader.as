@@ -56,15 +56,7 @@ public class HeatMasterConfigurationReader {
             var stationConfig:StationsConfig = stationsWrapper.getStationsForCountry(countryItem.code);
             if(stationConfig != null){
                 countryItem.stationsConfig = stationConfig;
-
                 countryItem.noRegions = true;
-                countryItem.temperatures = stationConfig.defaultStation.temperatures;
-                countryItem.groundTemperatures = stationConfig.defaultStation.groundTemperatures;
-                countryItem.insolationN = stationConfig.defaultStation.insolationN;
-                countryItem.insolationS = stationConfig.defaultStation.insolationS;
-                countryItem.insolationWE = stationConfig.defaultStation.insolationWE;
-                countryItem.optimalInsolation = stationConfig.defaultStation.optimalInsolation;
-
                 countryItem.regions = new ArrayCollection();
                 countryItem.ignoreConfigPrices = true;
             }

@@ -18,8 +18,10 @@
         import pl.znr.heatmaster.config.CountryItemHelper;
         import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
         import pl.znr.heatmaster.constants.GlobalValues;
+        import pl.znr.heatmaster.constants.StateConstants;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
         import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HeatMasterController;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.StateDataContext;
         import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
@@ -36,6 +38,7 @@
 
         private var configuratioReader:HeatMasterConfigurationReader;
         private var calculationStateController:CalculationStateController;
+        private var heatMasterController:HeatMasterController;
         private var environmentalData:EnvironmentalData;
 
 
@@ -107,11 +110,11 @@
             setupView(currentDataContext);
 
             if (stateDataContext.newDataContext != null) {
-                var prevProcessingResult:ProcessingResult = calculationStateController.calculateStateless(prevDataContext);
+                var prevProcessingResult:ProcessingResult = heatMasterController.calculateStateless(prevDataContext);
                 var prevValue:Number = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(prevProcessingResult);
-                setCalculatedValue(prevValue, prevProcessingResult.conversionData.selectedUnit, true);
+                setCalculatedValue(prevValue, prevProcessingResult.conversionData.selectedUnit,prevDataContext.currencyLocaleCode,true);
 
-                if (calculationStateController.isNewValueCalculated()) {
+                if (calculationStateController.isInNewState()) {
                     refProcessingResult = prevProcessingResult;
                     initNewStateView();
                 }
@@ -134,14 +137,14 @@
                 value = convertedResult.getEfficiencyAwareBalanceValue();
             }
 
-            if (calculationStateController.isReferenceValueCalculated()) {
+            if (calculationStateController.isInReferenceState()) {
                 refProcessingResult = resultData;
             }
             else {
                 newProcessingResult = resultData;
             }
 
-            setCalculatedValue(value, unit);
+            setCalculatedValue(value, unit,resultData.dataContext.currencyLocaleCode);
         }
 
         public function countryChanged(country:CountryItem):void {
@@ -158,22 +161,22 @@
             tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
         }
 
-        public function setCalculatedValue(value:Number, unit:int, previousMode:Boolean = false):void {
+        public function setCalculatedValue(value:Number, unit:int,currencyLocaleCode:String, previousMode:Boolean = false):void {
             this.calculatedValue = value;
-            if (calculationStateController.isReferenceValueCalculated()) {
+            if (calculationStateController.isInReferenceState()) {
                 if (!previousMode) {
-                    formattedReferenceValue = createFormattedValue(value, unit);
+                    formattedReferenceValue = createFormattedValue(value, unit,currencyLocaleCode);
                 }
                 else {
-                    formattedNewValue = createFormattedValue(value, unit);
+                    formattedNewValue = createFormattedValue(value, unit,currencyLocaleCode);
                 }
             }
             else {
                 if (!previousMode) {
-                    formattedNewValue = createFormattedValue(value, unit);
+                    formattedNewValue = createFormattedValue(value, unit,currencyLocaleCode);
                 }
                 else {
-                    formattedReferenceValue = createFormattedValue(value, unit);
+                    formattedReferenceValue = createFormattedValue(value, unit,currencyLocaleCode);
                 }
             }
         }
@@ -188,6 +191,10 @@
 
         public function setCalculationStateController(calculationStateController:CalculationStateController):void {
             this.calculationStateController = calculationStateController;
+        }
+
+        public function setHeatMasterController(heatMasterController:HeatMasterController):void {
+            this.heatMasterController = heatMasterController;
         }
 
 
@@ -249,12 +256,19 @@
             try {
                 var selectedItem:Object = unitDropDownList.selectedItem;
                 setMonthComponentsVisibility(selectedItem.data);
-                trace("UnitChanged: " + selectedItem.data);
 
-                var shortUnitNameCode:String = selectedItem.shortUnit;
                 var newUnit:int = selectedItem.data;
+                var shortUnitNameCode:String = getShortUnitNameCode(newUnit, selectedItem.shortUnit);
 
-                heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, getShortUnitNameCode(newUnit, shortUnitNameCode));
+                if (!calculationStateController.isInInitialState()) {
+                    var dataContext:DataContext = calculationStateController.getPreviousDataContext();
+                    dataContext = heatMasterListener.applyConversionChangesToDataContext(dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
+                    var processingResult:ProcessingResult = calculationStateController.isInReferenceState() ? newProcessingResult : refProcessingResult;
+                    processingResult = heatMasterController.convertResult(processingResult,dataContext.conversionData);
+                    setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult),newUnit,dataContext.currencyLocaleCode,true);
+                }
+
+                heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode);
             } catch (e:Error) {
                 Alert.show("Unit changed error " + e.message);
             }
@@ -285,14 +299,14 @@
             }
         }
 
-        private function createFormattedValue(value:Number, unit:int):String {
+        private function createFormattedValue(value:Number, unit:int,currencyLocaleCode:String):String {
             var format:NumberFormatter = new NumberFormatter();
             format.precision = 0;
             format.rounding = NumberBaseRoundType.NEAREST;
             format.thousandsSeparatorFrom = " ";
             format.thousandsSeparatorTo = " ";
 
-            var unitCode:String = getUnitName();
+            var unitCode:String = getUnitName(currencyLocaleCode);
             var unitName:String = "";
             if (ConversionUnits.isEmisionUnit(unit)) {
                 unitName = "CO2 "
@@ -307,12 +321,12 @@
             return format.format(value) + " " + unitName;
         }
 
-        private function getUnitName():String {
+        private function getUnitName(currencyLocaleCode:String):String {
             if (!ConversionUnits.isLocalCurrencyCostUnit(unitDropDownList.selectedItem.data)) {
                 return unitDropDownList.selectedItem.shortUnit;
             }
             else {
-                var shortUnitName:String = heatMasterListener.getDataContext().currencyLocaleCode + ".";
+                var shortUnitName:String = currencyLocaleCode + ".";
                 shortUnitName += ConversionUnits.isYearUnit(unitDropDownList.selectedItem.data) ? 'year_cost' : 'month_cost';
                 return shortUnitName;
             }
@@ -329,7 +343,8 @@
             }
 
             if (!initial) {
-                setCalculatedValue(value, unit);
+                var currencyLocaleCode:String = heatMasterListener.getDataContext().currencyLocaleCode;
+                setCalculatedValue(value, unit,currencyLocaleCode);
             }
             else {
                 formattedReferenceValue = resourceManager.getString('hm', 'hm.labels.energy');

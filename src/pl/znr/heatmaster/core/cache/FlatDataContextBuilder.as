@@ -231,6 +231,7 @@ public class FlatDataContextBuilder {
 
         //other environmentalData
         try {
+            flatDataContext.minCalcTemp = environmentalData.minCalcTemp;
             flatDataContext.temperatures = environmentalData.temperatures.slice();
             flatDataContext.groundTemperatures = environmentalData.groundTemperatures.slice();
             flatDataContext.tAvg = environmentalData.tAvg;
@@ -442,6 +443,7 @@ public class FlatDataContextBuilder {
 
 
         try {
+            environmentalData.minCalcTemp = flatDataContext.minCalcTemp;
             environmentalData.temperatures = flatDataContext.temperatures.slice();
             environmentalData.groundTemperatures = flatDataContext.groundTemperatures.slice();
             environmentalData.tAvg = flatDataContext.tAvg;
