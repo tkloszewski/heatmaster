@@ -12,6 +12,7 @@
                    <img_y>234</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.2</t>
                    <t>-0.9</t>
@@ -92,6 +93,7 @@
                    <img_y>170</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-4.9</t>
                    <t>-2</t>
@@ -172,6 +174,7 @@
                    <img_y>508</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.7</t>
                    <t>-2.3</t>
@@ -252,6 +255,7 @@
                    <img_y>179</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.7</t>
                    <t>0</t>
@@ -332,6 +336,7 @@
                    <img_y>122</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.7</t>
                    <t>-3.8</t>
@@ -412,6 +417,7 @@
                    <img_y>409</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-3.7</t>
                    <t>-0.8</t>
@@ -492,6 +498,7 @@
                    <img_y>75</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-1.9</t>
                    <t>-2</t>
@@ -572,6 +579,7 @@
                    <img_y>50</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>2</t>
                    <t>1.2</t>
@@ -652,6 +660,7 @@
                    <img_y>220</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>0.3</t>
                    <t>0.5</t>
@@ -732,6 +741,7 @@
                    <img_y>33</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>0</t>
                    <t>0.2</t>
@@ -812,6 +822,7 @@
                    <img_y>386</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.5</t>
                    <t>-2.4</t>
@@ -892,6 +903,7 @@
                    <img_y>316</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.7</t>
                    <t>-1.1</t>
@@ -972,6 +984,7 @@
                    <img_y>569</img_y>
                    <zone>5</zone>
                </position>
+               <calc_temp>-24</calc_temp>
                <temperatures>
                    <t>-4.9</t>
                    <t>-7.9</t>
@@ -1052,6 +1065,7 @@
                    <img_y>460</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.9</t>
                    <t>-2.4</t>
@@ -1132,6 +1146,7 @@
                    <img_y>80</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-4.1</t>
                    <t>-3.9</t>
@@ -1212,6 +1227,7 @@
                    <img_y>403</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.2</t>
                    <t>-2.1</t>
@@ -1292,6 +1308,7 @@
                    <img_y>445</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.6</t>
                    <t>-1.6</t>
@@ -1372,6 +1389,7 @@
                    <img_y>274</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.6</t>
                    <t>1.8</t>
@@ -1452,6 +1470,7 @@
                    <img_y>71</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>0.7</t>
                    <t>2.6</t>
@@ -1532,6 +1551,7 @@
                    <img_y>72</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>-0.8</t>
                    <t>-0.8</t>
@@ -1612,6 +1632,7 @@
                    <img_y>483</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.3</t>
                    <t>-2.6</t>
@@ -1692,6 +1713,7 @@
                    <img_y>518</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.9</t>
                    <t>-2.8</t>
@@ -1772,6 +1794,7 @@
                    <img_y>361</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>1.8</t>
                    <t>-0.8</t>
@@ -1852,6 +1875,7 @@
                    <img_y>545</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-0.4</t>
                    <t>-4.3</t>
@@ -1932,6 +1956,7 @@
                    <img_y>46</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>1.1</t>
                    <t>-0.3</t>
@@ -2012,6 +2037,7 @@
                    <img_y>360</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-2.6</t>
                    <t>-1.9</t>
@@ -2092,6 +2118,7 @@
                    <img_y>13</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>-0.4</t>
                    <t>-0.3</t>
@@ -2172,6 +2199,7 @@
                    <img_y>314</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1</t>
                    <t>-1</t>
@@ -2252,6 +2280,7 @@
                    <img_y>109</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-3.9</t>
                    <t>-2.3</t>
@@ -2332,6 +2361,7 @@
                    <img_y>181</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-2.3</t>
                    <t>-1.2</t>
@@ -2412,6 +2442,7 @@
                    <img_y>525</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>0.5</t>
                    <t>0.8</t>
@@ -2492,6 +2523,7 @@
                    <img_y>112</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-3.6</t>
                    <t>-2.9</t>
@@ -2572,6 +2604,7 @@
                    <img_y>422</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.6</t>
                    <t>-0.2</t>
@@ -2652,6 +2685,7 @@
                    <img_y>182</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.5</t>
                    <t>-1.5</t>
@@ -2732,6 +2766,7 @@
                    <img_y>171</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.3</t>
                    <t>-0.3</t>
@@ -2812,6 +2847,7 @@
                    <img_y>237</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.9</t>
                    <t>-2.7</t>
@@ -2892,6 +2928,7 @@
                    <img_y>249</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>0.2</t>
                    <t>-1.8</t>
@@ -2972,6 +3009,7 @@
                    <img_y>505</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-4.9</t>
                    <t>-2.4</t>
@@ -3052,6 +3090,7 @@
                    <img_y>468</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-0.1</t>
                    <t>-0.8</t>
@@ -3132,6 +3171,7 @@
                    <img_y>106</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>-1.2</t>
                    <t>-0.7</t>
@@ -3212,6 +3252,7 @@
                    <img_y>481</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-4.6</t>
                    <t>0.3</t>
@@ -3292,6 +3333,7 @@
                    <img_y>412</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-1.1</t>
                    <t>-1.5</t>
@@ -3372,6 +3414,7 @@
                    <img_y>266</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-2.1</t>
                    <t>-1.9</t>
@@ -3452,6 +3495,7 @@
                    <img_y>245</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>0.7</t>
                    <t>-1.1</t>
@@ -3532,6 +3576,7 @@
                    <img_y>356</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.4</t>
                    <t>-2</t>
@@ -3612,6 +3657,7 @@
                    <img_y>77</img_y>
                    <zone>5</zone>
                </position>
+               <calc_temp>-24</calc_temp>
                <temperatures>
                    <t>-5.3</t>
                    <t>-4.9</t>
@@ -3692,6 +3738,7 @@
                    <img_y>141</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>1.1</t>
                    <t>-0.2</t>
@@ -3772,6 +3819,7 @@
                    <img_y>119</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>-0.1</t>
                    <t>-1</t>
@@ -3852,6 +3900,7 @@
                    <img_y>410</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-4</t>
                    <t>-5.3</t>
@@ -3932,6 +3981,7 @@
                    <img_y>101</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>0.5</t>
                    <t>0.9</t>
@@ -4012,6 +4062,7 @@
                    <img_y>489</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.8</t>
                    <t>-0.7</t>
@@ -4092,6 +4143,7 @@
                    <img_y>280</img_y>
                    <zone>4</zone>
                </position>
+               <calc_temp>-22</calc_temp>
                <temperatures>
                    <t>-2.9</t>
                    <t>-3.1</t>
@@ -4172,6 +4224,7 @@
                    <img_y>186</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.7</t>
                    <t>-0.9</t>
@@ -4252,6 +4305,7 @@
                    <img_y>28</img_y>
                    <zone>1</zone>
                </position>
+               <calc_temp>-16</calc_temp>
                <temperatures>
                    <t>-0.3</t>
                    <t>0.2</t>
@@ -4332,6 +4386,7 @@
                    <img_y>367</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-1.3</t>
                    <t>-1.5</t>
@@ -4412,6 +4467,7 @@
                    <img_y>328</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-2.5</t>
                    <t>-3.4</t>
@@ -4492,6 +4548,7 @@
                    <img_y>385</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-0.4</t>
                    <t>-0.7</t>
@@ -4572,6 +4629,7 @@
                    <img_y>560</img_y>
                    <zone>5</zone>
                </position>
+               <calc_temp>-24</calc_temp>
                <temperatures>
                    <t>-2.8</t>
                    <t>-2.3</t>
@@ -4652,6 +4710,7 @@
                    <img_y>411</img_y>
                    <zone>3</zone>
                </position>
+               <calc_temp>-20</calc_temp>
                <temperatures>
                    <t>-2.6</t>
                    <t>0</t>
@@ -4732,6 +4791,7 @@
                    <img_y>293</img_y>
                    <zone>2</zone>
                </position>
+               <calc_temp>-18</calc_temp>
                <temperatures>
                    <t>-0.3</t>
                    <t>-0.7</t>
