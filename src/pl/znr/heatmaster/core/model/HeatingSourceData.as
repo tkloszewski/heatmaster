@@ -14,6 +14,7 @@ public class HeatingSourceData {
     private var _heatingEfficiency:Number;
     private var _pricePerkWh:Number;
     private var _naturalUnitPrice:Number;
+    private var _calorificValue:Number;
 
     private var _waterHeatingType:HeatingSourceType;
     private var _waterHeatingEfficiency:Number;
@@ -37,6 +38,13 @@ public class HeatingSourceData {
         _pricePerkWh = value;
     }
 
+    public function get calorificValue():Number {
+        return _calorificValue;
+    }
+
+    public function set calorificValue(value:Number):void {
+        _calorificValue = value;
+    }
 
     public function get heatingType():HeatingSourceType {
         return _heatingType;

@@ -7,33 +7,26 @@
  */
 package pl.znr.heatmaster.config {
 
-import flash.globalization.StringTools;
-
-import mx.collections.XMLListCollection;
-import mx.formatters.NumberFormatter;
 import mx.collections.ArrayCollection;
 import mx.resources.IResourceManager;
-import mx.resources.ResourceManager;
-import mx.utils.StringUtil;
-import mx.utils.StringUtil;
-import mx.validators.StringValidator;
 
-import pl.znr.heatmaster.config.StationsWrapper;
+import pl.znr.heatmaster.util.SortingUtil;
 
-import pl.znr.heatmaster.config.StationsWrapper;
-
-import pl.znr.heatmaster.constants.GlobalValues;
+import spark.collections.Sort;
+import spark.collections.SortField;
 
 public class HeatMasterConfigurationReader {
 
     private var countryConfigReader:CountryConfigurationReader;
     private var stationConfigReader:StationConfigurationReader;
+    private var resManager:IResourceManager;
 
     private var config:ArrayCollection;
 
     public function HeatMasterConfigurationReader(countryXML:XML,stationsXML:XML,resManager:IResourceManager = null) {
         this.countryConfigReader = new CountryConfigurationReader(countryXML,resManager);
         this.stationConfigReader = new StationConfigurationReader(stationsXML,resManager);
+        this.resManager = resManager;
     }
 
     public function readConfig():ArrayCollection {

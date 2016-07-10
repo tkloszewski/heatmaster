@@ -39,6 +39,7 @@
         import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.util.CollectionHelper;
+        import pl.znr.heatmaster.util.SortingUtil;
 
         import spark.utils.TextFlowUtil;
 
@@ -498,8 +499,6 @@
             houseList.refresh();
             houseDropDownList.selectedIndex = oldIdx;
 
-            oldIdx = countryDropDownList.selectedIndex;
-
             for (var i:int = 0; i < countryList.length; i++) {
                 var configItem:CountryItem = countryList.getItemAt(i) as CountryItem;
                 configItem.name = resourceManager.getString('hm', configItem.localeCode);
@@ -512,8 +511,10 @@
                 }
             }
 
+            countryList = SortingUtil.sortCountryListByName(countryList,resourceManager.getLocales()[0]);
             countryList.refresh();
-            countryDropDownList.selectedIndex = oldIdx;
+            countryDropDownList.dataProvider = countryList;
+            countryDropDownList.selectedIndex = getSelectedCountryIndex(countryList, selectedCountry.code);
 
             if (regionList != null) {
                 if (regionDropDownList.visible) {

@@ -2,13 +2,9 @@
  * Created by Dom on 2016-06-21.
  */
 package pl.znr.heatmaster.core.station {
-import flash.geom.Point;
-
 import mx.collections.ArrayCollection;
 
 import pl.znr.heatmaster.config.StationItem;
-
-import pl.znr.heatmaster.core.station.Position;
 
 import spark.collections.Sort;
 
@@ -34,6 +30,19 @@ public class StationLocator {
 
         return result;
     }
+
+    public function findNearestStation(position:Position):StationDistance {
+        var stationDistances:Array = calcDistances(position).toArray();
+        var minDistanceStation:StationDistance = stationDistances[0];
+        for(var i:int = 1; i < stationDistances.length; i++){
+            var stationDistance:StationDistance = stationDistances[i] as StationDistance;
+            if(minDistanceStation.distance > stationDistance.distance){
+               minDistanceStation = stationDistance;
+            }
+        }
+        return minDistanceStation;
+    }
+
 
     private function doFindNearestStations(position:Position):ArrayCollection {
         var result:ArrayCollection = new ArrayCollection();

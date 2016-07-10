@@ -13,6 +13,7 @@ public class HeatingSourceTypeItem {
     private var _type:HeatingSourceType;
     private var _pricePerKwh:Number;
     private var _naturalUnitPrice:Number;
+    private var  _heatingValueMJ:Number;
 
     public function HeatingSourceTypeItem(type:HeatingSourceType, pricePerKwh:Number = -1) {
         _type = type;
@@ -23,15 +24,20 @@ public class HeatingSourceTypeItem {
          _pricePerKwh = pricePerKwh;
         }
         _naturalUnitPrice = type.naturalUnitPrice;
+        _heatingValueMJ = type.heatingValueMJ;
     }
 
-    public function resetOriginalPrice():void{
-        _pricePerKwh = type.pricePerkWh;
-        _naturalUnitPrice = type.naturalUnitPrice;
+    public function resetOriginalPrice(ratio:Number):void{
+        _pricePerKwh = type.pricePerkWh * ratio;
+        _naturalUnitPrice = type.naturalUnitPrice * ratio;
     }
 
     public function get naturalUnitPrice():Number {
         return _naturalUnitPrice;
+    }
+
+    public function set naturalUnitPrice(value:Number):void {
+        _naturalUnitPrice = value;
     }
 
     public function get type():HeatingSourceType {
@@ -48,6 +54,14 @@ public class HeatingSourceTypeItem {
 
     public function set pricePerKwh(value:Number):void {
         _pricePerKwh = value;
+    }
+
+    public function get heatingValueMJ():Number {
+        return _heatingValueMJ;
+    }
+
+    public function set heatingValueMJ(value:Number):void {
+        _heatingValueMJ = value;
     }
 }
 }

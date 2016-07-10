@@ -120,6 +120,7 @@
         import pl.znr.heatmaster.ui.components.LangChangeListener;
         import pl.znr.heatmaster.ui.components.panel.BalanceReportPanel;
         import pl.znr.heatmaster.ui.components.panel.StationsPanel;
+        import pl.znr.heatmaster.util.SortingUtil;
 
         import spark.primitives.BitmapImage;
 
@@ -184,7 +185,7 @@
         public function showStationsMap(stationsConfig:StationsConfig, selectedStation:StationItem):void {
             if (stationsPanel.visible) {
                 stationsPanel.visible = false;
-                heatMasterContainer.removeElement(stationsPanel);
+                this.removeElement(stationsPanel);
                 return;
             }
 
@@ -192,12 +193,10 @@
             bitmapImg.source = stationsConfig.mapImage;
 
             stationsPanel.setStations(stationsConfig.stations, selectedStation);
-            stationsPanel.width = bitmapImg.sourceWidth + 0.33 * bitmapImg.sourceWidth;
-            stationsPanel.height = bitmapImg.sourceHeight + 1;
             stationsPanel.mapImage = stationsConfig.mapImage;
             stationsPanel.visible = true;
 
-            heatMasterContainer.addElement(stationsPanel);
+            this.addElement(stationsPanel);
         }
 
         public function groundBackgroundVisible(visible:Boolean):void {
@@ -221,7 +220,7 @@
 
         public function hideMap():void {
             stationsPanel.visible = false;
-            heatMasterContainer.removeElement(stationsPanel);
+            this.removeElement(stationsPanel);
         }
 
         public function showBalanceReport(comparatorResult:ComparatorResult):void {
@@ -248,7 +247,7 @@
 
             stationsPanel = new StationsPanel();
             stationsPanel.x = housePanel.x + 200;
-            stationsPanel.y = 80;
+            stationsPanel.y = 60;
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
@@ -263,6 +262,7 @@
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
 
+            selectedLang = resourceManager.getLocales()[0];
             configItems = configurationReader.readConfig();
         }
 
@@ -970,7 +970,6 @@
                          bottom="5" fontSize="9" color="white" click="toggleLocale()"/>
             </s:BorderContainer>
         </s:Group>
-
     </s:Scroller>
 
     <mx:Image maintainAspectRatio="false" id="bottomBarImg" left="0" right="0" y="715"

@@ -153,13 +153,11 @@
         [Bindable]
         private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
 
-
         [Bindable]
         private var showNaturalUnit:Boolean = true;
 
         private var localCurrency:Boolean = false;
         private var selectedCountry:CountryItem;
-
 
         override public function langChanged(lang:String):void {
             var oldIdx:int = heatingTypeDropDownList.selectedIndex;
@@ -231,7 +229,7 @@
             }
         }
 
-        public function configChanged(configItem:CountryItem, localCurrency:Boolean):void {
+        public function configChanged(configItem:CountryItem, localCurrency:Boolean, preserveLocallyChangedValues:Boolean = false):void {
             applyConfigPrices(detachedHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
             applyConfigPrices(multiFamilyHeatingSourceList, configItem, heatingTypeDropDownList, localCurrency);
             applyConfigPrices(warmWaterDetachedHeatingSourceList, configItem, warmWaterHeatingTypeDropDownList, localCurrency);
@@ -240,17 +238,17 @@
             var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
             var warmWaterHeatingSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
 
-            applyPriceValuesToControls(heatingSourceTypeItem.pricePerKwh);
+            applyPriceValuesToControls(heatingSourceTypeItem);
             applyWarmWaterPriceValuesToControls(warmWaterHeatingSourceTypeItem.pricePerKwh);
+
+            calorificValInput.enabled = heatingSourceTypeItem.type.heatingValueEditable;
+            calorificValInput.textDisplay.editable = heatingSourceTypeItem.type.heatingValueEditable;
+            calorificValInput.textDisplay.enabled = heatingSourceTypeItem.type.heatingValueEditable;
 
             selectedCountry = configItem;
             this.localCurrency = localCurrency;
 
             applyCurrencyToLabels(configItem, localCurrency);
-
-            priceNS.enabled = !configItem.ignoreConfigPrices;
-            priceWarmWaterNS.enabled = !configItem.ignoreConfigPrices;
-            naturalUnitPriceNS.enabled = configItem.ignoreConfigPrices;
         }
 
         private function applyCurrencyToLabels(country:CountryItem, localCurrency:Boolean):void {
@@ -259,6 +257,7 @@
 
             heatingCostRichText.text = currencyName;
             warmWaterHeatingCostRichText.text = currencyName;
+            heatingNaturalUnitCostRichText.text = currencyName;
         }
 
         public function getConfigAppliedHeatingPrice():Number {
@@ -271,9 +270,10 @@
 
         private function applyConfigPrices(heatingTypes:ArrayCollection, configItem:CountryItem, dropDownList:DropDownList, localCurrency:Boolean):void {
             if (configItem.ignoreConfigPrices) {
+                var ignoreConfigRate:Number = localCurrency ? 1.0 : 1 / configItem.currencyExchangeRate;
                 for each(var item:Object in heatingTypes) {
                     var heatingSourceTypeItem:HeatingSourceTypeItem = item.data;
-                    heatingSourceTypeItem.resetOriginalPrice();
+                    heatingSourceTypeItem.resetOriginalPrice(ignoreConfigRate);
                 }
             }
             else {
@@ -304,6 +304,7 @@
                     else {
                         trace("No proper heatingType: " + configItem.code);
                     }
+                    heatingSourceTypeItem.naturalUnitPrice = HeatingSourceType.toNaturalPrice(heatingSourceTypeItem.pricePerKwh, heatingSourceTypeItem.type.heatingValueMJ);
                 }
             }
 
@@ -332,9 +333,12 @@
                 heatingCostRichText.text = currencyName;
                 warmWaterHeatingCostRichText.text = currencyName;
             }
-            if (selectedCountry.ignoreConfigPrices && !isNaN(heatingData.naturalUnitPrice)) {
+            if (!isNaN(heatingData.naturalUnitPrice)) {
                 naturalUnitPriceNS.value = heatingData.naturalUnitPrice;
                 naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingData.naturalUnitPrice);
+            }
+            if(!isNaN(heatingData.calorificValue)) {
+                calorificValInput.value = heatingData.calorificValue;
             }
 
             var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
@@ -344,6 +348,10 @@
             showNaturalUnit = heatingSourceType.showNaturalUnit;
             previousControlsVisible = controlsVisible;
             setWarmWaterVisibility(false);
+
+            calorificValInput.enabled = heatingSourceType.heatingValueEditable;
+            calorificValInput.textDisplay.editable = heatingSourceType.heatingValueEditable;
+            calorificValInput.textDisplay.enabled = heatingSourceType.heatingValueEditable;
         }
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
@@ -356,13 +364,17 @@
             heatingTypeDropDownList.selectedIndex = heatIdx;
 
             var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
-            applyHeatingValuesToControls(heatingSourceTypeItem.type, heatingSourceTypeItem.pricePerKwh);
+            applyHeatingValuesToControls(heatingSourceTypeItem.type, heatingSourceType.pricePerkWh, heatingSourceType.naturalUnitPrice);
 
             if (warmWaterIdx != -1) {
                 warmWaterHeatingTypeDropDownList.selectedIndex = warmWaterIdx;
                 var heatingWarmWaterSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
-                applyWarmWaterValuesToControls(heatingWarmWaterSourceTypeItem.type, heatingWarmWaterSourceTypeItem.pricePerKwh);
+                applyWarmWaterValuesToControls(warmWaterHeatingSourceType, warmWaterHeatingSourceType.pricePerkWh);
             }
+
+            calorificValInput.enabled = heatingSourceType.heatingValueEditable;
+            calorificValInput.textDisplay.editable = heatingSourceType.heatingValueEditable;
+            calorificValInput.textDisplay.enabled = heatingSourceType.heatingValueEditable;
 
             var warmWaterDistributionIdx:int = getWarmWaterDistributionIndex(context.model.warmWaterDistribution, detachedWarmWaterDistributionList);
             var warmWaterStorageIdx:int = getComboItemIndexForCollection(context.model.warmWaterStorage, warmWaterStorageList);
@@ -487,7 +499,7 @@
                 try {
                     var currentHeatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data;
                     var warmWaterHeatingSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data;
-                    applyHeatingValuesToControls(currentHeatingSourceTypeItem.type, currentHeatingSourceTypeItem.pricePerKwh);
+                    applyHeatingValuesToControls(currentHeatingSourceTypeItem.type, currentHeatingSourceTypeItem.pricePerKwh, currentHeatingSourceTypeItem.naturalUnitPrice);
                     applyWarmWaterValuesToControls(warmWaterHeatingSourceTypeItem.type, warmWaterHeatingSourceTypeItem.pricePerKwh);
                 } catch (e:Error) {
                     Alert.show("Error applying values to heating popup controls...");
@@ -545,7 +557,7 @@
 
             efficiencyNS.value = heatingSourceType.efficiency;
             priceNS.value = heatingSourceType.pricePerkWh;
-            calorificValInput.text = heatingSourceType.heatingValueMJ.toString();
+            calorificValInput.value = heatingSourceType.heatingValueMJ;
             naturalUnitPriceNS.value = heatingSourceType.naturalUnitPrice;
             naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.naturalUnitPrice);
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
@@ -677,13 +689,33 @@
         private function heatingTypeChanged():void {
             var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
             var changed:Boolean = forceChangeWarmWaterHeatingType(heatingSourceType.type);
-            applyHeatingValuesToControls(heatingSourceType.type, heatingSourceType.pricePerKwh);
+
+            var pricePerKwh:Number = heatingSourceType.type.pricePerkWh;
+            var naturalUnitPrice:Number = heatingSourceType.type.naturalUnitPrice;
+            var rate:Number = getCurrentExchangeRate();
+
+
+            applyHeatingValuesToControls(heatingSourceType.type, pricePerKwh * rate,  naturalUnitPrice * rate);
             if (changed) {
-                applyWarmWaterValuesToControls(heatingSourceType.type, heatingSourceType.pricePerKwh);
+                applyWarmWaterValuesToControls(heatingSourceType.type, pricePerKwh * rate);
             }
+            calorificValInput.enabled = heatingSourceType.type.heatingValueEditable;
+            calorificValInput.textDisplay.editable = heatingSourceType.type.heatingValueEditable;
+            calorificValInput.textDisplay.enabled = heatingSourceType.type.heatingValueEditable;
+
             var heatingData:HeatingSourceData = createHeatingData();
             heatMasterListener.heatingDataChanged(heatingData);
         }
+
+        private function getCurrentExchangeRate():Number {
+            if (localCurrency) {
+                return selectedCountry.ignoreConfigPrices ? 1.0 : selectedCountry.currencyExchangeRate;
+            }
+            else {
+                return selectedCountry.ignoreConfigPrices ? 1 / selectedCountry.currencyExchangeRate : 1.0;
+            }
+        }
+
 
         private function forceChangeWarmWaterHeatingType(heatingSourceType:HeatingSourceType):Boolean {
             var heatingIdx:int = -1;
@@ -699,12 +731,13 @@
             return heatingIdx != -1;
         }
 
-        private function applyHeatingValuesToControls(heatingSourceType:HeatingSourceType, pricePerkWh:Number):void {
+        private function applyHeatingValuesToControls(heatingSourceType:HeatingSourceType, pricePerkWh:Number, naturalUnitPrice:Number):void {
             efficiencyNS.value = heatingSourceType.efficiency;
             priceNS.value = pricePerkWh;
-            calorificValInput.text = heatingSourceType.heatingValueMJ.toString();
+            naturalUnitPriceNS.value = naturalUnitPrice;
+            calorificValInput.value = heatingSourceType.heatingValueMJ;
             naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.naturalUnitPrice);
-            naturalUnitPriceNS.value = heatingSourceType.naturalUnitPrice;
+
 
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             showNaturalUnit = heatingSourceType.showNaturalUnit;
@@ -716,8 +749,9 @@
             priceWarmWaterNS.value = pricePerkWh;
         }
 
-        private function applyPriceValuesToControls(pricePerkWh:Number):void {
-            priceNS.value = pricePerkWh;
+        private function applyPriceValuesToControls(heatingSourceTypeItem:HeatingSourceTypeItem):void {
+            priceNS.value = heatingSourceTypeItem.pricePerKwh;
+            naturalUnitPriceNS.value = heatingSourceTypeItem.naturalUnitPrice;
         }
 
         private function applyWarmWaterPriceValuesToControls(pricePerkWh:Number):void {
@@ -748,7 +782,7 @@
         private function naturalUnitPriceChanged():void {
             var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
             var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem as HeatingSourceTypeItem;
-            var pricePerKWh:Number = HeatingSourceType.toPricePerKWh(naturalUnitPriceNS.value, heatingSourceType.type.heatingValueMJ);
+            var pricePerKWh:Number = HeatingSourceType.toPricePerKWh(naturalUnitPriceNS.value, heatingSourceType.heatingValueMJ);
             priceNS.value = pricePerKWh;
             if (warmWaterHeatingSourceType != null && heatingSourceType.type == warmWaterHeatingSourceType.type) {
                 priceWarmWaterNS.value = pricePerKWh;
@@ -756,6 +790,25 @@
             var heatingData:HeatingSourceData = createHeatingData();
             heatingData.pricePerkWh = pricePerKWh;
             heatingData.naturalUnitPrice = naturalUnitPriceNS.value;
+            if (warmWaterHeatingSourceType != null && heatingSourceType.type == warmWaterHeatingSourceType.type) {
+                heatingData.priceWaterPerkWh = pricePerKWh;
+            }
+            heatMasterListener.heatingDataChanged(heatingData);
+        }
+
+        private function calorificValueChanged():void {
+            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem as HeatingSourceTypeItem;
+            var heatingValueMJ:Number = calorificValInput.value;
+            var pricePerKWh:Number = HeatingSourceType.toPricePerKWh(naturalUnitPriceNS.value, heatingValueMJ);
+            priceNS.value = pricePerKWh;
+            if (warmWaterHeatingSourceType != null && heatingSourceType.type == warmWaterHeatingSourceType.type) {
+                priceWarmWaterNS.value = pricePerKWh;
+            }
+            var heatingData:HeatingSourceData = createHeatingData();
+            heatingData.pricePerkWh = pricePerKWh;
+            heatingData.naturalUnitPrice = naturalUnitPriceNS.value;
+            heatingData.calorificValue = heatingValueMJ;
             if (warmWaterHeatingSourceType != null && heatingSourceType.type == warmWaterHeatingSourceType.type) {
                 heatingData.priceWaterPerkWh = pricePerKWh;
             }
@@ -820,6 +873,8 @@
             heatingData.heatingType = heatingSourceType.type;
             heatingData.heatingEfficiency = efficiencyNS.value;
             heatingData.pricePerkWh = heatingSourceType.pricePerKwh;
+            heatingData.naturalUnitPrice = heatingSourceType.naturalUnitPrice;
+            heatingData.calorificValue = heatingSourceType.heatingValueMJ;
 
             heatingData.waterHeatingType = warmWaterHeatingSourceType.type;
             heatingData.waterHeatingEfficiency = efficiencyWarmWaterNS.value;
@@ -980,7 +1035,8 @@
             <!--Natural unit calorific value-->
             <s:Label right="200" y="35"  color="#FF6600" fontSize="12" visible="{showNaturalUnit}"
                      fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.heating_value')}" verticalAlign="middle"/>
-            <s:TextInput id="calorificValInput" x="81" y="30" width="44" height="20" editable="false"  enabled="false" visible="{showNaturalUnit}" />
+            <s:NumericStepper id="calorificValInput" x="81" y="30" width="44" height="20"  visible="{showNaturalUnit}"
+                    minimum="1" maximum="50000" stepSize="1" change="calorificValueChanged()" valueParseFunction="parse" valueFormatFunction="format" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
             <s:RichText id="naturalUnitCalorificValueRichText" x="128" y="36"  fontSize="7" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}"/>
 
             <!--Natural unit price-->

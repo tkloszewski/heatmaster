@@ -41,6 +41,7 @@ public class FlatDataContext {
     private var _heatingEfficiency:Number;
     private var _pricePerkWh:Number;
     private var _naturalUnitPrice:Number;
+    private var _calorificValue:Number;
     private var _waterHeatingTypeId:String;
     private var _waterHeatingEfficiency:Number;
     private var _priceWaterPerkWh:Number;
@@ -254,6 +255,14 @@ public class FlatDataContext {
 
     public function set naturalUnitPrice(value:Number):void {
         _naturalUnitPrice = value;
+    }
+
+    public function get calorificValue():Number {
+        return _calorificValue;
+    }
+
+    public function set calorificValue(value:Number):void {
+        _calorificValue = value;
     }
 
     public function get waterHeatingTypeId():String {
