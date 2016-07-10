@@ -618,13 +618,14 @@
 
         <s:Label  y="120" right="202" text="{resourceManager.getString('hm','hm.label.in_house_temp')}" styleName="popupPanelLabelOrangeStyle"/>
         <s:NumericStepper value="20"  id="inHouseTempNS" x="116" y="117" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="0" maximum="50" change="inHouseTempChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-        <s:RichText x="167" y="120" styleName="pupupPanelGrayFontStyle">
+        <s:RichText x="164" y="122" styleName="pupupPanelGrayFontStyle">
             <s:span baselineShift="superscript">0</s:span><s:span>C</s:span>
         </s:RichText>
 
         <s:Label y="120" right="83"  styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.area')}"/>
-        <s:NumericStepper value="120"  id="totalSurfaceNS" x="233" y="115" width="36" height="20" minimum="10" maximum="999"  valueParseFunction="{GlobalValues.parseIntValue}" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-        <s:RichText x="274" y="120" styleName="pupupPanelGrayFontStyle">
+        <s:NumericStepper value="120"  id="totalSurfaceNS" x="233" y="115" width="36" height="20" minimum="10" maximum="999"  valueParseFunction="{GlobalValues.parseIntValue}"
+                          change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:RichText x="273" y="120" styleName="pupupPanelGrayFontStyle">
             <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
         </s:RichText>
 
@@ -633,11 +634,13 @@
                 {TextFlowUtil.importFromString(resourceManager.getString('hm','hm.label.panel.floors'))}
             </s:textFlow>
         </s:RichText>
-        <s:NumericStepper value="1"   id="floorsCountNS" x="116" y="144"  width="44" height="20"  minimum="1" maximum="100"   valueParseFunction="{GlobalValues.parseIntValue}" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:NumericStepper value="1"   id="floorsCountNS" x="116" y="144"  width="44" height="20"  minimum="1" maximum="100"   valueParseFunction="{GlobalValues.parseIntValue}"
+                          change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
 
         <s:Label  y="149" right="83"  text="{resourceManager.getString('hm','hm.label.floor_height')}"     styleName="popupPanelLabelOrangeStyle"/>
-        <s:NumericStepper value="2.7" stepSize="0.1" minimum="2" maximum="10" valueParseFunction="{GlobalValues.parseFloatValue}"  id="floorHeightNS" x="233" y="144"  height="20" width="36" change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-        <s:RichText x="274" y="144"  text="m" styleName="pupupPanelGrayFontStyle"/>
+        <s:NumericStepper id="floorHeightNS" x="233" y="144" height="20" width="36" value="2.7" stepSize="0.1" minimum="2" maximum="10" valueParseFunction="{GlobalValues.parseFloatValue}"
+                          change="primaryDataChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+        <s:RichText x="273" y="149" text="m" styleName="pupupPanelGrayFontStyle"/>
 
         <s:CheckBox id="detailsCheckBox" x="30" y="174" visible="false"  label="{resourceManager.getString('hm','hm.label.edit_details')}" click="setDetailsVisibility()" />
 

@@ -104,10 +104,7 @@
 
     <fx:Script><![CDATA[
         import mx.collections.IList;
-        import mx.collections.IList;
         import mx.controls.Alert;
-        import mx.core.FlexGlobals;
-        import mx.formatters.Formatter;
         import mx.formatters.NumberBaseRoundType;
         import mx.formatters.NumberFormatter;
 
@@ -115,11 +112,10 @@
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.NaturalUnit;
+        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
         import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.constants.combo.HouseType;
         import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
         import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
         import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
         import pl.znr.heatmaster.core.DataContext;
@@ -127,15 +123,11 @@
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.model.HeatingSourceData;
-        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
         import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
         import pl.znr.heatmaster.core.model.SolarCollectorData;
         import pl.znr.heatmaster.core.model.WarmWaterData;
-        import pl.znr.heatmaster.ui.components.popup.HeatingSourceTypeItem;
-        import pl.znr.heatmaster.ui.components.popup.HeatingSourceTypeItem;
         import pl.znr.heatmaster.util.HeatMasterFormatter;
         import pl.znr.heatmaster.util.HouseStandardModelContainer;
-        import pl.znr.heatmaster.util.HouseTypeHelper;
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         import spark.components.BorderContainer;
@@ -337,7 +329,7 @@
                 naturalUnitPriceNS.value = heatingData.naturalUnitPrice;
                 naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingData.naturalUnitPrice);
             }
-            if(!isNaN(heatingData.calorificValue)) {
+            if (!isNaN(heatingData.calorificValue)) {
                 calorificValInput.value = heatingData.calorificValue;
             }
 
@@ -695,7 +687,7 @@
             var rate:Number = getCurrentExchangeRate();
 
 
-            applyHeatingValuesToControls(heatingSourceType.type, pricePerKwh * rate,  naturalUnitPrice * rate);
+            applyHeatingValuesToControls(heatingSourceType.type, pricePerKwh * rate, naturalUnitPrice * rate);
             if (changed) {
                 applyWarmWaterValuesToControls(heatingSourceType.type, pricePerKwh * rate);
             }
@@ -995,9 +987,9 @@
         }
         ]]></fx:Script>
 
-    <mx:Image x="6"  y="2"  id="heatPopupMainSmallImg" scaleY="1.38" scaleX="1.10" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_heat_small.png')" />
+    <mx:Image x="6"  y="10"  id="heatPopupMainSmallImg"  visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_2016.png')" />
     <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.25" scaleX="1.10" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
-    <s:Image x="12"  y="6"  id="heatPopupTabImg" visible="true" scaleX="1.10" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
+    <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/pasek_panel_heat.png')"/>
 
     <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
 
@@ -1037,35 +1029,34 @@
                      fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.heating_value')}" verticalAlign="middle"/>
             <s:NumericStepper id="calorificValInput" x="81" y="30" width="44" height="20"  visible="{showNaturalUnit}"
                     minimum="1" maximum="50000" stepSize="1" change="calorificValueChanged()" valueParseFunction="parse" valueFormatFunction="format" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText id="naturalUnitCalorificValueRichText" x="128" y="36"  fontSize="7" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}"/>
+            <s:RichText id="naturalUnitCalorificValueRichText" x="129" y="35"  styleName="pupupPanelGrayFontStyle" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}"/>
 
             <!--Natural unit price-->
             <s:Label id="naturalUnitCostLabel" right="40" y="35" color="#FF6600" fontSize="12"
                      fontWeight="bold"  verticalAlign="middle"/>
             <s:NumericStepper x="240" y="30" width="44" height="20" id="naturalUnitPriceNS" minimum="0"  maximum="5000" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
                               change="naturalUnitPriceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="288" y="33" id="heatingNaturalUnitCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
+            <s:RichText x="288" y="35" id="heatingNaturalUnitCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" />
 
 
             <!--Efficiency-->
             <s:Label right="200" y="65"  color="#FF6600" fontSize="12"
                      fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.efficiency')}" verticalAlign="middle"/>
             <s:NumericStepper x="81" y="60" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="1" maximum="400" id="efficiencyNS" change="efficiencyChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="126" y="64" fontSize="11" fontWeight="bold" paddingTop="3"
-                        text="%" verticalAlign="middle"/>
+            <s:RichText x="129" y="65" styleName="pupupPanelGrayFontStyle" text="%" />
 
             <!--1kWh -->
             <s:Label right="40" y="65" color="#FF6600" fontSize="12"
                      fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
             <s:NumericStepper x="240" y="60" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="parse" valueFormatFunction="format"
                               change="priceChanged()"   enabled="false" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="288" y="63" id="heatingCostRichText" width="18" height="17" fontSize="8" text="{resourceManager.getString('hm','hm.label.currency.zl')}" verticalAlign="middle" textAlign="left"/>
+            <s:RichText x="288" y="65" id="heatingCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" />
 
             <!--Max power-->
             <s:Label right="40" y="95" color="#FF6600" fontSize="12"
                      fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.heating.source.max-power')}" verticalAlign="middle"/>
             <s:TextInput id="maxPowerRichText" x="240" y="90" width="44" editable="false"  enabled="false" />
-            <s:RichText x="286" y="98" text="kWh" fontSize="8" verticalAlign="middle" textAlign="left"/>
+            <s:RichText x="288" y="95" text="kW" styleName="pupupPanelGrayFontStyle" verticalAlign="middle" textAlign="left"/>
 
             <!--Include warm water-->
             <s:CheckBox id="includeWarmWaterCheckBox" visible="false" x="10" y="113" click="setWarmWaterVisibility()"
@@ -1089,8 +1080,7 @@
                                   change="warmWaterHeatingEfficiencyChanged()"
                                   valueParseFunction="{GlobalValues.parseIntValue}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-                <s:RichText x="125" y="37" fontSize="11" fontWeight="bold" paddingTop="3"
-                            text="%" verticalAlign="middle"/>
+                <s:RichText x="129" y="38" styleName="pupupPanelGrayFontStyle" text="%"/>
 
                 <s:Label right="40" y="38"  color="#FF6600" fontSize="12"
                          fontWeight="bold" text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
@@ -1099,7 +1089,7 @@
                                   valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
                                   change="warmWaterPriceChanged()" enabled="false"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-                <s:RichText x="288" y="35" width="18" height="17" id="warmWaterHeatingCostRichText" fontSize="8" text="" verticalAlign="middle" textAlign="left"/>
+                <s:RichText x="288" y="38"  id="warmWaterHeatingCostRichText" styleName="pupupPanelGrayFontStyle" text="" />
 
 
                 <s:Label y="65" right="200"  text="{resourceManager.getString('hm','hm.label.warm_water.distribution')}" color="#FF6600"
@@ -1132,7 +1122,7 @@
                                   valueParseFunction="{GlobalValues.parseIntValue}"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"  />
 
-                <s:RichText id="collectorSurfaceLabel" visible="false" x="{solarSurfaceNS.x + solarSurfaceNS.width + 3}" verticalAlign="middle" y="30" styleName="pupupPanelGrayFontStyle">
+                <s:RichText id="collectorSurfaceLabel" visible="false" x="{solarSurfaceNS.x + solarSurfaceNS.width + 4}" verticalAlign="middle" y="30" styleName="pupupPanelGrayFontStyle">
                     <s:span>m</s:span><s:span baselineShift="superscript">2</s:span>
                 </s:RichText>
 

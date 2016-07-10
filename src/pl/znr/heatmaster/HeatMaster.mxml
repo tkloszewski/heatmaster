@@ -508,7 +508,7 @@
 
             var dataContext:DataContext = new DataContext();
             var envDataConfig:IEnvironmentalDataConfig = null;
-            if(regionItem != null){
+            if (regionItem != null) {
                 envDataConfig = regionItem;
             }
             else {
@@ -542,8 +542,10 @@
             }
         }
 
-        private function reportClicked():void {
-            plotVisible = !plotVisible;
+        public function showMonthlyReport():void {
+            if (!plotVisible) {
+                plotVisible = true;
+            }
         }
 
         private function openManualPdf():void {
@@ -796,18 +798,7 @@
 
                 <s:Group id="menuButtonGroup" y="0" x="{heatingPopup.x + heatingPopup.width + getReportIconOffset()}"
                          visible="false">
-                    <mx:Button id="reportBtn" x="0" y="14"
-                               toolTip="{resourceManager.getString('hm','hm.tooltip.button.report')}"
-                               width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
-                               height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/raport_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/raport_icon_over.png')"
-                               buttonMode="true">
-                        <mx:click><![CDATA[
-                                this.reportClicked()
-                            ]]></mx:click>
-                    </mx:Button>
-                    <mx:Button id="helpBtn" x="{reportBtn.x + reportBtn.width + getIconsOffset()}" y="14"
+                    <mx:Button id="helpBtn" x="0" y="14"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.manual')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"

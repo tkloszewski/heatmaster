@@ -112,7 +112,7 @@
             if (stateDataContext.newDataContext != null) {
                 var prevProcessingResult:ProcessingResult = heatMasterController.calculateStateless(prevDataContext);
                 var prevValue:Number = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(prevProcessingResult);
-                setCalculatedValue(prevValue, prevProcessingResult.conversionData.selectedUnit,prevDataContext.currencyLocaleCode,true);
+                setCalculatedValue(prevValue, prevProcessingResult.conversionData.selectedUnit, prevDataContext.currencyLocaleCode, true);
 
                 if (calculationStateController.isInNewState()) {
                     refProcessingResult = prevProcessingResult;
@@ -144,7 +144,7 @@
                 newProcessingResult = resultData;
             }
 
-            setCalculatedValue(value, unit,resultData.dataContext.currencyLocaleCode);
+            setCalculatedValue(value, unit, resultData.dataContext.currencyLocaleCode);
         }
 
         public function countryChanged(country:CountryItem):void {
@@ -161,22 +161,22 @@
             tempSE.value = environmentalData.temperatures[monthDropDownList.selectedIndex];
         }
 
-        public function setCalculatedValue(value:Number, unit:int,currencyLocaleCode:String, previousMode:Boolean = false):void {
+        public function setCalculatedValue(value:Number, unit:int, currencyLocaleCode:String, previousMode:Boolean = false):void {
             this.calculatedValue = value;
             if (calculationStateController.isInReferenceState()) {
                 if (!previousMode) {
-                    formattedReferenceValue = createFormattedValue(value, unit,currencyLocaleCode);
+                    formattedReferenceValue = createFormattedValue(value, unit, currencyLocaleCode);
                 }
                 else {
-                    formattedNewValue = createFormattedValue(value, unit,currencyLocaleCode);
+                    formattedNewValue = createFormattedValue(value, unit, currencyLocaleCode);
                 }
             }
             else {
                 if (!previousMode) {
-                    formattedNewValue = createFormattedValue(value, unit,currencyLocaleCode);
+                    formattedNewValue = createFormattedValue(value, unit, currencyLocaleCode);
                 }
                 else {
-                    formattedReferenceValue = createFormattedValue(value, unit,currencyLocaleCode);
+                    formattedReferenceValue = createFormattedValue(value, unit, currencyLocaleCode);
                 }
             }
         }
@@ -198,7 +198,7 @@
         }
 
 
-        private function showReport():void {
+        private function showBalanceReport():void {
             var comparatorResult:ComparatorResult = new ProcessingResultComparator().compare(refProcessingResult, newProcessingResult);
             HeatMaster.getInstance().showBalanceReport(comparatorResult);
         }
@@ -264,8 +264,8 @@
                     var dataContext:DataContext = calculationStateController.getPreviousDataContext();
                     dataContext = heatMasterListener.applyConversionChangesToDataContext(dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
                     var processingResult:ProcessingResult = calculationStateController.isInReferenceState() ? newProcessingResult : refProcessingResult;
-                    processingResult = heatMasterController.convertResult(processingResult,dataContext.conversionData);
-                    setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult),newUnit,dataContext.currencyLocaleCode,true);
+                    processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
+                    setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, dataContext.currencyLocaleCode, true);
                 }
 
                 heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode);
@@ -299,7 +299,7 @@
             }
         }
 
-        private function createFormattedValue(value:Number, unit:int,currencyLocaleCode:String):String {
+        private function createFormattedValue(value:Number, unit:int, currencyLocaleCode:String):String {
             var format:NumberFormatter = new NumberFormatter();
             format.precision = 0;
             format.rounding = NumberBaseRoundType.NEAREST;
@@ -344,7 +344,7 @@
 
             if (!initial) {
                 var currencyLocaleCode:String = heatMasterListener.getDataContext().currencyLocaleCode;
-                setCalculatedValue(value, unit,currencyLocaleCode);
+                setCalculatedValue(value, unit, currencyLocaleCode);
             }
             else {
                 formattedReferenceValue = resourceManager.getString('hm', 'hm.labels.energy');
@@ -383,6 +383,10 @@
             unitList.refresh();
             unitDropDownList.selectedIndex = oldIdx;
         }
+
+        private function showMonthlyReport():void {
+            HeatMaster.getInstance().showMonthlyReport();
+        }
         ]]></fx:Script>
 
     <fx:Declarations>
@@ -418,21 +422,32 @@
     </fx:Declarations>
 
 
-    <s:Image x="0" y="0" scaleY="1.20" source="@Embed('/pl/znr/heatmaster/assets/images/licznik.png')"/>
-    <s:DropDownList x="24" y="30" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="4" change="unitUIChanged()"
+    <s:Image x="0" y="0" source="@Embed('/pl/znr/heatmaster/assets/images/counter/counter-button.png')"/>
+    <s:DropDownList x="24" y="18" width="155" id="unitDropDownList" dataProvider="{unitList}" labelField="name" selectedIndex="4" change="unitUIChanged()"
                     fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
 
-    <s:Label id="refValueLabel" x="20" y="59"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>
-    <hmbtn:KeepDownStateButton id="switchToRefStateButton" visible="false" y="55" x="{refValueLabel.x + refValueLabel.width}" width="20" click="switchToReferenceState()"/>
+    <mx:Button id="showMonthlyReportButton" x="{unitDropDownList.x + unitDropDownList.width + 3}" y="{unitDropDownList.y}" click="showMonthlyReport()"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_button.png')" toolTip="{resourceManager.getString('hm','hm.tooltip.button.report')}"/>
 
-    <s:Label x="20" y="79" id="newValueLabel" visible="false" width="138" text="{formattedNewValue}" styleName="popupPanelHeader" color="yellow" fontSize="16" textAlign="center" verticalAlign="middle"/>
-    <hmbtn:KeepDownStateButton id="switchToNewStateButton" visible="false" y="75" x="{newValueLabel.x + newValueLabel.width}" width="20" click="switchToNewState()"/>
+    <mx:Button id="reportCompareButton" x="{unitDropDownList.x + unitDropDownList.width + 3}" y="40" click="showBalanceReport()" visible="false"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_compare_button.png')" toolTip="{resourceManager.getString('hm','hm.tooltip.button.report-compare')}"/>
+
+
+    <s:Label id="refValueLabel" x="20" y="44"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToRefStateButton" visible="false" y="40" x="{refValueLabel.x + refValueLabel.width}" width="20" click="switchToReferenceState()"
+            skinClass="pl.znr.heatmaster.ui.components.button.KeepDownStateButtonSkin" toolTip="{resourceManager.getString('hm','hm.tooltip.button.switch-reference')}"/>
+
+    <s:Label x="20" y="64" id="newValueLabel" visible="false" width="138" text="{formattedNewValue}" styleName="popupPanelHeader" color="yellow" fontSize="16" textAlign="center" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToNewStateButton" visible="false" y="60" x="{newValueLabel.x + newValueLabel.width}" width="20" click="switchToNewState()"
+                               skinClass="pl.znr.heatmaster.ui.components.button.KeepDownStateButtonSkin" toolTip="{resourceManager.getString('hm','hm.tooltip.button.switch-new')}"/>
 
 
 
-    <mx:HRule id="hRule" x="28" y="79" width="151" height="1"/>
 
-    <s:Group x="0" y="86" id="monthGroup" visible="false">
+
+    <mx:HRule id="hRule" x="28" y="64" width="151" height="1" />
+
+    <s:Group x="0" y="71" id="monthGroup" visible="false">
         <s:DropDownList id="monthDropDownList" x="24" y="1" width="86" dataProvider="{monthList}" selectedIndex="0" change="monthChanged()"
                         fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
         <s:NumericStepper id="tempSE" x="114" y="1" width="44" height="20" valueParseFunction="{GlobalValues.parseIntValue}" minimum="-20" maximum="40" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin" change="tempChanged()"/>
@@ -441,10 +456,9 @@
         </s:RichText>
     </s:Group>
 
-    <s:Button id="freezeStateButton" y="100" x="24" width="155" color="gray" fontSize="10" fontWeight="bold"  click="freezeReferenceState()" label="{resourceManager.getString('hm','hm.button.compare.houses')}" />
-    <s:Button id="reportCompareButton" y="100" x="24" width="155" color="gray" fontSize="10" fontWeight="bold"  click="showReport()" label="{resourceManager.getString('hm','hm.button.compare.report')}" visible="false"/>
+    <s:Button id="freezeStateButton" y="80" x="24" width="153" color="gray" fontSize="10" fontWeight="bold"  click="freezeReferenceState()" label="{resourceManager.getString('hm','hm.button.compare.houses')}" />
 
-    <mx:Button top="1" right="1" buttonMode="true"
+    <mx:Button top="-4" right="-4" buttonMode="true"
                skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
                overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
                click="openInfoPanel(event)"/>
