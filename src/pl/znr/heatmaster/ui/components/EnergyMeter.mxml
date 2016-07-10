@@ -427,10 +427,14 @@
                     fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterDropDownSkin"/>
 
     <mx:Button id="showMonthlyReportButton" x="{unitDropDownList.x + unitDropDownList.width + 3}" y="{unitDropDownList.y}" click="showMonthlyReport()"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_button.png')" toolTip="{resourceManager.getString('hm','hm.tooltip.button.report')}"/>
+               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_button.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_button_over.png')"
+               toolTip="{resourceManager.getString('hm','hm.tooltip.button.report')}"/>
 
     <mx:Button id="reportCompareButton" x="{unitDropDownList.x + unitDropDownList.width + 3}" y="40" click="showBalanceReport()" visible="false"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_compare_button.png')" toolTip="{resourceManager.getString('hm','hm.tooltip.button.report-compare')}"/>
+               skin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_compare_button.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/counter/report_compare_button_over.png')"
+               toolTip="{resourceManager.getString('hm','hm.tooltip.button.report-compare')}"/>
 
 
     <s:Label id="refValueLabel" x="20" y="44"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>

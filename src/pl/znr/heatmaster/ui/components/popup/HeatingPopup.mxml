@@ -987,9 +987,9 @@
         }
         ]]></fx:Script>
 
-    <mx:Image x="6"  y="10"  id="heatPopupMainSmallImg"  visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_2016.png')" />
-    <mx:Image x="6"  y="2"  id="heatPopupMainImg"      scaleY="1.25" scaleX="1.10" visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_house_bkg.png')" />
-    <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/pasek_panel_heat.png')"/>
+    <mx:Image x="6"  y="10"  id="heatPopupMainSmallImg"  visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/small_panel_heat_bkg.png')" />
+    <mx:Image x="10"  y="10"   id="heatPopupMainImg" scaleY="1.25"     visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_bkg.png')" />
+    <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bar_panel_heat.png')"/>
 
     <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
 
