@@ -30,6 +30,17 @@ public class GlobalValues {
     public static const PRICE_HEAT_KWH_COMBINED:Number = 0.22;
 
 
+    public static function getLongestStringLength(strings:Array):int {
+        var longestLength:int = 0;
+        for(var i:int;i < strings.length; i++){
+            var s:String = strings[i] as String;
+            if(longestLength < s.length){
+                longestLength = s.length;
+            }
+        }
+        return longestLength;
+    }
+
     public static function parseIntValue(value:String):Number{
         var result:Number = parseInt(value);
         if(isNaN(result)){
@@ -37,7 +48,6 @@ public class GlobalValues {
         }
         return result;
     }
-
 
     public static function toPrecision(value:Number,precision:int):Number {
         return parseFloatValue(value.toPrecision(precision));

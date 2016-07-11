@@ -325,13 +325,7 @@
                 heatingCostRichText.text = currencyName;
                 warmWaterHeatingCostRichText.text = currencyName;
             }
-            if (!isNaN(heatingData.naturalUnitPrice)) {
-                naturalUnitPriceNS.value = heatingData.naturalUnitPrice;
-                naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingData.naturalUnitPrice);
-            }
-            if (!isNaN(heatingData.calorificValue)) {
-                calorificValInput.value = heatingData.calorificValue;
-            }
+
 
             var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
@@ -552,6 +546,7 @@
             calorificValInput.value = heatingSourceType.heatingValueMJ;
             naturalUnitPriceNS.value = heatingSourceType.naturalUnitPrice;
             naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.naturalUnitPrice);
+            calorificValInput.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.heatingValueMJ);
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             naturalUnitCalorificValueRichText.text = getNaturalUnitText(heatingSourceType.naturalUnit);
 
@@ -575,8 +570,15 @@
             heatingTypeDropDownList.selectedIndex = heatingIdx;
             efficiencyNS.value = heatingData.heatingEfficiency;
             priceNS.value = heatingData.pricePerkWh;
-            naturalUnitPriceNS.value = (heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem).naturalUnitPrice;
-            naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(naturalUnitPriceNS.value);
+
+            if (!isNaN(heatingData.naturalUnitPrice)) {
+                naturalUnitPriceNS.value = heatingData.naturalUnitPrice;
+                naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingData.naturalUnitPrice);
+            }
+            if (!isNaN(heatingData.calorificValue)) {
+                calorificValInput.value = heatingData.calorificValue;
+                calorificValInput.stepSize = HeatMasterFormatter.getStepSize(heatingData.calorificValue);
+            }
         }
 
         private function applyWarmWaterDataToControls(houseType:int, heatingData:HeatingSourceData, warmWaterData:WarmWaterData):void {
@@ -682,8 +684,8 @@
             var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
             var changed:Boolean = forceChangeWarmWaterHeatingType(heatingSourceType.type);
 
-            var pricePerKwh:Number = heatingSourceType.type.pricePerkWh;
-            var naturalUnitPrice:Number = heatingSourceType.type.naturalUnitPrice;
+            var pricePerKwh:Number = heatingSourceType.pricePerKwh;
+            var naturalUnitPrice:Number = heatingSourceType.naturalUnitPrice;
             var rate:Number = getCurrentExchangeRate();
 
 
@@ -729,7 +731,7 @@
             naturalUnitPriceNS.value = naturalUnitPrice;
             calorificValInput.value = heatingSourceType.heatingValueMJ;
             naturalUnitPriceNS.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.naturalUnitPrice);
-
+            calorificValInput.stepSize = HeatMasterFormatter.getStepSize(heatingSourceType.heatingValueMJ);
 
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             showNaturalUnit = heatingSourceType.showNaturalUnit;
@@ -988,7 +990,7 @@
         ]]></fx:Script>
 
     <mx:Image x="6"  y="10"  id="heatPopupMainSmallImg"  visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/small_panel_heat_bkg.png')" />
-    <mx:Image x="10"  y="10"   id="heatPopupMainImg" scaleY="1.25"     visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_bkg.png')" />
+    <mx:Image x="9"  y="10"   id="heatPopupMainImg" scaleY="1.25"     visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_bkg.png')" />
     <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bar_panel_heat.png')"/>
 
     <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
@@ -1011,7 +1013,7 @@
 
     </s:Group>
 
-    <mx:Button id="heatPopupOkBtn" visible="false" x="42" y="165" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_heat.png')">
+    <mx:Button id="heatPopupOkBtn" visible="false" x="42" y="169" click="hideStartState()" buttonMode="true" skin="@Embed('/pl/znr/heatmaster/assets/images/OK_button_heat.png')">
 
     </mx:Button>
 
@@ -1027,16 +1029,16 @@
             <!--Natural unit calorific value-->
             <s:Label right="200" y="35"  color="#FF6600" fontSize="12" visible="{showNaturalUnit}"
                      fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.heating_value')}" verticalAlign="middle"/>
-            <s:NumericStepper id="calorificValInput" x="81" y="30" width="44" height="20"  visible="{showNaturalUnit}"
+            <s:NumericStepper id="calorificValInput" x="81" y="30" width="50" height="20"  visible="{showNaturalUnit}"
                     minimum="1" maximum="50000" stepSize="1" change="calorificValueChanged()" valueParseFunction="parse" valueFormatFunction="format" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText id="naturalUnitCalorificValueRichText" x="129" y="35"  styleName="pupupPanelGrayFontStyle" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}"/>
+            <s:RichText id="naturalUnitCalorificValueRichText" x="135" y="35"  styleName="pupupPanelGrayFontStyle" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}"/>
 
             <!--Natural unit price-->
-            <s:Label id="naturalUnitCostLabel" right="40" y="35" color="#FF6600" fontSize="12"
+            <s:Label id="naturalUnitCostLabel" right="36" y="35" color="#FF6600" fontSize="12"
                      fontWeight="bold"  verticalAlign="middle"/>
-            <s:NumericStepper x="240" y="30" width="44" height="20" id="naturalUnitPriceNS" minimum="0"  maximum="5000" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
+            <s:NumericStepper right="-10" y="30" width="44" height="20" id="naturalUnitPriceNS" minimum="0"  maximum="5000" stepSize="0.01" valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
                               change="naturalUnitPriceChanged()" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="288" y="35" id="heatingNaturalUnitCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" />
+            <s:RichText x="292" y="35" id="heatingNaturalUnitCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" textAlign="left"/>
 
 
             <!--Efficiency-->
@@ -1046,17 +1048,17 @@
             <s:RichText x="129" y="65" styleName="pupupPanelGrayFontStyle" text="%" />
 
             <!--1kWh -->
-            <s:Label right="40" y="65" color="#FF6600" fontSize="12"
+            <s:Label right="36" y="65" color="#FF6600" fontSize="12"
                      fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
-            <s:NumericStepper x="240" y="60" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="parse" valueFormatFunction="format"
+            <s:NumericStepper right="-10" y="60" width="44" height="20" id="priceNS" minimum="0.01" value = "0.45" stepSize="0.01" valueParseFunction="parse" valueFormatFunction="format"
                               change="priceChanged()"   enabled="false" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-            <s:RichText x="288" y="65" id="heatingCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" />
+            <s:RichText x="292" y="65" id="heatingCostRichText" styleName="pupupPanelGrayFontStyle" text="{resourceManager.getString('hm','hm.label.currency.zl')}" />
 
             <!--Max power-->
-            <s:Label right="40" y="95" color="#FF6600" fontSize="12"
+            <s:Label right="36" y="95" color="#FF6600" fontSize="12"
                      fontWeight="bold"  text="{resourceManager.getString('hm','hm.label.heating.source.max-power')}" verticalAlign="middle"/>
-            <s:TextInput id="maxPowerRichText" x="240" y="90" width="44" editable="false"  enabled="false" />
-            <s:RichText x="288" y="95" text="kW" styleName="pupupPanelGrayFontStyle" verticalAlign="middle" textAlign="left"/>
+            <s:TextInput id="maxPowerRichText" right="-10" y="90" width="44" editable="false"  enabled="false" />
+            <s:RichText x="292" y="96" text="kW" styleName="pupupPanelGrayFontStyle" verticalAlign="middle" textAlign="left"/>
 
             <!--Include warm water-->
             <s:CheckBox id="includeWarmWaterCheckBox" visible="false" x="10" y="113" click="setWarmWaterVisibility()"
@@ -1082,14 +1084,13 @@
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
                 <s:RichText x="129" y="38" styleName="pupupPanelGrayFontStyle" text="%"/>
 
-                <s:Label right="40" y="38"  color="#FF6600" fontSize="12"
+                <s:Label right="36" y="38"  color="#FF6600" fontSize="12"
                          fontWeight="bold" text="{resourceManager.getString('hm','hm.label.kwh_cost')}" verticalAlign="middle"/>
-
-                <s:NumericStepper x="240" y="33" width="44" height="20" id="priceWarmWaterNS" minimum="0.01" value = "0.45" stepSize="0.01"
+                <s:NumericStepper right="-10" y="33" width="44" height="20" id="priceWarmWaterNS" minimum="0.01" value = "0.45" stepSize="0.01"
                                   valueParseFunction="{GlobalValues.parseFloatValue}" valueFormatFunction="format"
                                   change="warmWaterPriceChanged()" enabled="false"
                                   skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
-                <s:RichText x="288" y="38"  id="warmWaterHeatingCostRichText" styleName="pupupPanelGrayFontStyle" text="" />
+                <s:RichText x="292" y="38"  id="warmWaterHeatingCostRichText" styleName="pupupPanelGrayFontStyle" text="" />
 
 
                 <s:Label y="65" right="200"  text="{resourceManager.getString('hm','hm.label.warm_water.distribution')}" color="#FF6600"

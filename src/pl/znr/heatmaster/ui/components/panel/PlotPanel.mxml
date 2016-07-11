@@ -3,8 +3,7 @@
                                       xmlns:components="pl.znr.heatmaster.ui.components.*"
                                       xmlns:mx="library://ns.adobe.com/flex/mx"
                                       xmlns:s="library://ns.adobe.com/flex/spark"
-                                      xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
-                                      xmlns:local="*" xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
+                                      xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
                                       initialize="popupInitialized()"
                                       creationComplete="plotCreated()"
         >
@@ -40,42 +39,50 @@
     </fx:Declarations>
 
     <fx:Script><![CDATA[
-        import flashx.textLayout.elements.ParagraphElement;
-
-        import mx.charts.chartClasses.IAxis;
-        import mx.charts.chartClasses.IAxisRenderer;
-        import mx.charts.series.renderData.LineSeriesRenderData;
+        import mx.charts.chartClasses.NumericAxis;
         import mx.collections.ArrayCollection;
         import mx.controls.Alert;
+        import mx.formatters.NumberFormatter;
         import mx.utils.StringUtil;
-
 
         import pl.znr.heatmaster.HeatMaster;
         import pl.znr.heatmaster.constants.EnergyClass;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
-
-        import pl.znr.heatmaster.constants.combo.ConversionUnits;
-
-        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.DataContext;
-
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.converter.ConversionData;
+        import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
-        import pl.znr.heatmaster.ui.components.*;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyClassToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.FinalPrimaryEnergyToolTip;
         import pl.znr.heatmaster.util.EnergyClassHelper;
 
         import spark.components.Label;
 
-        import spark.primitives.Rect;
-
         private static const COST:String = "Koszty";
         private static const EMISSION:String = "Emisje";
         private static const MONTH_COST:String = "Koszty miesięczne";
         private static const MONTH_EMISSION:String = "Emisje miesięczne";
+
+
+        [Bindable]
+        private var userEnergyTotalConsumptionString:String;
+
+        [Bindable]
+        private var userEnergyTotalConsumptionSqMeterString:String;
+
+        [Bindable]
+        private var finalEnergyTotalConsumptionString:String;
+
+        [Bindable]
+        private var finalEnergyTotalConsumptionSqMeterString:String;
+
+        [Bindable]
+        private var primaryEnergyTotalConsumptionString:String;
+
+        [Bindable]
+        private var primaryEnergyTotalConsumptionSqMeterString:String;
 
         [Bindable]
         private var plotDataProvider:ArrayCollection = new ArrayCollection([]);
@@ -132,69 +139,26 @@
         private var warmWaterLegendGroupVar:Group;
         private var collectorsLegendGroupVar:Group;
 
-
         private var houseHeatingEfficiency:Number = GlobalValues.INITIAL_HOUSE_HEATING_SOURCE.efficiency;
         private var warmWaterHeatingEfficiency:Number;
 
         private var warmWaterIncluded:Boolean = false;
 
-        var isCostUnit:Boolean;
-        var isEmissionUnit:Boolean;
-        var energyClass:EnergyClass;
+        private var isCostUnit:Boolean;
+        private var isEmissionUnit:Boolean;
+        private var energyClass:EnergyClass;
 
         var yearlyCost:Number = 0;
 
         private var currencyCode:String;
         private var localCurrency:Boolean = false;
+        private var rawUnitName:String;
 
         private var _originalChartWidth:int;
 
         override public function initData(dataContext:DataContext):DataContext {
             currencyCode = HeatMaster.CURRENCY_EURO_LOCALE_CODE;
             return dataContext;
-        }
-
-        override public function langChanged(lang:String):void {
-            if (isCostUnit) {
-                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_cost');
-                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.costs');
-            }
-            else if (isEmissionUnit) {
-                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_emission');
-                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.emissions');
-            }
-            energyClassDescriptionLabel.text = resourceManager.getString('hm', energyClass.description);
-            yearlyCostValueLabel.text = formatHMValue(yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
-        }
-
-        private function popupInitialized():void {
-            panelLabelWidth = (chart.width - gutterLeft - gutterRight) + (chart.width - gutterLeft - gutterRight) / 12;
-            warmWaterLegendGroupVar = warmWaterLegendGroup;
-            collectorsLegendGroupVar = collectorsLegendGroup;
-            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
-            legendGainGroup.removeElement(collectorsLegendGroupVar);
-            legendVerticalLayout.gap = 17;
-        }
-
-        private function plotCreated():void {
-            /*warmWaterLegendGroup.visible = false;
-             collectorsLegendGroup.visible = false;
-
-             legendEnergyLossGroupY = legendEnergyLossGroup.y;
-             legendEnergyLossGroup.y = legendEnergyLossGroupY - 10;
-             */
-
-            _originalChartWidth = chart.width;
-        }
-
-        private function closePlot():void {
-            HeatMaster.getInstance().hideReport();
-        }
-
-
-        override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
-            super.updateDisplayList(unscaledWidth, unscaledHeight);
-            trace("Chart width: " + chart.width);
         }
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
@@ -231,6 +195,7 @@
                 var conversionData:ConversionData = resultData.conversionData;
 
                 currencyCode = resultData.dataContext.currencyLocaleCode;
+                rawUnitName = getRawUnitName(conversionData.selectedUnit,currencyCode);
 
                 isCostUnit = ConversionUnits.isCostUnit(conversionData.selectedUnit);
                 isEmissionUnit = ConversionUnits.isEmisionUnit(conversionData.selectedUnit);
@@ -254,14 +219,19 @@
                 var primaryEnergyConsumption:Number = resultData.primaryEnergyConsumption;
                 var primaryEnergySqMConsumption:Number = resultData.unitSurfacePrimaryEnergyConsumption;
 
-                setEnergyLabelsRow(userEnergySpan, userUnitNameSpan, userEnergySqSpan, userEnergySqUnitNameSpan,
-                        userEnergyConsumption, userEnergySqMConsumption, conversionData);
+                userEnergyTotalConsumptionString = getTotalConsumptionEnergyString(userEnergyConsumption, conversionData);
+                finalEnergyTotalConsumptionString = getTotalConsumptionEnergyString(finalEnergyConsumption, conversionData);
+                primaryEnergyTotalConsumptionString = getTotalConsumptionEnergyString(primaryEnergyConsumption, conversionData);
+                userEnergyTotalConsumptionSqMeterString = " " + getTotalConsumptionEnergyString(userEnergySqMConsumption, conversionData, 100000);
+                finalEnergyTotalConsumptionSqMeterString = " " + getTotalConsumptionEnergyString(finalEnergySqMConsumption, conversionData, 100000);
+                primaryEnergyTotalConsumptionSqMeterString = " " + getTotalConsumptionEnergyString(primaryEnergySqMConsumption, conversionData, 100000);
 
-                setEnergyLabelsRow(finalEnergySpan, finalUnitNameSpan, finalEnergySqSpan, finalEnergySqUnitNameSpan,
-                        finalEnergyConsumption, finalEnergySqMConsumption, conversionData);
-
-                setEnergyLabelsRow(primaryEnergySpan, primaryUnitNameSpan, primaryEnergySqSpan, primaryEnergySqUnitNameSpan,
-                        primaryEnergyConsumption, primaryEnergySqMConsumption, conversionData);
+                userEnergyTotalConsumptionUnitNameRichText.text = getAdjustedEnergyUnitName(userEnergyConsumption, conversionData.selectedUnit);
+                userEnergyTotalConsumptionSqMeterUnitNameRichText.text = getAdjustedEnergyUnitName(userEnergySqMConsumption, conversionData.selectedUnit);
+                finalEnergyTotalConsumptionUnitNameRichText.text = getAdjustedEnergyUnitName(finalEnergyConsumption, conversionData.selectedUnit);
+                finalEnergyTotalConsumptionSqMeterUnitNameRichText.text = getAdjustedEnergyUnitName(finalEnergySqMConsumption, conversionData.selectedUnit);
+                primaryEnergyTotalConsumptionUnitNameRichText.text = getAdjustedEnergyUnitName(primaryEnergyConsumption, conversionData.selectedUnit);
+                primaryEnergyTotalConsumptionSqMeterUnitNameRichText.text = getAdjustedEnergyUnitName(primaryEnergySqMConsumption, conversionData.selectedUnit);
 
 
                 yearlyCost = resultData.yearlyCost;
@@ -269,7 +239,6 @@
                 yearlyCostValueLabel.text = formatHMValue(resultData.yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
 
                 energyClass = EnergyClassHelper.getEnergyClass(resultData.unitSurfaceFinalEnergyClassConsumption);
-                trace("Energy class: " + energyClass);
                 energyClassCodeLabel.text = energyClass.code;
                 energyClassCodeLabel.setStyle("color", energyClass.color);
                 energyClassDescriptionLabel.text = resourceManager.getString('hm', energyClass.description);
@@ -279,35 +248,85 @@
                 passiveLogoImg.visible = energyClass.separateIconUrl;
 
             } catch (e:Error) {
-                trace("Plot error: " + e.getStackTrace());
                 Alert.show("Plot error: " + e.message);
             }
         }
 
+        override public function langChanged(lang:String):void {
+            if (isCostUnit) {
+                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_cost');
+                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.costs');
+            }
+            else if (isEmissionUnit) {
+                costEmissionLegendText.text = resourceManager.getString('hm', 'hm.label.monthly_emission');
+                costEmissionLegendItemText.text = resourceManager.getString('hm', 'hm.label.emissions');
+            }
+            energyClassDescriptionLabel.text = resourceManager.getString('hm', energyClass.description);
+            yearlyCostValueLabel.text = formatHMValue(yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
+        }
 
-        private function setEnergyLabelsRow(energySpan:SpanElement, unitNameSpan:SpanElement, energySqMSpan:SpanElement, energySqMUnitNameSpan:SpanElement, energyConsumption:Number, unitSurfaceEnergyConsumption:Number, conversionData:ConversionData):void {
+        private function getRawUnitName(selectedUnit:int,currencyCode:String):String {
+            if(ConversionUnits.isEmisionUnit(selectedUnit)){
+               return "CO2";
+            }
+            else if(ConversionUnits.isGJUnit(selectedUnit)){
+               return "GJ";
+            }
+            else if(ConversionUnits.isKiloWattsUnit(selectedUnit)){
+               return "kWh";
+            }
+            else if(ConversionUnits.isCostUnit(selectedUnit)){
+               return resourceManager.getString('hm',currencyCode);
+            }
+            return "W";
+        }
 
+        private function verticalAxisLabelFunction(labelValue:Object, previousLabelValue:Object, axis:LinearAxis):String {
+            if(labelValue == '0'){
+               return rawUnitName + "  " +  "0";
+            }
+            return labelValue.toString();
+        }
+
+
+        private function popupInitialized():void {
+            panelLabelWidth = (chart.width - gutterLeft - gutterRight) + (chart.width - gutterLeft - gutterRight) / 12;
+            warmWaterLegendGroupVar = warmWaterLegendGroup;
+            collectorsLegendGroupVar = collectorsLegendGroup;
+            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+            legendGainGroup.removeElement(collectorsLegendGroupVar);
+            legendVerticalLayout.gap = 17;
+        }
+
+        private function plotCreated():void {
+            /*warmWaterLegendGroup.visible = false;
+             collectorsLegendGroup.visible = false;
+
+             legendEnergyLossGroupY = legendEnergyLossGroup.y;
+             legendEnergyLossGroup.y = legendEnergyLossGroupY - 10;
+             */
+
+            _originalChartWidth = chart.width;
+        }
+
+        private function closePlot():void {
+            HeatMaster.getInstance().hideReport();
+        }
+
+        private function getTotalConsumptionEnergyString(energyConsumption:Number, conversionData:ConversionData, limitPrecisionThreshold:Number = Number.NaN):String {
             var energyUnitName:String = getAdjustedEnergyUnitName(energyConsumption, conversionData.selectedUnit);
             var energyConsumptionVal:Number = adjustNumber(energyConsumption);
-
             var decimalNumber:int = getDecimalNumbersCount(energyConsumption,
                     ConversionUnits.isGJUnit(conversionData.selectedUnit), energyUnitName == "MWh");
 
-            var energyUnitNameSqM:String = getAdjustedEnergyUnitName(unitSurfaceEnergyConsumption, conversionData.selectedUnit);
-            var energyConsumptionSqM:Number = adjustNumber(unitSurfaceEnergyConsumption);
+            if (isNaN(limitPrecisionThreshold)) {
+                return formatHMValue(energyConsumptionVal, decimalNumber)
+            }
 
-            energySpan.text = formatHMValue(energyConsumptionVal, decimalNumber);
-            unitNameSpan.text = "  " + energyUnitName;
-
-            decimalNumber = getDecimalNumbersCount(unitSurfaceEnergyConsumption,
-                    ConversionUnits.isGJUnit(conversionData.selectedUnit), energyUnitNameSqM == "MWh");
-
-            energySqMSpan.text = formatHMValue(energyConsumptionSqM, energyConsumptionSqM < 100000 ? Math.max(1, decimalNumber) : 0);
-            energySqMUnitNameSpan.text = "  " + energyUnitNameSqM;
-
+            return formatHMValue(energyConsumptionVal, energyConsumptionVal < limitPrecisionThreshold ? Math.max(1, decimalNumber) : 0);
         }
 
-        private function getDecimalNumbersCount(value:Number, isGJUnit:Boolean, isMGWhUnit:Boolean) {
+        private function getDecimalNumbersCount(value:Number, isGJUnit:Boolean, isMGWhUnit:Boolean):int {
             var decimalNumber:int = 0;
             if (isGJUnit) {
                 var formattedGJValue:String = formatHMValue(value);
@@ -544,17 +563,6 @@
             else {
                 twoDigitValue = 100;
             }
-
-
-            /*if (res < 4) {
-             twoDigitValue = twoDigitValue - res;
-             }
-             else if (res < 7) {
-             twoDigitValue = (Math.round(twoDigitValue / 10)) * 10 + 5;
-             }
-             else {
-             twoDigitValue = (Math.round(twoDigitValue / 10)) * 10 + 10;
-             }*/
             return twoDigitValue * Math.pow(10, digits - 2);
         }
 
@@ -621,102 +629,114 @@
                    overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
                    click="openPrimaryFinalEnergyToolTip(event)"/>
 
-        <!--USER ENERGY -->
 
+
+
+        <!--USER ENERGY -->
         <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="12" id="userEnergyMainLabel"
                  styleName="reportBlackLabel"
                  fontSize="{12 * getFontRatio()}"
                  text="{resourceManager.getString('hm','hm.label.effective_energy.consumption')}"/>
 
-        <s:RichText id="userEnergyValueText"
-                    x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}"
-                    y="{userEnergyMainLabel.y}"
-                    width="{60 * getWidthRatio()}" styleName="reportBlackLabel"
-                    kerning="on" textAlign="right"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span id="userEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="userEnergyUnitNameRichText" styleName="reportBlackLabel"
-                    x="{userEnergyValueText.x + userEnergyValueText.width}" y="{userEnergyMainLabel.y}"
+        <s:RichText id="userEnergyTotalConsumptionRichText" x="{primaryEnergyMainLabel.x + primaryEnergyMainLabel.width + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" styleName="reportBlackLabel" textAlign="right"
+                text="{userEnergyTotalConsumptionString}"/>
 
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span id="userUnitNameSpan" textAlign="right"></s:span>
-                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
-                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
-                <s:span>:</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="userEnergyValueSqRichText" textAlign="right" styleName="reportBlackLabel"
-                    x="{userEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{userEnergyMainLabel.y}"
-                    width="{50 * getWidthRatio()}"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="right" id="userEnergySqSpan"></s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="userEnergyValueSqUnitNameRichText" styleName="reportBlackLabel"
-                    x="{userEnergyValueSqRichText.x + userEnergyValueSqRichText.width}" y="{userEnergyMainLabel.y}"
-                    width="{40 * getWidthRatio()}"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="left" id="userEnergySqUnitNameSpan"></s:span>
-            </s:content>
+        <s:RichText id="userEnergyTotalConsumptionUnitNameRichText" x="{userEnergyTotalConsumptionRichText.x + userEnergyTotalConsumptionRichText.width + 5 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportBlackLabel" textAlign="left"
+                    text=""/>
+
+        <s:RichText id="sqMeterRichText1" styleName="reportBlackLabel"
+                    x="{userEnergyTotalConsumptionRichText.x + userEnergyTotalConsumptionRichText.width + 90 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" textAlign="right" >
+            <s:textFlow>
+                <s:TextFlow textAlign="right">
+                    <s:span>{resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                    <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                    <s:span whiteSpaceCollapse="preserve">: </s:span>
+                </s:TextFlow>
+            </s:textFlow>
         </s:RichText>
 
-        <!--USER ENERGY END-->
+        <s:RichText id="userEnergyTotalConsumptionSqMeterRichText" styleName="reportBlackLabel"
+                    x="{sqMeterRichText1.x + sqMeterRichText1.width/4}" y="{userEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{90 * getWidthRatio()}" textAlign="right" text="{userEnergyTotalConsumptionSqMeterString}" >
+        </s:RichText>
 
+        <s:RichText id="userEnergyTotalConsumptionSqMeterUnitNameRichText" x="{userEnergyTotalConsumptionSqMeterRichText.x + userEnergyTotalConsumptionSqMeterRichText.width + 5 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportBlackLabel" textAlign="left"
+                    text=""/>
 
         <!--FINAL ENERGY-->
-
-        <s:Label x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y + 20}"
-                 id="finalEnergyMainLabel" styleName="reportGrayLabel"
-                 text="{resourceManager.getString('hm','hm.label.final_energy.consumption')}"
+        <s:Label id="finalEnergyMainLabel" x="{primaryFinalInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{userEnergyMainLabel.y + 20}"
+                 styleName="reportGrayLabel"   text="{resourceManager.getString('hm','hm.label.final_energy.consumption')}"
                  fontSize="{12 * getFontRatio()}"/>
 
-        <s:RichText id="finalEnergyValueText"
-                    x="{finalEnergyMainLabel.x + finalEnergyMainLabel.width + 30 * getOffsetRatio()}"
-                    y="{finalEnergyMainLabel.y}"
-                    width="{60 * getWidthRatio()}" styleName="reportGrayLabel" kerning="on" textAlign="right"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span id="finalEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="finalEnergyUnitNameRichText" styleName="reportGrayLabel"
-                    x="{finalEnergyValueText.x + finalEnergyValueText.width}"
-                    y="{finalEnergyMainLabel.y}"
-                    fontSize="{12 *getFontRatio()}">
-            <s:content>
-                <s:span id="finalUnitNameSpan" textAlign="right"></s:span>
-                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
-                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
-                <s:span>:</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="finalEnergyValueSqRichText" textAlign="right" styleName="reportGrayLabel"
-                    x="{finalEnergyUnitNameRichText.x + 90 * getWidthRatio() }" y="{finalEnergyMainLabel.y}"
-                    width="{50 * getWidthRatio()}"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="right" id="finalEnergySqSpan"></s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="finalEnergyValueSqUnitNameRichText" styleName="reportGrayLabel"
-                    x="{finalEnergyValueSqRichText.x + finalEnergyValueSqRichText.width}" y="{finalEnergyMainLabel.y}"
-                    width="{40 * getWidthRatio()}"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="left" id="finalEnergySqUnitNameSpan"></s:span>
-            </s:content>
+
+        <s:RichText id="finalEnergyTotalConsumptionRichText" x="{userEnergyTotalConsumptionRichText.x}" y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="right"
+                    text="{finalEnergyTotalConsumptionString}"/>
+
+        <s:RichText id="finalEnergyTotalConsumptionUnitNameRichText" x="{userEnergyTotalConsumptionUnitNameRichText.x}" y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="left"
+                    text=""/>
+
+        <s:RichText id="sqMeterRichText2" styleName="reportGrayLabel"
+                    x="{sqMeterRichText1.x}" y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" textAlign="right">
+            <s:textFlow>
+                <s:TextFlow>
+                    <s:span>{resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                    <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                    <s:span whiteSpaceCollapse="preserve">: </s:span>
+                </s:TextFlow>
+            </s:textFlow>
         </s:RichText>
 
-        <!--FINAL ENERGY END-->
+        <s:RichText id="finalEnergyTotalConsumptionSqMeterRichText" styleName="reportGrayLabel"  x="{userEnergyTotalConsumptionSqMeterRichText.x}" y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{90 * getWidthRatio()}" textAlign="right" text=" {finalEnergyTotalConsumptionSqMeterString}" >
+        </s:RichText>
+
+        <s:RichText id="finalEnergyTotalConsumptionSqMeterUnitNameRichText" x="{userEnergyTotalConsumptionSqMeterUnitNameRichText.x}" y="{finalEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="left"
+                    text=""/>
+
+
+        <!--PIRMARY ENERGY-->
+        <s:Label id="primaryEnergyMainLabel" x="{finalEnergyMainLabel.x}" y="{finalEnergyMainLabel.y + 20 * getWidthRatio()}"
+                 styleName="reportDarkGrayLabel"  text="{resourceManager.getString('hm','hm.label.primary_energy.consumption')}"
+                 fontSize="{12 * getFontRatio()}"/>
+
+        <s:RichText id="primaryEnergyTotalConsumptionRichText" x="{userEnergyTotalConsumptionRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="right"
+                    text="{primaryEnergyTotalConsumptionString}"/>
+
+        <s:RichText id="primaryEnergyTotalConsumptionUnitNameRichText" x="{userEnergyTotalConsumptionUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="left"
+                    text=""/>
+
+        <s:RichText id="sqMeterRichText3" styleName="reportGrayLabel"
+                    x="{sqMeterRichText1.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{60 * getWidthRatio()}" textAlign="right">
+            <s:textFlow>
+                <s:TextFlow>
+                    <s:span>{resourceManager.getString('hm','hm.label.per')} 1m</s:span>
+                    <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
+                    <s:span whiteSpaceCollapse="preserve">: </s:span>
+                </s:TextFlow>
+            </s:textFlow>
+        </s:RichText>
+
+        <s:RichText id="primaryEnergyTotalConsumptionSqMeterRichText" styleName="reportGrayLabel"  x="{userEnergyTotalConsumptionSqMeterRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{90 * getWidthRatio()}" text="{primaryEnergyTotalConsumptionSqMeterString}" textAlign="right">
+        </s:RichText>
+
+        <s:RichText id="primaryEnergyTotalConsumptionSqMeterUnitNameRichText" x="{userEnergyTotalConsumptionSqMeterUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
+                    fontSize="{12 * getFontRatio()}" width="{30 * getWidthRatio()}" styleName="reportGrayLabel" textAlign="left"
+                    text=""/>
 
         <mx:VRule id="vRule1"
-                  x="{userEnergyValueSqUnitNameRichText.x + userEnergyValueSqUnitNameRichText.width + 20 * this.width/1200}"
+                  x="{userEnergyTotalConsumptionSqMeterUnitNameRichText.x + userEnergyTotalConsumptionSqMeterUnitNameRichText.width + 20 * this.width/1200}"
                   y="{userEnergyMainLabel.y + 5}" height="40" width="1"/>
         <s:Label id="yearlyCostLabel" x="{vRule1.x + vRule1.width + 50 * getOffsetRatio()}" y="{vRule1.y + 5}"
                  text="{resourceManager.getString('hm','hm.label.energy_cost')}" styleName="popupPanelHeader"
@@ -737,48 +757,6 @@
                  id="energyClassCodeLabel" text="F"
                  styleName="popupPanelHeader" fontSize="{47 * getFontRatio()}"/>
 
-
-        <!--PRIMARY ENERGY -->
-
-        <s:Label x="{finalEnergyMainLabel.x}" y="{finalEnergyMainLabel.y + 20 * getWidthRatio()}"
-                 id="primaryEnergyMainLabel"
-                 styleName="reportDarkGrayLabel"
-                 text="{resourceManager.getString('hm','hm.label.primary_energy.consumption')}"
-                 fontSize="{12 * getFontRatio()}"/>
-
-        <s:RichText id="primaryEnergyValueText" x="{finalEnergyValueText.x}" y="{primaryEnergyMainLabel.y}"
-                    width="{finalEnergyValueText.width}" styleName="reportDarkGrayLabel" kerning="on" textAlign="right"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span id="primaryEnergySpan" digitWidth="tabular" textAlign="left">123456</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="primaryEnergyUnitNameRichText" styleName="reportDarkGrayLabel"
-                    x="{finalEnergyUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
-                    fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span id="primaryUnitNameSpan" textAlign="right"></s:span>
-                <s:span>, {resourceManager.getString('hm','hm.label.per')} 1m</s:span>
-                <s:span baselineShift="superscript" digitWidth="tabular">2</s:span>
-                <s:span>:</s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="primaryEnergyValueSqRichText" textAlign="right" styleName="reportDarkGrayLabel"
-                    x="{finalEnergyValueSqRichText.x}" y="{primaryEnergyMainLabel.y}"
-                    width="{finalEnergyValueSqRichText.width}" fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="right" id="primaryEnergySqSpan"></s:span>
-            </s:content>
-        </s:RichText>
-        <s:RichText id="primaryEnergyValueSqUnitNameRichText" styleName="reportDarkGrayLabel"
-                    x="{finalEnergyValueSqUnitNameRichText.x}" y="{primaryEnergyMainLabel.y}"
-                    width="{finalEnergyValueSqUnitNameRichText.width}" fontSize="{12 * getFontRatio()}">
-            <s:content>
-                <s:span textAlign="left" id="primaryEnergySqUnitNameSpan"></s:span>
-            </s:content>
-        </s:RichText>
-
-        <!--PRIMARY ENERGY END-->
 
 
         <s:Label id="yearlyCostValueLabel" x="{yearlyCostLabel.x}" y="{vRule1.y + 25 * this.width/1200}"
@@ -805,7 +783,7 @@
             </mx:horizontalAxis>
 
             <mx:verticalAxis>
-                <mx:LinearAxis id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}">
+                <mx:LinearAxis id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}" labelFunction="verticalAxisLabelFunction">
                 </mx:LinearAxis>
             </mx:verticalAxis>
 
@@ -1142,7 +1120,7 @@
                                             width="{7* (chart.width - gutterLeft)/6}" visible="true"/>
 
 
-        <mx:Button right="5" top="2" buttonMode="true"
+        <mx:Button x="{plotBkgImg.width - 32}" top="2" buttonMode="true"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
                    overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
                    click="closePlot()"/>

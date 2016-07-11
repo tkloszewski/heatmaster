@@ -683,7 +683,7 @@
         .pupupPanelGrayFontStyle {
             fontSize: 11px;
             color: #333333;
-            fontWeight: bold;
+            fontWeight: normal;
         }
 
         .smallPupupPanelGrayFontStyle {
