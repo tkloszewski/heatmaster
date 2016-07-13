@@ -28,13 +28,9 @@ public class PlotDataProvider {
 
         var plotData:PlotData = new PlotData();
         var columnData:Array = [];
-        var lineData:Array = [];
-
-        columnData[0] = createEmptyPlotDataItem();
-        lineData[0] = {netLoss: 0};
-        lineData[1] = {netLoss: 0};
-        lineData[2] = {netLoss: 0};
-        lineData[3] = {netLoss: 0};
+        var lineData1:Array = [];
+        var lineData2:Array = [];
+        columnData.push(createEmptyPlotDataItem());
 
         var refYearlyConvertedResult:ConvertedResult = refResultData.yearlyAggregatedConvertedData;
         var newYearlyConvertedResult:ConvertedResult = newResultData.yearlyAggregatedConvertedData;
@@ -49,13 +45,20 @@ public class PlotDataProvider {
         var yInterval:Number = adjustInterval(Math.round(yMaxValue / 6));
 
         //add column and line plot data
-        columnData[1] = createPlotColumnItem(refYearlyConvertedResult,conversionData,true,renderMode);
-        columnData[2] = createPlotColumnItem(newYearlyConvertedResult,conversionData,true,renderMode);
-        columnData[3] = createEmptyPlotDataItem();
+        columnData.push(createPlotColumnItem(refYearlyConvertedResult,conversionData,true,renderMode));
+        columnData.push(createPlotColumnItem(newYearlyConvertedResult,conversionData,true,renderMode));
+        columnData.push(createEmptyPlotDataItem());
+
+        lineData1.push({netLoss: columnData[1].netLoss,xField:0});
+        lineData1.push({netLoss: columnData[1].netLoss,xField:1});
+        lineData2.push({netLoss: columnData[2].netLoss,xField:2});
+        lineData2.push({netLoss: columnData[2].netLoss,xField:3});
+
 
         var data:Object = {
             columnData:columnData,
-            lineData:lineData
+            lineData1:lineData1,
+            lineData2:lineData2
         };
 
         plotData.data = data;
@@ -147,6 +150,7 @@ public class PlotDataProvider {
         var enLosses:Number = getDataColumnMaxValue(converterResult,yearlyMode,renderMode);
         var enGains:Number = getDataColumnMinValue(converterResult,yearlyMode,renderMode);
         var netLoss:Number = getBalanceValue(enLosses,enGains,renderMode);
+        var columnData:SplitColumnData = new SplitColumnDataProvider().getColumnData(converterResult,renderMode,yearlyMode);
 
         return {
             drawingEnabled: true,
@@ -155,6 +159,7 @@ public class PlotDataProvider {
             enLosses: enLosses,
             enGains: enGains,
             netLoss: netLoss,
+            columnData:columnData,
             conversionUnit: conversionData.selectedUnit,
             convertedResult: converterResult
         };

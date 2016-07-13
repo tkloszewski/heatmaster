@@ -228,16 +228,8 @@
         }
 
         public function showBalanceReport(calculationState:CalculationState):void {
-            /*if (balanceReportPanel.visible) {
-             hideBalanceReport();
-             return;
-             }
-             balanceReportPanel.visible = true;
-             heatMasterContainer.addElement(balanceReportPanel);
-             balanceReportPanel.showBalanceReport(comparatorResult);
-             */
             plotVisible = false;
-            comparingPlotPanel.drawComparingPlot(calculationState);
+            //comparingPlotPanel.drawComparingPlot(calculationState);
             comparingPlotVisible = true;
 
         }
@@ -367,6 +359,7 @@
             housePanel.energyMeter.setConfigurationReader(configurationReader);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
+            comparingPlotPanel.setCalculationStateController(calculationStateController);
 
             startButtonVisible = cachedData == null;
 
@@ -804,9 +797,9 @@
                                  width="{Math.min(Math.max(1000 * 1200/1280,1200/1280 * this.width),1200)}"
                                  id="plotPanel" visible="{plotVisible}" />
 
-                <panel:ComparingPlotPanel x="{Math.max(0,(this.width - comparingPlotPanel.width)/2)}" maxWidth="800" y="90"
+                <panel:ComparingPlotPanel x="{Math.max(0,(this.width - comparingPlotPanel.width)/2)}" maxWidth="{0.8 * 1200}" y="90"
                                  height="560"
-                                 width="{Math.min(Math.max(2 * 1000/3 * 1200/1280,1200/1280 * 2 * this.width/3),800)}"
+                                 width="{Math.min(Math.max(0.8 * 1000 * 1200/1280,1200/1280 * 0.8 * this.width),0.8 * 1200)}"
                                  id="comparingPlotPanel" visible="{comparingPlotVisible}" />
 
                 <popup:HousePopup id="housePopup" y="18" x="{housePanel.x + 200}" height="400" visible="false"/>

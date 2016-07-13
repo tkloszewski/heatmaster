@@ -21,6 +21,7 @@ import pl.znr.heatmaster.core.converter.ConvertedResult;
 import pl.znr.heatmaster.ui.plot.ColumnMode;
 import pl.znr.heatmaster.ui.plot.RangeMode;
 import pl.znr.heatmaster.ui.plot.RenderMode;
+import pl.znr.heatmaster.ui.plot.SplitColumnData;
 
 import spark.primitives.Graphic;
 
@@ -51,35 +52,17 @@ public class CustomPlotColumnRenderer extends mx.skins.ProgrammaticSkin implemen
             }
 
             var convertedResult:ConvertedResult = _chartItem.item.convertedResult as ConvertedResult;
-            var overallValue:Number = convertedResult.getEnLosses() + convertedResult.getEnGains();
-            var conversionUnit:int =  _chartItem.item.conversionUnit;
 
             g.lineStyle(1,0x808080);
 
             var renderMode:RenderMode = _chartItem.item.renderMode;
-
-            if(renderMode == null){
-                if(_chartItem.item.alwaysDrawSubComponents){
-                    renderSplitRect(convertedResult, overallValue, g, unscaledWidth, unscaledHeight,null,false);
-                }
-                else {
-                    if (!ConversionUnits.isCostUnit(conversionUnit) && !ConversionUnits.isEmisionUnit(conversionUnit)) {
-                        renderSplitRect(convertedResult, overallValue, g, unscaledWidth, unscaledHeight,null,false);
-                    }
-                    else {
-                        drawRect(g, unscaledWidth, unscaledHeight, 0, 0, 0xF24848, 1);
-                    }
-                }
+            if(ColumnMode.isAggregatedMode(renderMode.columnMode)){
+                drawRect(g, unscaledWidth, unscaledHeight, 0, 0, 0xF24848, 1);
             }
             else {
-                if(ColumnMode.isAggregatedMode(renderMode.columnMode)){
-                    drawRect(g, unscaledWidth, unscaledHeight, 0, 0, 0xF24848, 1);
-                }
-                else {
-                    var yearlyMode:Boolean = _chartItem.item.yearlyMode;
-                    var range:Number = _chartItem.item.enLosses - _chartItem.item.enGains;
-                    renderSplitRect(convertedResult, range, g, unscaledWidth, unscaledHeight,renderMode,yearlyMode);
-                }
+                var range:Number = _chartItem.item.enLosses - _chartItem.item.enGains;
+                var splitColumnData:SplitColumnData = _chartItem.item.columnData;
+                renderSplitRect(splitColumnData, range, g, unscaledWidth, unscaledHeight);
             }
 
         } catch (e:Error) {
@@ -88,68 +71,51 @@ public class CustomPlotColumnRenderer extends mx.skins.ProgrammaticSkin implemen
         }
     }
 
-    private function renderSplitRect(convertedResult:ConvertedResult,overallValue:Number,g:Graphics,unscaledWidth:Number,unscaledHeight:Number,renderMode:RenderMode,yearlyMode:Boolean):void {
+    private function renderSplitRect(splitColumnData:SplitColumnData,overallValue:Number,g:Graphics,unscaledWidth:Number,unscaledHeight:Number):void {
         var currentY:Number = 0;
         var ratio:Number = 1;
 
-        var enVent:Number = convertedResult.enVent;
-        var drawHeatingSourceLoss:Boolean = false;
-        if(renderMode != null && ColumnMode.isAllComponentsMode(renderMode.columnMode)){
-           enVent = enVent + convertedResult.enRecuperator;
-           drawHeatingSourceLoss = true;
-        }
+        ratio = splitColumnData.enHeatingSourceLoss/overallValue;
+        currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0x700A0A,ratio);
 
-        if(drawHeatingSourceLoss){
-           ratio = (convertedResult.heatingSourceLoss + convertedResult.warmWaterHeatingSourceLoss)/overallValue;
-           currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0x700A0A,ratio);
-        }
-
-        var enProductGain:Number = convertedResult.enPersonGain + convertedResult.enElectricityGain;
-        var enSolGain:Number = convertedResult.enSolGain;
-        var enCollectorsGain:Number = convertedResult.enCollectorSolarGain;
-
-        if(yearlyMode){
-           enProductGain = convertedResult.enHeatingProductAggregated;
-           enSolGain = convertedResult.enSolGainAggregated;
-           enCollectorsGain = Math.min(enCollectorsGain,convertedResult.enWarmWater);
-        }
-
-        ratio = convertedResult.enWarmWater/overallValue;
+        ratio = splitColumnData.enWarmWater/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFF0000,ratio);
 
-        ratio = convertedResult.enWalls/overallValue;
+        ratio = splitColumnData.enWalls/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xF24848,ratio);
 
-        ratio = convertedResult.enRoof/overallValue;
+        ratio = splitColumnData.enRoof/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFF6464,ratio);
 
-        ratio = (convertedResult.enFloor )/overallValue;
+        ratio = (splitColumnData.enFloor )/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFF8A8A,ratio);
 
-        ratio = convertedResult.enWindows/overallValue;
+        ratio = splitColumnData.enWindows/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFFC6C6,ratio);
 
-        ratio = (convertedResult.enFoundations)/overallValue;
+        ratio = (splitColumnData.enFoundations)/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFFECEC,ratio);
 
-        ratio = enVent/overallValue;
+        ratio = splitColumnData.enVent/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFFE88C,ratio);
 
-        ratio = convertedResult.enAir/overallValue;
+        ratio = splitColumnData.enAir/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFDD65E,ratio);
 
-        ratio = convertedResult.enTightness/overallValue;
+        ratio = splitColumnData.enTightness/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFFBC79,ratio);
 
-        ratio = enSolGain/overallValue;
+        ratio = splitColumnData.enSolGain/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xADE7A3,ratio);
 
-        ratio = enProductGain/overallValue;
+        ratio = splitColumnData.enProductGain/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xD3F1CD,ratio);
 
-        ratio = enCollectorsGain/overallValue;
+        ratio = splitColumnData.enCollectorsGain/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0x00FF00,ratio);
 
+        ratio = splitColumnData.enHeatingSourceGain/overallValue;
+        currentY = drawRect(g, unscaledWidth,unscaledHeight,0, currentY,0x185218,ratio);
     }
 
     private function drawRect(g:Graphics,unscaledWidth:Number,unscaledHeight:Number,x:Number,y:Number,color:int,ratio:Number):Number {

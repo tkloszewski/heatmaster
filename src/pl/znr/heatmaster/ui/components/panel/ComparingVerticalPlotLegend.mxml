@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-13.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" initialize="legendInitialize()">
+
+    <fx:Style>
+        .numericValueLabel {
+            fontWeight: bold;
+            fontSize: 12pt;
+        }
+        .mainHeaderLabel {
+            fontWeight: bold;
+            fontSize: 13pt;
+        }
+        .subHeaderLabel {
+            fontWeight: bold;
+            fontSize: 13pt;
+        }
+    </fx:Style>
+
+
+    <fx:Script><![CDATA[
+        import pl.znr.heatmaster.ui.plot.SplitColumnData;
+        import pl.znr.heatmaster.util.HeatMasterFormatter;
+
+        [Bindable]
+        private var _gridItemGap:int = 5;
+
+        [Bindable]
+        private var _mainLegendRectWidth:Number = 20;
+
+        [Bindable]
+        private var _mainLegendRectHeight:Number = 12;
+
+        [Bindable]
+        private var _legendRectLabelPaddingTop:int = 2;
+
+        [Bindable]
+        private var refSplitColumnData:SplitColumnData = new SplitColumnData();
+
+        [Bindable]
+        private var newSplitColumnData:SplitColumnData = new SplitColumnData();
+
+        [Bindable] private var rowWidth:Number = 300;
+        [Bindable] private var cell1Width:Number = 80;
+        [Bindable] private var cell2Width:Number = 70;
+        [Bindable] private var cell3Width:Number = 130;
+
+        private var warmWaterLegendGroupVar:Group;
+        private var collectorsLegendGroupVar:Group;
+        private var heatingSourceLossLegendGroupVar:Group;
+        private var heatingSourceGainLegendGroupVar:Group;
+
+        private var heatingSourceLossIncluded:Boolean = false;
+
+        public function feedValues(refSplitColumnData:SplitColumnData, newSplitColumnData:SplitColumnData):void {
+            this.refSplitColumnData = refSplitColumnData;
+            this.newSplitColumnData = newSplitColumnData;
+        }
+
+        private function legendInitialize():void {
+            warmWaterLegendGroupVar = warmWaterLegendGroup;
+            collectorsLegendGroupVar = collectorsLegendGroup;
+            heatingSourceLossLegendGroupVar = heatingSourceLossLegendGroup;
+            heatingSourceGainLegendGroupVar = heatingSourceGainLegendGroup;
+
+            legendEnergyLossGroup.removeElement(heatingSourceLossLegendGroupVar);
+            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+            legendGainGroup.removeElement(collectorsLegendGroupVar);
+            legendGainGroup.removeElement(heatingSourceGainLegendGroupVar);
+
+            legendVerticalLayout.gap = 17;
+        }
+
+        public function adjustWarmWaterState(warmWaterIncluded:Boolean):void {
+            if (!warmWaterIncluded) {
+                legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+                legendGainGroup.removeElement(collectorsLegendGroupVar);
+                legendVerticalLayout.gap = 17;
+            }
+            else {
+                legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, this.heatingSourceLossIncluded ? 4 : 3);
+                legendGainGroup.addElementAt(collectorsLegendGroupVar, 3);
+                legendVerticalLayout.gap = 12;
+            }
+        }
+
+        public function setHeatingSourceLossVisibility(visibility:Boolean):void {
+            this.heatingSourceLossIncluded = visibility;
+            if (this.heatingSourceLossIncluded) {
+                legendEnergyLossGroup.addElementAt(heatingSourceLossLegendGroupVar, 3);
+            }
+            else {
+                legendEnergyLossGroup.removeElement(heatingSourceLossLegendGroupVar);
+            }
+        }
+
+        public function setHeatingSourceGainsVisibility(visibility:Boolean):void {
+            if(!visibility){
+                legendGainGroup.removeElement(heatingSourceGainLegendGroupVar);
+            }
+            else {
+                legendGainGroup.addElement(heatingSourceGainLegendGroupVar)
+            }
+        }
+
+
+        public function set gridItemGap(legendItemGap:int):void {
+            this._gridItemGap = legendItemGap
+        }
+
+        public function set mainLegendRectWidth(mainLegendRectWidth:Number):void {
+            this._mainLegendRectWidth = mainLegendRectWidth
+        }
+
+        public function set mainLegendRectHeight(mainLegendRectHeight:Number):void {
+            this._mainLegendRectHeight = mainLegendRectHeight
+        }
+
+        public function set legendRectLabelPaddingTop(legendRectLabelPaddingTop:Number):void {
+            this._legendRectLabelPaddingTop = legendRectLabelPaddingTop
+        }
+
+        private function format(val:Number):String {
+            return HeatMasterFormatter.formatHMValue(val);
+        }
+        ]]></fx:Script>
+
+
+    <s:layout>
+        <s:VerticalLayout id="legendVerticalLayout" gap="12"/>
+    </s:layout>
+
+    <s:Group width="100%" id="legendEnergyLossGroup">
+        <s:layout>
+            <s:VerticalLayout gap="{_gridItemGap}"/>
+        </s:layout>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+            <s:RichText id="refStateLabel" styleName="mainHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.state.reference')}" width="{cell1Width}">
+            </s:RichText>
+
+            <s:RichText id="newStateLabel" styleName="mainHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.state.new')}" width="{cell2Width}">
+            </s:RichText>
+
+            <s:RichText id="elementLegendText" styleName="mainHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.grid.header.element')}" width="130">
+            </s:RichText>
+        </s:Group>
+
+        <s:Group/>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refInsulationAndWarmWaterGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell1Width}"/>
+            <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
+
+            <s:RichText id="energyLegendText" styleName="subHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}" width="{cell3Width}">
+            </s:RichText>
+        </s:Group>
+
+
+
+        <s:Group id="heatingSourceLossLegendGroup" width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refHeatingSourceLossValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enHeatingSourceLoss)}" width="{cell1Width}"/>
+            <s:Label id="newHeatingSourceLossvalueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enHeatingSourceLoss)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0x700A0A"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.heating.source_loss_legend')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
+        <s:Group id="warmWaterLegendGroup" width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refWarmWaterValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enWarmWater)}" width="{cell1Width}"/>
+            <s:Label id="newWarmWaterValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enWarmWater)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFF0000"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refWallsValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enWalls)}" width="{cell1Width}"/>
+            <s:Label id="newWallsValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enWalls)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xF24848"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.walls')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refRoofValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enRoof)}" width="{cell1Width}"/>
+            <s:Label id="newRoofValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enRoof)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFF6464"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.roof')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refFloorValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enFloor)}" width="{cell1Width}"/>
+            <s:Label id="newFloorValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enFloor)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFF8A8A"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refWindowsValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enWindows)}" width="{cell1Width}"/>
+            <s:Label id="newWindowsValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enWindows)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFFC6C6"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refFoundationsValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enFoundations)}" width="{cell1Width}"/>
+            <s:Label id="newFoundationsValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enFoundations)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFFECEC"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+    </s:Group>
+
+    <s:Group width="100%">
+        <s:layout>
+            <s:VerticalLayout gap="{_gridItemGap}"/>
+        </s:layout>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+            <s:Label id="refVentilationGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.ventilationGroup)}" width="{cell1Width}"/>
+            <s:Label id="newVentilationGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
+
+            <s:RichText styleName="subHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.label.ventilation')}" width="{cell3Width}"/>
+        </s:Group>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refVentValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enVent)}" width="{cell1Width}"/>
+            <s:Label id="newVentValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enVent)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFFE88C"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refAirValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enAir)}" width="{cell1Width}"/>
+            <s:Label id="newAirValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enAir)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFDD65E"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.airing')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refTightnessValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enTightness)}" width="{cell1Width}"/>
+            <s:Label id="newTightnessValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enTightness)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFFBC79"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+    </s:Group>
+
+    <s:Group width="100%" id="legendGainGroup">
+        <s:layout>
+            <s:VerticalLayout gap="{_gridItemGap}"/>
+        </s:layout>
+
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+            <s:Label id="refEnGainsGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.enGainsGroup)}" width="{cell1Width}" />
+            <s:Label id="newEnGainsGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
+
+            <s:RichText styleName="subHeaderLabel"
+                        text="{resourceManager.getString('hm','hm.label.energy_gain')}" width="{cell3Width}"/>
+        </s:Group>
+
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refEnSolGainValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enSolGain)}" width="{cell1Width}"/>
+            <s:Label id="newEnSolGainValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enSolGain)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xADE7A3"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refEnProductGainValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enProductGain)}" width="{cell1Width}"/>
+            <s:Label id="newEnProductGainValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enProductGain)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xD3F1CD"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
+        <s:Group id="collectorsLegendGroup" width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refEnCollectorsGainValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enCollectorsGain)}" width="{cell1Width}"/>
+            <s:Label id="newEnCollectorsGainValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enCollectorsGain)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0x00FF00"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
+        <s:Group id="heatingSourceGainLegendGroup">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refEnHeatingSourceGainValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enHeatingSourceGain)}" width="{cell1Width}"/>
+            <s:Label id="newEnHeatingSourceGainValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enHeatingSourceGain)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0x185218"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.heating.source_gain')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
+
+    </s:Group>
+
+
+
+
+
+</s:Group>

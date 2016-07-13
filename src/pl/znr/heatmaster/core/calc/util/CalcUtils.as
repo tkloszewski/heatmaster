@@ -3,7 +3,17 @@
  */
 package pl.znr.heatmaster.core.calc.util {
 public class CalcUtils {
+
+    public static const NEW_MAX_POWER_THRESHOLD_DIFF:Number = 0.8;
+
     public function CalcUtils() {
+    }
+
+    public static function maxHeatingSourcePowerThresholdExceeded(previousMaxPower:Number, currentMaxPower:Number):Boolean{
+        if(currentMaxPower < NEW_MAX_POWER_THRESHOLD_DIFF * previousMaxPower){
+           return true;
+        }
+        return false;
     }
 
     public static function maxValue(values:Array):Number {

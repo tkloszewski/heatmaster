@@ -652,7 +652,7 @@
         </s:Group>
 
 
-        <panel:EnergyConsumptionLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
+        <panel:VerticalPlotLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
                                        id="legendEnergyEmissionGroup"
                                        styleName="reportLegendVerticalLabel"/>
 

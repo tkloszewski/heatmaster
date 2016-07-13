@@ -12,6 +12,8 @@ public interface IResultDataAware {
 
     function resultCalculated(resultData:ProcessingResult,month:int):void;
 
+    function processPreviousResult(resultData:ProcessingResult):void;
+
     function unitChanged(resultData:ProcessingResult,month:int,unit:int):void;
 }
 }

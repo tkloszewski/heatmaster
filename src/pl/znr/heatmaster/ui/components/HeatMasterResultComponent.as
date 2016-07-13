@@ -16,6 +16,9 @@ public class HeatMasterResultComponent extends HeatMasterComponent implements IR
     public function resultCalculated(resultData:ProcessingResult, month:int):void {
     }
 
+    public function processPreviousResult(resultData:ProcessingResult):void {
+    }
+
     public function unitChanged(resultData:ProcessingResult, month:int, unit:int):void {
     }
 }

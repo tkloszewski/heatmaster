@@ -3,44 +3,156 @@
   Created by Dom on 2016-07-11.
 -->
 <panel:BasePlotPanel xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
-                     xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx">
+                     xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx"
+                     initialize="{gutterBottom = 50}">
 
 
 
   <fx:Script><![CDATA[
+    import mx.charts.HitData;
+    import mx.charts.series.items.ColumnSeriesItem;
     import mx.collections.ArrayCollection;
 
     import pl.znr.heatmaster.HeatMaster;
+    import pl.znr.heatmaster.constants.combo.ConversionUnits;
     import pl.znr.heatmaster.core.DataContext;
+    import pl.znr.heatmaster.core.ProcessingResult;
+    import pl.znr.heatmaster.core.StateDataContext;
+    import pl.znr.heatmaster.core.calc.util.CalcUtils;
     import pl.znr.heatmaster.core.converter.ConversionData;
     import pl.znr.heatmaster.core.state.CalculationState;
+    import pl.znr.heatmaster.core.state.CalculationStateController;
+    import pl.znr.heatmaster.ui.plot.SplitColumnData;
+
+    private var calculationStateController:CalculationStateController;
 
     [Bindable]
     private var plotDataProvider:ArrayCollection = new ArrayCollection([]);
 
     [Bindable]
-    private var enBalanceVisible:Boolean = false;
+    private var lineSeriesDataProvider1:ArrayCollection = new ArrayCollection([]);
+
+    [Bindable]
+    private var lineSeriesDataProvider2:ArrayCollection = new ArrayCollection([]);
+
+    [Bindable]
+    private var refStateFormattedValue:String;
+    [Bindable]
+    private var refStateValue:Number = 0;
+    [Bindable]
+    private var newStateFormattedValue:String;
+    [Bindable]
+    private var newStateValue:Number = 0;
+
+    [Bindable]
+    private var refMaxPower:Number;
+
+    [Bindable]
+    private var newMaxPower:Number;
+
+    [Bindable]
+    private var showMaxPowerWarningInfo:Boolean = false;
 
     private var warmWaterIncluded:Boolean = false;
+    private var heatingSourceLossIncluded = false;
+    private var heatingSourceGainsIncluded = false;
 
-    public function drawComparingPlot(calculationState:CalculationState):void {
+
+    private var refProcessingResult:ProcessingResult;
+    private var newProcessingResult:ProcessingResult;
+
+    override public function resultCalculated(resultData:ProcessingResult, month:int):void {
+      if (calculationStateController.isInInitialState() || calculationStateController.isInReferenceState()) {
+        refProcessingResult = resultData;
+      }
+      else {
+        newProcessingResult = resultData;
+      }
+      if (refProcessingResult != null && newProcessingResult != null) {
+        drawComparingPlot(new CalculationState(refProcessingResult, newProcessingResult));
+      }
+    }
+
+    override public function setupReferenceView(stateDataContext:StateDataContext):void {
+      //refProcessingResult = stateDataContext.ref
+    }
+
+    public function setCalculationStateController(calculationStateController:CalculationStateController):void {
+      this.calculationStateController = calculationStateController;
+    }
+
+    protected function drawComparingPlot(calculationState:CalculationState):void {
       var conversionData:ConversionData = calculationState.refProcessingResult.conversionData;
       var refDataContext:DataContext = calculationState.refProcessingResult.dataContext;
       var newDataContext:DataContext = calculationState.newProcessingResult.dataContext;
 
+      refMaxPower = calculationState.refProcessingResult.wattsEnergyResult.heatingSourceMaxPower;
+      newMaxPower = calculationState.newProcessingResult.wattsEnergyResult.heatingSourceMaxPower;
+
+      setMaxPowerWarningInfoVisibility(refMaxPower, newMaxPower, refDataContext, newDataContext);
+
       var newWarmWaterIncluded:Boolean = refDataContext.includeWarmWater || newDataContext.includeWarmWater;
-      if(warmWaterIncluded != newWarmWaterIncluded){
+      if (warmWaterIncluded != newWarmWaterIncluded) {
         warmWaterIncluded = newWarmWaterIncluded;
-        legendEnergyEmissionGroup.adjustLegend(warmWaterIncluded);
+        comparingLegend.adjustWarmWaterState(warmWaterIncluded);
       }
 
       currencyCode = calculationState.refProcessingResult.dataContext.currencyLocaleCode;
       rawUnitName = getRawUnitName(conversionData.selectedUnit, currencyCode);
 
       var plotObject:Object = getComparingPlotArrayData(calculationState.refProcessingResult, calculationState.newProcessingResult);
-      var plotArrayData:Array = plotObject.columnData;
-      plotDataProvider = new ArrayCollection(plotArrayData);
+      var plotColumnData:Array = plotObject.columnData;
+      plotDataProvider = new ArrayCollection(plotColumnData);
+      lineSeriesDataProvider1 = new ArrayCollection(plotObject.lineData1);
+      lineSeriesDataProvider2 = new ArrayCollection(plotObject.lineData2);
+
+      var refSplitColumnData:SplitColumnData = plotColumnData[1].columnData;
+      var newSplitColumnData:SplitColumnData = plotColumnData[2].columnData;
+
+      var newHeatingSourceLossIncluded:Boolean = refSplitColumnData.enHeatingSourceLoss > 0 || newSplitColumnData.enHeatingSourceLoss > 0;
+      var newHeatingSourceGainsIncluded:Boolean = refSplitColumnData.enHeatingSourceGain > 0 || newSplitColumnData.enHeatingSourceGain > 0;
+
+      if (newHeatingSourceLossIncluded != heatingSourceLossIncluded) {
+        heatingSourceLossIncluded = newHeatingSourceLossIncluded;
+        comparingLegend.setHeatingSourceLossVisibility(heatingSourceLossIncluded);
+      }
+      if (newHeatingSourceGainsIncluded != heatingSourceGainsIncluded) {
+        heatingSourceLossIncluded = newHeatingSourceGainsIncluded;
+        comparingLegend.setHeatingSourceGainsVisibility(heatingSourceLossIncluded);
+      }
+
+      comparingLegend.feedValues(refSplitColumnData, newSplitColumnData);
+
+      refStateValue = lineSeriesDataProvider1.getItemAt(0).netLoss;
+      refStateFormattedValue = formatHMValue(refStateValue);
+      newStateValue = lineSeriesDataProvider2.getItemAt(0).netLoss;
+      newStateFormattedValue = formatHMValue(newStateValue);
     }
+
+    protected function horizontalAxisLabelFunction(labelValue:Object, previousLabelValue:Object, axis:LinearAxis):String {
+      if (labelValue == '1') {
+        return resourceManager.getString('hm', 'hm.state.reference')
+      }
+      if (labelValue == '2') {
+        return resourceManager.getString('hm', 'hm.state.new');
+      }
+      return "";
+    }
+
+    private function setMaxPowerWarningInfoVisibility(refMaxPower:Number, newMaxPower:Number, refDataContext:DataContext, newDataContext:DataContext):void {
+      if (!isNaN(refMaxPower) && !isNaN(newMaxPower)) {
+        if (refDataContext.heatingData.heatingType == newDataContext.heatingData.heatingType) {
+          showMaxPowerWarningInfo = CalcUtils.maxHeatingSourcePowerThresholdExceeded(refMaxPower, newMaxPower);
+        }
+        else {
+          showMaxPowerWarningInfo = false;
+        }
+      }
+      else {
+        showMaxPowerWarningInfo = false;
+      }
+    }
+
 
     private function hideReport():void {
       HeatMaster.getInstance().hideBalanceReport();
@@ -51,12 +163,16 @@
     <mx:Image x="0" y="0" id="plotBkgImg" maintainAspectRatio="false" width="{this.width}" height="{this.height}"
               source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
 
+
+    <s:Label y="30" width="{0.7 * this.width}" x="{0.15 * this.width}" textAlign="center" text="{resourceManager.getString('hm','hm.header.comparing-plot')}"
+             fontSize="16" fontWeight="bold"/>
+
     <mx:ColumnChart id="chart" y="{plotContainer.height * 0.15}" gutterLeft="{gutterLeft}"
-                    gutterRight="{gutterRight}"
+                    gutterRight="0"
                     gutterTop="0" gutterBottom="{gutterBottom}" dataProvider="{plotDataProvider}"
-                    showAllDataTips="false" width="{this.width - 180}" height="75%">
+                    showAllDataTips="false" width="{this.width * 0.6}" height="75%">
       <mx:horizontalAxis>
-        <mx:CategoryAxis id="monthAxis"/>
+        <mx:LinearAxis id="horizontalAxis" minimum="0" maximum="3" interval="1" labelFunction="horizontalAxisLabelFunction"/>
       </mx:horizontalAxis>
 
       <mx:verticalAxis>
@@ -65,7 +181,16 @@
       </mx:verticalAxis>
 
       <mx:verticalAxisRenderers>
-        <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none"
+        <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none" placement="left"
+                         minorTickPlacement="none">
+          <mx:axisStroke>
+            <mx:SolidColorStroke
+                    color="0x78838F"
+                    weight="2"
+                    caps="square"/>
+          </mx:axisStroke>
+        </mx:AxisRenderer>
+        <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none" placement="right"
                          minorTickPlacement="none">
           <mx:axisStroke>
             <mx:SolidColorStroke
@@ -77,13 +202,14 @@
       </mx:verticalAxisRenderers>
 
       <mx:horizontalAxisRenderers>
-        <mx:AxisRenderer axis="{monthAxis}" labelAlign="center" showLine="false">
+        <mx:AxisRenderer axis="{horizontalAxis}" labelAlign="center" showLine="true" showLabels="true" placement="bottom" >
           <mx:axisStroke>
             <mx:SolidColorStroke color="0x78838F"
-                                 weight="1"
+                                 weight="2"
                                  caps="square"/>
           </mx:axisStroke>
         </mx:AxisRenderer>
+
       </mx:horizontalAxisRenderers>
 
       <mx:series>
@@ -92,12 +218,17 @@
                 minField="enGains"
                 itemRenderer="pl.znr.heatmaster.ui.renderer.CustomPlotColumnRenderer"/>
 
-        <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}">
+        <mx:LineSeries id="refLineSeries" yField="netLoss" xField="xField" width="100%" form="segment" dataProvider="{lineSeriesDataProvider1}"  >
           <mx:lineStroke>
-            <mx:SolidColorStroke color="red" weight="2"/>
+            <mx:SolidColorStroke color="blue" weight="1"/>
           </mx:lineStroke>
         </mx:LineSeries>
 
+        <mx:LineSeries id="newLineSeries" yField="netLoss" xField="xField" width="100%" form="segment" dataProvider="{lineSeriesDataProvider2}">
+          <mx:lineStroke>
+            <mx:SolidColorStroke color="blue" weight="1" />
+          </mx:lineStroke>
+        </mx:LineSeries>
       </mx:series>
 
       <mx:backgroundElements>
@@ -115,9 +246,43 @@
       </mx:backgroundElements>
     </mx:ColumnChart>
 
-    <panel:EnergyConsumptionLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
-                                   id="legendEnergyEmissionGroup"
+    <s:Label x="{chart.x + gutterLeft + (chart.width -gutterLeft)/12}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - refStateValue)/(yMaxValue - yMinValue) - 10}"
+             text="{refStateFormattedValue + ' ' + rawUnitName}" color="blue"/>
+    <s:Label  x="{chart.x + gutterLeft + 5 * (chart.width -gutterLeft)/6}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - newStateValue)/(yMaxValue - yMinValue) - 10}"
+              text="{newStateFormattedValue + ' ' + rawUnitName}" color="blue"/>
+
+
+    <panel:ComparingVerticalPlotLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
+                                   id="comparingLegend"
                                    styleName="reportLegendVerticalLabel"/>
+
+
+    <s:Group x="{chart.x + gutterLeft}" y="{chart.y + chart.height - gutterBottom + 30}">
+      <mx:Grid>
+        <mx:GridRow>
+          <mx:GridItem>
+            <s:Label text="{resourceManager.getString('hm','hm.label.heating.source.max-power') + ' (' + resourceManager.getString('hm', 'hm.state.reference') + ') '}" fontWeight="bold"/>
+          </mx:GridItem>
+          <mx:GridItem>
+            <s:Label text="{formatHMValue(refMaxPower,1)}" fontWeight="bold"/>
+          </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+          <mx:GridItem>
+            <s:Label text="{resourceManager.getString('hm','hm.label.heating.source.max-power') + ' (' + resourceManager.getString('hm', 'hm.state.new') + ') '}" fontWeight="bold"/>
+          </mx:GridItem>
+          <mx:GridItem>
+            <s:Label text="{formatHMValue(newMaxPower,1)}" fontWeight="bold"/>
+          </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+          <mx:GridItem colSpan="2">
+            <s:Label visible="{showMaxPowerWarningInfo}" text="{resourceManager.getString('hm','hm.info.max_power.threshold_exceeded')}" fontWeight="bold"/>
+          </mx:GridItem>
+        </mx:GridRow>
+      </mx:Grid>
+    </s:Group>
+
 
 
     <mx:Button x="{plotBkgImg.width - 32}" top="2" buttonMode="true"

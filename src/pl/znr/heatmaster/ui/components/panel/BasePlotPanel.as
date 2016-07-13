@@ -53,10 +53,12 @@ public class BasePlotPanel extends HeatMasterResultComponent{
     [Bindable]
     protected var gutterBottom:Number = 0;
 
+    [Bindable]
+    protected var rawUnitName:String;
 
     protected var currencyCode:String;
     protected var localCurrency:Boolean = false;
-    protected var rawUnitName:String;
+
 
     public function BasePlotPanel() {
     }
