@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.ui.components {
+import pl.znr.heatmaster.core.IResultDataAware;
 import pl.znr.heatmaster.core.ProcessingResult;
 
 public class HeatMasterResultComponent extends HeatMasterComponent implements IResultDataAware{

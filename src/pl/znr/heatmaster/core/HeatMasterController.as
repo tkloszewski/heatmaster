@@ -21,8 +21,8 @@ import pl.znr.heatmaster.core.converter.ConverterService;
 import pl.znr.heatmaster.core.converter.RatioCluster;
 import pl.znr.heatmaster.core.converter.RatioClusterFactory;
 
-import pl.znr.heatmaster.ui.IDataContextAware;
-import pl.znr.heatmaster.ui.components.IResultDataAware;
+import pl.znr.heatmaster.core.IDataContextAware;
+import pl.znr.heatmaster.core.IResultDataAware;
 
 //stateful
 public class HeatMasterController {

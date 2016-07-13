@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-11.
+-->
+<panel:BasePlotPanel xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
+                     xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx">
+
+
+
+  <fx:Script><![CDATA[
+    import mx.collections.ArrayCollection;
+
+    import pl.znr.heatmaster.HeatMaster;
+    import pl.znr.heatmaster.core.DataContext;
+    import pl.znr.heatmaster.core.converter.ConversionData;
+    import pl.znr.heatmaster.core.state.CalculationState;
+
+    [Bindable]
+    private var plotDataProvider:ArrayCollection = new ArrayCollection([]);
+
+    [Bindable]
+    private var enBalanceVisible:Boolean = false;
+
+    private var warmWaterIncluded:Boolean = false;
+
+    public function drawComparingPlot(calculationState:CalculationState):void {
+      var conversionData:ConversionData = calculationState.refProcessingResult.conversionData;
+      var refDataContext:DataContext = calculationState.refProcessingResult.dataContext;
+      var newDataContext:DataContext = calculationState.newProcessingResult.dataContext;
+
+      var newWarmWaterIncluded:Boolean = refDataContext.includeWarmWater || newDataContext.includeWarmWater;
+      if(warmWaterIncluded != newWarmWaterIncluded){
+        warmWaterIncluded = newWarmWaterIncluded;
+        legendEnergyEmissionGroup.adjustLegend(warmWaterIncluded);
+      }
+
+      currencyCode = calculationState.refProcessingResult.dataContext.currencyLocaleCode;
+      rawUnitName = getRawUnitName(conversionData.selectedUnit, currencyCode);
+
+      var plotObject:Object = getComparingPlotArrayData(calculationState.refProcessingResult, calculationState.newProcessingResult);
+      var plotArrayData:Array = plotObject.columnData;
+      plotDataProvider = new ArrayCollection(plotArrayData);
+    }
+
+    private function hideReport():void {
+      HeatMaster.getInstance().hideBalanceReport();
+    }
+    ]]></fx:Script>
+
+  <s:BorderContainer id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false">
+    <mx:Image x="0" y="0" id="plotBkgImg" maintainAspectRatio="false" width="{this.width}" height="{this.height}"
+              source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
+
+    <mx:ColumnChart id="chart" y="{plotContainer.height * 0.15}" gutterLeft="{gutterLeft}"
+                    gutterRight="{gutterRight}"
+                    gutterTop="0" gutterBottom="{gutterBottom}" dataProvider="{plotDataProvider}"
+                    showAllDataTips="false" width="{this.width - 180}" height="75%">
+      <mx:horizontalAxis>
+        <mx:CategoryAxis id="monthAxis"/>
+      </mx:horizontalAxis>
+
+      <mx:verticalAxis>
+        <mx:LinearAxis id="valueAxis" minimum="{yMinValue}" maximum="{yMaxValue}" interval="{yInterval}" labelFunction="verticalAxisLabelFunction">
+        </mx:LinearAxis>
+      </mx:verticalAxis>
+
+      <mx:verticalAxisRenderers>
+        <mx:AxisRenderer x="30" axis="{valueAxis}" styleName="verticalAxisStyle" tickPlacement="none"
+                         minorTickPlacement="none">
+          <mx:axisStroke>
+            <mx:SolidColorStroke
+                    color="0x78838F"
+                    weight="2"
+                    caps="square"/>
+          </mx:axisStroke>
+        </mx:AxisRenderer>
+      </mx:verticalAxisRenderers>
+
+      <mx:horizontalAxisRenderers>
+        <mx:AxisRenderer axis="{monthAxis}" labelAlign="center" showLine="false">
+          <mx:axisStroke>
+            <mx:SolidColorStroke color="0x78838F"
+                                 weight="1"
+                                 caps="square"/>
+          </mx:axisStroke>
+        </mx:AxisRenderer>
+      </mx:horizontalAxisRenderers>
+
+      <mx:series>
+        <mx:ColumnSeries
+                yField="enLosses"
+                minField="enGains"
+                itemRenderer="pl.znr.heatmaster.ui.renderer.CustomPlotColumnRenderer"/>
+
+        <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}">
+          <mx:lineStroke>
+            <mx:SolidColorStroke color="red" weight="2"/>
+          </mx:lineStroke>
+        </mx:LineSeries>
+
+      </mx:series>
+
+      <mx:backgroundElements>
+        <mx:GridLines>
+          <mx:horizontalFill>
+            <mx:SolidColor color="white"/>
+          </mx:horizontalFill>
+          <mx:horizontalAlternateFill>
+            <mx:SolidColor color="white"/>
+          </mx:horizontalAlternateFill>
+          <mx:horizontalOriginStroke>
+            <mx:SolidColorStroke weight="2" color="gray"/>
+          </mx:horizontalOriginStroke>
+        </mx:GridLines>
+      </mx:backgroundElements>
+    </mx:ColumnChart>
+
+    <panel:EnergyConsumptionLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
+                                   id="legendEnergyEmissionGroup"
+                                   styleName="reportLegendVerticalLabel"/>
+
+
+    <mx:Button x="{plotBkgImg.width - 32}" top="2" buttonMode="true"
+               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
+               click="hideReport()"/>
+
+  </s:BorderContainer>
+
+
+</panel:BasePlotPanel>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<components:HeatMasterResultComponent xmlns:fx="http://ns.adobe.com/mxml/2009"
+<panel:BasePlotPanel xmlns:fx="http://ns.adobe.com/mxml/2009"
                                       xmlns:components="pl.znr.heatmaster.ui.components.*"
                                       xmlns:mx="library://ns.adobe.com/flex/mx"
                                       xmlns:s="library://ns.adobe.com/flex/spark"
@@ -39,10 +39,8 @@
     </fx:Declarations>
 
     <fx:Script><![CDATA[
-        import mx.charts.chartClasses.NumericAxis;
         import mx.collections.ArrayCollection;
         import mx.controls.Alert;
-        import mx.formatters.NumberFormatter;
         import mx.utils.StringUtil;
 
         import pl.znr.heatmaster.HeatMaster;
@@ -94,50 +92,14 @@
         private var unitName:String = "";
 
         [Bindable]
-        private var yMaxValue:Number = 6000;
-
-        [Bindable]
-        private var yMinValue:Number = 0;
-
-        [Bindable]
-        private var yInterval:Number = 1000;
-
-        [Bindable]
-        private var gutterLeft:Number = 50;
-
-        [Bindable]
-        private var gutterRight:Number = 0;
-
-        [Bindable]
-        private var gutterBottom:Number = 0;
-
-        [Bindable]
         private var panelLabelWidth:Number;
-
-        [Bindable]
-        private var mainLegendRectWidth:Number = 20;
-
-        [Bindable]
-        private var mainLegendRectHeight:Number = 12;
-
-        [Bindable]
-        private var enBalanceVisible:Boolean = false;
 
         [Bindable]
         private var bluePlotLineVisible:Boolean = false;
 
-        [Bindable]
-        private var legendRectLabelPaddingTop:int = 2;
-
-        [Bindable]
-        private var legendItemGap:int = 5;
-
         private var warmWaterGroup:Group;
 
         private var legendEnergyLossGroupY:int;
-
-        private var warmWaterLegendGroupVar:Group;
-        private var collectorsLegendGroupVar:Group;
 
         private var houseHeatingEfficiency:Number = GlobalValues.INITIAL_HOUSE_HEATING_SOURCE.efficiency;
         private var warmWaterHeatingEfficiency:Number;
@@ -150,11 +112,8 @@
 
         var yearlyCost:Number = 0;
 
-        private var currencyCode:String;
-        private var localCurrency:Boolean = false;
-        private var rawUnitName:String;
-
         private var _originalChartWidth:int;
+
 
         override public function initData(dataContext:DataContext):DataContext {
             currencyCode = HeatMaster.CURRENCY_EURO_LOCALE_CODE;
@@ -167,21 +126,12 @@
 
                 if (warmWaterIncluded != dataContext.includeWarmWater) {
                     warmWaterIncluded = dataContext.includeWarmWater;
-                    if (!dataContext.includeWarmWater) {
-                        legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
-                        legendGainGroup.removeElement(collectorsLegendGroupVar);
-                        legendVerticalLayout.gap = 17;
-                    }
-                    else {
-                        legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, 1);
-                        legendGainGroup.addElement(collectorsLegendGroupVar);
-                        legendVerticalLayout.gap = 12;
-                    }
+                    legendEnergyEmissionGroup.adjustLegend(dataContext.includeWarmWater);
                 }
 
                 var plotObject:Object;
                 try {
-                    plotObject = getPlotArrayData(resultData);
+                    plotObject = getMonthlyPlotArrayData(resultData,monthList);
                 } catch (e:Error) {
                     Alert.show("Plot array data error: " + e.message);
                 }
@@ -195,7 +145,7 @@
                 var conversionData:ConversionData = resultData.conversionData;
 
                 currencyCode = resultData.dataContext.currencyLocaleCode;
-                rawUnitName = getRawUnitName(conversionData.selectedUnit,currencyCode);
+                rawUnitName = getRawUnitName(conversionData.selectedUnit, currencyCode);
 
                 isCostUnit = ConversionUnits.isCostUnit(conversionData.selectedUnit);
                 isEmissionUnit = ConversionUnits.isEmisionUnit(conversionData.selectedUnit);
@@ -265,52 +215,17 @@
             yearlyCostValueLabel.text = formatHMValue(yearlyCost) + " " + resourceManager.getString('hm', currencyCode);
         }
 
-        private function getRawUnitName(selectedUnit:int,currencyCode:String):String {
-            if(ConversionUnits.isEmisionUnit(selectedUnit)){
-               return "CO2";
-            }
-            else if(ConversionUnits.isGJUnit(selectedUnit)){
-               return "GJ";
-            }
-            else if(ConversionUnits.isKiloWattsUnit(selectedUnit)){
-               return "kWh";
-            }
-            else if(ConversionUnits.isCostUnit(selectedUnit)){
-               return resourceManager.getString('hm',currencyCode);
-            }
-            return "W";
-        }
-
-        private function verticalAxisLabelFunction(labelValue:Object, previousLabelValue:Object, axis:LinearAxis):String {
-            if(labelValue == '0'){
-               return rawUnitName + "  " +  "0";
-            }
-            return labelValue.toString();
-        }
-
 
         private function popupInitialized():void {
             panelLabelWidth = (chart.width - gutterLeft - gutterRight) + (chart.width - gutterLeft - gutterRight) / 12;
-            warmWaterLegendGroupVar = warmWaterLegendGroup;
-            collectorsLegendGroupVar = collectorsLegendGroup;
-            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
-            legendGainGroup.removeElement(collectorsLegendGroupVar);
-            legendVerticalLayout.gap = 17;
         }
 
         private function plotCreated():void {
-            /*warmWaterLegendGroup.visible = false;
-             collectorsLegendGroup.visible = false;
-
-             legendEnergyLossGroupY = legendEnergyLossGroup.y;
-             legendEnergyLossGroup.y = legendEnergyLossGroupY - 10;
-             */
-
             _originalChartWidth = chart.width;
         }
 
         private function closePlot():void {
-            HeatMaster.getInstance().hideReport();
+            HeatMaster.getInstance().hideMonthlyReport();
         }
 
         private function getTotalConsumptionEnergyString(energyConsumption:Number, conversionData:ConversionData, limitPrecisionThreshold:Number = Number.NaN):String {
@@ -352,95 +267,6 @@
             return decimalNumber;
         }
 
-        private function getPlotArrayData(resultData:ProcessingResult):Object {
-            var result:Object = {};
-
-            var columnData:Array = [];
-            var lineData:Array = [];
-
-            var maxValue:Number = Number.MIN_VALUE;
-            var conversionData:ConversionData = resultData.conversionData;
-
-            var minValue:Number = 0;
-
-            for (var month:int = 0; month < 12; month++) {
-                var monthlyConverterResult:ConvertedResult = resultData.monthlyConvertedData[month] as ConvertedResult;
-                var converterResult:ConvertedResult = ConverterHelper.buildWithAbsoluteValues(monthlyConverterResult);
-
-                var enLosses:Number = converterResult.getEnLosses() - converterResult.enRecuperator;
-                var enGains:Number = converterResult.getEnGains();
-
-                if (ConversionUnits.isEnergyUnit(conversionData.selectedUnit) || conversionData.selectedUnit == ConversionUnits.ENERGY_WATTS) {
-                    if (maxValue < enLosses) {
-                        maxValue = enLosses;
-                    }
-                    if (maxValue < enGains) {
-                        maxValue = enGains;
-                    }
-
-                    if (minValue > -enGains) {
-                        minValue = -enGains;
-                    }
-                }
-                else {
-                    if (maxValue < converterResult.getEfficiencyAwareBalanceValue()) {
-                        maxValue = converterResult.getEfficiencyAwareBalanceValue();
-                    }
-                }
-                var plotDataItem:Object = createPlotDataItem(converterResult, conversionData, month);
-
-                columnData.push(plotDataItem);
-            }
-
-            var objectFirst:Object = columnData[0];
-            var objectLast:Object = columnData[11];
-            var netLossAvg:Number = (objectFirst.netLoss + objectLast.netLoss) / 2;
-            for (var i:int = 0; i < 12; i++) {
-                var object:Object = columnData[i];
-                var lineDataItem:Object = {netLoss: object.netLoss};
-                if (i == 0) {
-                    lineData.push({netLoss: netLossAvg});
-                }
-                lineData.push(lineDataItem);
-
-                if (i < 11) {
-                    var objectNext:Object = columnData[i + 1];
-                    var avgNet:Number = (object.netLoss + objectNext.netLoss) / 2;
-                    lineData.push({netLoss: avgNet});
-                }
-
-                if (i == 11) {
-                    lineData.push({netLoss: netLossAvg});
-                }
-            }
-
-
-            yMaxValue = 1.05 * maxValue;
-            if (yMaxValue < 10) {
-                yMaxValue = 10;
-            }
-
-            yMinValue = 1.05 * minValue;
-
-            trace("yMinValue= " + yMinValue);
-
-            yInterval = adjustInterval(Math.round(yMaxValue / 6));
-
-            result.columnData = columnData;
-            result.lineData = lineData;
-
-            return result;
-        }
-
-
-        private function formatEnergyValueText(value:Number, precision:int, whiteSpaceLength:int):String {
-            var formatted:String = formatHMValue(value, precision);
-            if (whiteSpaceLength > 0) {
-                formatted = formatted + StringUtil.repeat("\u0020", whiteSpaceLength);
-                Alert.show("#" + formatted + "#");
-            }
-            return formatted;
-        }
 
         private function formatEnergyText(value:Number, unitName:String, precision:int, textLength:int):String {
             var formatted:String = formatHMValue(value, precision) + " " + unitName;
@@ -511,61 +337,11 @@
             return result;
         }
 
-        private function createPlotDataItem(converterResult:ConvertedResult, conversionData:ConversionData, monthIdx:int):Object {
-            var monthName:String = monthList.getItemAt(monthIdx) as String;
-            var enLosses:Number = converterResult.getEnLosses() - converterResult.enRecuperator;
-            var enGains:Number = -converterResult.getEnGains();
-            var enBalance:Number = enLosses + enGains;
-            var netLoss:Number = converterResult.getBalanceValue() - converterResult.enRecuperator;
-
-            if (ConversionUnits.isEfficiencyAwareUnit(conversionData.selectedUnit)) {
-                enGains = 0;
-                enLosses = converterResult.getEfficiencyAwareBalanceValue();
-            }
-
-            return {
-                month: monthName, enLosses: enLosses, enGains: enGains,
-                enBalance: enBalance, netLoss: netLoss,
-                conversionUnit: conversionData.selectedUnit, convertedResult: converterResult
-            };
-        }
-
         private function defineLabel(labelValue:Object, previousLabelValue:Object, ax:CategoryAxis, labelItem:Object):String {
             var monthName:String = labelItem.monthName;
             var enBalance:String = labelItem.enBalance.toString();
             return monthName + "\n" + enBalance;
         }
-
-
-        private function adjustInterval(interval:int):int {
-            var digits:int = 0;
-            var value:int = interval;
-            while (value > 0) {
-                value = value / 10;
-                digits++;
-            }
-
-            if (digits == 1) {
-                return interval;
-            }
-
-            var twoDigitValue:int = interval / (Math.pow(10, digits - 2));
-            var res:int = twoDigitValue % 10;
-            if (twoDigitValue < 15) {
-                twoDigitValue = 10;
-            }
-            else if (twoDigitValue < 35) {
-                twoDigitValue = 20
-            }
-            else if (twoDigitValue < 75) {
-                twoDigitValue = 50;
-            }
-            else {
-                twoDigitValue = 100;
-            }
-            return twoDigitValue * Math.pow(10, digits - 2);
-        }
-
 
         private function openPrimaryFinalEnergyToolTip(evt:MouseEvent):void {
             var heatMaster:HeatMaster = HeatMaster.getInstance();
@@ -814,7 +590,7 @@
                         yField="enLosses"
                         minField="enGains"
                         labelField="{unitName}"
-                        itemRenderer="pl.znr.heatmaster.ui.components.CustomPlotColumnRenderer"/>
+                        itemRenderer="pl.znr.heatmaster.ui.renderer.CustomPlotColumnRenderer"/>
 
 
                 <mx:LineSeries yField="netLoss" interpolateValues="true" dataProvider="{lineSeriesDataProvider}"
@@ -827,29 +603,11 @@
                     </mx:horizontalAxis>
                 </mx:LineSeries>
 
-                <mx:LineSeries yField="enBalance" width="100%" visible="{enBalanceVisible}">
-                    <mx:lineStroke>
-                        <mx:SolidColorStroke color="red" weight="2"/>
 
-                    </mx:lineStroke>
-                </mx:LineSeries>
 
             </mx:series>
 
             <mx:backgroundElements>
-
-                <!--<components:DistinguishedGridLines distinguishedTick="7" >
-                    <components:distinguishedStroke>
-                        <s:Stroke weight="2" color="0x00008b"/>
-                    </components:distinguishedStroke>
-                    <components:horizontalFill>
-                      <s:SolidColor color="white"/>
-                    </components:horizontalFill>
-                    <components:horizontalAlternateFill>
-                      <s:SolidColor color="white"/>
-                    </components:horizontalAlternateFill>
-                </components:DistinguishedGridLines>-->
-
                 <mx:GridLines>
                     <mx:horizontalFill>
                         <mx:SolidColor color="white"/>
@@ -863,6 +621,8 @@
                 </mx:GridLines>
             </mx:backgroundElements>
         </mx:ColumnChart>
+
+
 
         <s:Group visible="false" y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}"
                  width="12%" id="legendCostGroup" styleName="reportLegendVerticalLabel">
@@ -892,227 +652,9 @@
         </s:Group>
 
 
-        <s:Group y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
-                 id="legendEnergyEmissionGroup"
-                 styleName="reportLegendVerticalLabel">
-            <s:layout>
-                <s:VerticalLayout id="legendVerticalLayout" gap="12"/>
-            </s:layout>
-
-            <s:Group width="100%" id="legendEnergyLossGroup">
-                <s:layout>
-                    <s:VerticalLayout gap="{legendItemGap}"/>
-                </s:layout>
-
-                <s:RichText id="energyLegendText" fontWeight="bold" fontSize="13"
-                            text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}">
-
-                </s:RichText>
-
-                <s:Group id="warmWaterLegendGroup">
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFF0000"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xF24848"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.walls')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFF6464"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.roof')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFF8A8A"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFFC6C6"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFFECEC"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-            </s:Group>
-
-            <s:Group width="100%">
-                <s:layout>
-                    <s:VerticalLayout gap="{legendItemGap}"/>
-                </s:layout>
-
-                <s:RichText fontWeight="bold" fontSize="13"
-                            text="{resourceManager.getString('hm','hm.label.ventilation')}"/>
-
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFFE88C"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFDD65E"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.airing')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xFFBC79"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-            </s:Group>
-
-            <s:Group width="100%" id="legendGainGroup">
-                <s:layout>
-                    <s:VerticalLayout gap="{legendItemGap}"/>
-                </s:layout>
-
-                <s:RichText fontWeight="bold" fontSize="13"
-                            text="{resourceManager.getString('hm','hm.label.energy_gain')}"/>
-
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xADE7A3"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group>
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0xD3F1CD"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-                <s:Group id="collectorsLegendGroup">
-                    <s:layout>
-                        <s:HorizontalLayout/>
-                    </s:layout>
-                    <s:Rect width="{mainLegendRectWidth}" height="{mainLegendRectHeight}">
-                        <s:fill>
-                            <s:SolidColor color="0x00FF00"/>
-                        </s:fill>
-                        <s:stroke>
-                            <s:SolidColorStroke weight="1"/>
-                        </s:stroke>
-                    </s:Rect>
-                    <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}"
-                             paddingTop="{legendRectLabelPaddingTop}"/>
-                </s:Group>
-            </s:Group>
-
-        </s:Group>
+        <panel:EnergyConsumptionLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
+                                       id="legendEnergyEmissionGroup"
+                                       styleName="reportLegendVerticalLabel"/>
 
 
         <!--<s:Group id="monthLabels" y="{chart.y + chart.height}" x="{chart.x + gutterLeft}" width="{chart.width - gutterLeft - gutterRight}"/>-->
@@ -1128,4 +670,4 @@
 
     </s:BorderContainer>
 
-</components:HeatMasterResultComponent>
+</panel:BasePlotPanel>

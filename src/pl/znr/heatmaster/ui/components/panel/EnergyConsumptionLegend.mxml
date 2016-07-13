@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-07-11.
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" initialize="legendInitialize()">
+
+  <fx:Script><![CDATA[
+    [Bindable]
+    private var _legendItemGap:int = 5;
+
+    [Bindable]
+    private var _mainLegendRectWidth:Number = 20;
+
+    [Bindable]
+    private var _mainLegendRectHeight:Number = 12;
+
+    [Bindable]
+    private var _legendRectLabelPaddingTop:int = 2;
+
+    private var warmWaterLegendGroupVar:Group;
+    private var collectorsLegendGroupVar:Group;
+
+    private function legendInitialize():void {
+      warmWaterLegendGroupVar = warmWaterLegendGroup;
+      collectorsLegendGroupVar = collectorsLegendGroup;
+      legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+      legendGainGroup.removeElement(collectorsLegendGroupVar);
+      legendVerticalLayout.gap = 17;
+    }
+
+    public function adjustLegend(warmWaterIncluded:Boolean): void {
+      if (!warmWaterIncluded) {
+        legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
+        legendGainGroup.removeElement(collectorsLegendGroupVar);
+        legendVerticalLayout.gap = 17;
+      }
+      else {
+        legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, 1);
+        legendGainGroup.addElement(collectorsLegendGroupVar);
+        legendVerticalLayout.gap = 12;
+      }
+    }
+
+
+    public function set legendItemGap(legendItemGap:int):void {
+      this._legendItemGap = legendItemGap
+    }
+
+    public function set mainLegendRectWidth(mainLegendRectWidth:Number):void {
+      this._mainLegendRectWidth = mainLegendRectWidth
+    }
+
+    public function set mainLegendRectHeight(mainLegendRectHeight:Number):void {
+      this._mainLegendRectHeight = mainLegendRectHeight
+    }
+
+    public function set legendRectLabelPaddingTop(legendRectLabelPaddingTop:Number):void {
+      this._legendRectLabelPaddingTop = legendRectLabelPaddingTop
+    }
+
+
+
+
+    ]]></fx:Script>
+
+  <s:layout>
+    <s:VerticalLayout id="legendVerticalLayout" gap="12"/>
+  </s:layout>
+
+  <s:Group width="100%" id="legendEnergyLossGroup">
+    <s:layout>
+      <s:VerticalLayout gap="{_legendItemGap}"/>
+    </s:layout>
+
+    <s:RichText id="energyLegendText" fontWeight="bold" fontSize="13"
+                text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}">
+
+    </s:RichText>
+
+    <s:Group id="warmWaterLegendGroup">
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFF0000"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.warm_water')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xF24848"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.walls')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFF6464"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.roof')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFF8A8A"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFFC6C6"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFFECEC"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.foundations')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+  </s:Group>
+
+  <s:Group width="100%">
+    <s:layout>
+      <s:VerticalLayout gap="{_legendItemGap}"/>
+    </s:layout>
+
+    <s:RichText fontWeight="bold" fontSize="13"
+                text="{resourceManager.getString('hm','hm.label.ventilation')}"/>
+
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFFE88C"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.ventilation')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFDD65E"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.airing')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xFFBC79"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.tightness')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+  </s:Group>
+
+  <s:Group width="100%" id="legendGainGroup">
+    <s:layout>
+      <s:VerticalLayout gap="{_legendItemGap}"/>
+    </s:layout>
+
+    <s:RichText fontWeight="bold" fontSize="13"
+                text="{resourceManager.getString('hm','hm.label.energy_gain')}"/>
+
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xADE7A3"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.legend.insolation')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+    <s:Group>
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0xD3F1CD"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.residual_heat')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+
+    <s:Group id="collectorsLegendGroup">
+      <s:layout>
+        <s:HorizontalLayout/>
+      </s:layout>
+      <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+        <s:fill>
+          <s:SolidColor color="0x00FF00"/>
+        </s:fill>
+        <s:stroke>
+          <s:SolidColorStroke weight="1"/>
+        </s:stroke>
+      </s:Rect>
+      <s:Label text="{resourceManager.getString('hm','hm.label.solar_collectors')}"
+               paddingTop="{_legendRectLabelPaddingTop}"/>
+    </s:Group>
+  </s:Group>
+
+
+
+
+
+
+</s:Group>

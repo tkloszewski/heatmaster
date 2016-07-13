@@ -19,10 +19,12 @@ import org.osmf.utils.OSMFStrings;
 import pl.znr.heatmaster.constants.StateConstants;
 
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.IHeatMasterListenerAware;
+import pl.znr.heatmaster.core.LangChangeListener;
 import pl.znr.heatmaster.core.StateDataContext;
 
-import pl.znr.heatmaster.ui.HeatMasterChangeListener;
-import pl.znr.heatmaster.ui.IDataContextAware;
+import pl.znr.heatmaster.core.HeatMasterChangeListener;
+import pl.znr.heatmaster.core.IDataContextAware;
 import pl.znr.heatmaster.util.HeatMasterFormatter;
 
 import spark.components.Group;

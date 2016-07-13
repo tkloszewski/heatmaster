@@ -92,6 +92,16 @@ public class CalculationStateController {
         return state;
     }
 
+    public function getPreviousState():int {
+        if(isInInitialState()){
+           return StateConstants.INITIAL_STATE;
+        }
+        if(isInReferenceState()){
+            return StateConstants.NEW_SWITCHED;
+        }
+        return StateConstants.REFERENCE_SWITCHED;
+    }
+
     public function isInInitialState():Boolean {
         return state == StateConstants.INITIAL_STATE;
     }

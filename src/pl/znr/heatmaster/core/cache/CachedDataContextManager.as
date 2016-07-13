@@ -91,6 +91,19 @@ public class CachedDataContextManager {
         trace("Written to cache...")
     }
 
+    public function writeToSelectedStateCache(dataContext:DataContext,state:int): void {
+        var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
+        var flatDataContext:FlatDataContext = FlatDataContextBuilder.buildFlatDataContext(dataContext);
+        if(StateConstants.isInitialOrReference(state)){
+            so.data.hmData = flatDataContext;
+        }
+        else {
+            so.data.hmDataNew = flatDataContext;
+        }
+        so.flush();
+        cacheWritten = true;
+    }
+
     public function writeState(state:int):void {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
         so.data.state = state;

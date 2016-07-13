@@ -31,8 +31,9 @@
         import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
+        import pl.znr.heatmaster.core.state.CalculationState;
         import pl.znr.heatmaster.core.state.CalculationStateController;
-        import pl.znr.heatmaster.ui.HeatMasterChangeListener;
+        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyMeterToolTip;
 
@@ -199,8 +200,8 @@
 
 
         private function showBalanceReport():void {
-            var comparatorResult:ComparatorResult = new ProcessingResultComparator().compare(refProcessingResult, newProcessingResult);
-            HeatMaster.getInstance().showBalanceReport(comparatorResult);
+            // var comparatorResult:ComparatorResult = new ProcessingResultComparator().compare(refProcessingResult, newProcessingResult);
+            HeatMaster.getInstance().showBalanceReport(new CalculationState(refProcessingResult, newProcessingResult));
         }
 
         private function freezeReferenceState():void {
@@ -262,7 +263,8 @@
 
                 if (!calculationStateController.isInInitialState()) {
                     var dataContext:DataContext = calculationStateController.getPreviousDataContext();
-                    dataContext = heatMasterListener.applyConversionChangesToDataContext(dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
+                    var previousState:int = calculationStateController.getPreviousState()
+                    dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState,dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
                     var processingResult:ProcessingResult = calculationStateController.isInReferenceState() ? newProcessingResult : refProcessingResult;
                     processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
                     setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, dataContext.currencyLocaleCode, true);

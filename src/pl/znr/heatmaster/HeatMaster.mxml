@@ -108,16 +108,17 @@
         import pl.znr.heatmaster.core.model.VentilationData;
         import pl.znr.heatmaster.core.model.WarmWaterData;
         import pl.znr.heatmaster.core.model.WindowElement;
+        import pl.znr.heatmaster.core.state.CalculationState;
         import pl.znr.heatmaster.core.state.CalculationStateController;
         import pl.znr.heatmaster.core.state.ICalculationStateListener;
         import pl.znr.heatmaster.locale.HeatMasterLocaleManager;
         import pl.znr.heatmaster.locale.LangHelper;
-        import pl.znr.heatmaster.ui.HeatMasterChangeListener;
+        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.HeatMasterComponent;
         import pl.znr.heatmaster.ui.components.HeatMasterResultComponent;
-        import pl.znr.heatmaster.ui.components.HouseStandardChangeListener;
-        import pl.znr.heatmaster.ui.components.LangChangeListener;
+        import pl.znr.heatmaster.core.HouseStandardChangeListener;
+        import pl.znr.heatmaster.core.LangChangeListener;
         import pl.znr.heatmaster.ui.components.panel.BalanceReportPanel;
         import pl.znr.heatmaster.ui.components.panel.StationsPanel;
         import pl.znr.heatmaster.util.SortingUtil;
@@ -151,6 +152,9 @@
 
         [Bindable]
         private var plotVisible:Boolean = false;
+
+        [Bindable]
+        private var comparingPlotVisible = false;
 
         private var footerTip:IToolTip;
         private var myFooterText:RichText;
@@ -214,7 +218,7 @@
             addElement(toolTipComp);
         }
 
-        public function hideReport():void {
+        public function hideMonthlyReport():void {
             plotVisible = false;
         }
 
@@ -223,19 +227,25 @@
             this.removeElement(stationsPanel);
         }
 
-        public function showBalanceReport(comparatorResult:ComparatorResult):void {
-            if (balanceReportPanel.visible) {
-                hideBalanceReport();
-                return;
-            }
-            balanceReportPanel.visible = true;
-            heatMasterContainer.addElement(balanceReportPanel);
-            balanceReportPanel.showBalanceReport(comparatorResult);
+        public function showBalanceReport(calculationState:CalculationState):void {
+            /*if (balanceReportPanel.visible) {
+             hideBalanceReport();
+             return;
+             }
+             balanceReportPanel.visible = true;
+             heatMasterContainer.addElement(balanceReportPanel);
+             balanceReportPanel.showBalanceReport(comparatorResult);
+             */
+            plotVisible = false;
+            comparingPlotPanel.drawComparingPlot(calculationState);
+            comparingPlotVisible = true;
+
         }
 
         public function hideBalanceReport():void {
-            balanceReportPanel.visible = false;
-            heatMasterContainer.removeElement(balanceReportPanel);
+            /*balanceReportPanel.visible = false;
+             heatMasterContainer.removeElement(balanceReportPanel);*/
+            comparingPlotVisible = false;
         }
 
         public function showProperPopupsVisibility():void {
@@ -545,6 +555,7 @@
         public function showMonthlyReport():void {
             if (!plotVisible) {
                 plotVisible = true;
+                comparingPlotVisible = false;
             }
         }
 
@@ -786,11 +797,17 @@
 
 
                 <panel:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715"
-                                  visible="{!plotVisible}"/>
+                                  visible="{!plotVisible &amp;&amp; !comparingPlotVisible}"/>
+
                 <panel:PlotPanel x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90"
                                  height="560"
                                  width="{Math.min(Math.max(1000 * 1200/1280,1200/1280 * this.width),1200)}"
                                  id="plotPanel" visible="{plotVisible}" />
+
+                <panel:ComparingPlotPanel x="{Math.max(0,(this.width - comparingPlotPanel.width)/2)}" maxWidth="800" y="90"
+                                 height="560"
+                                 width="{Math.min(Math.max(2 * 1000/3 * 1200/1280,1200/1280 * 2 * this.width/3),800)}"
+                                 id="comparingPlotPanel" visible="{comparingPlotVisible}" />
 
                 <popup:HousePopup id="housePopup" y="18" x="{housePanel.x + 200}" height="400" visible="false"/>
                 <popup:HeatingPopup id="heatingPopup" y="18" x="{housePopup.x + housePopup.width}" visible="false"/>

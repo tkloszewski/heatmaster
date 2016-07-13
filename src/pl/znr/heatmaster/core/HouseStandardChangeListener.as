@@ -5,7 +5,7 @@
  * Time: 21:22
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.ui.components {
+package pl.znr.heatmaster.core {
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.HouseStandardTypeContext;
 import pl.znr.heatmaster.core.Ordered;

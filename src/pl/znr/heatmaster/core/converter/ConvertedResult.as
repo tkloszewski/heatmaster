@@ -32,6 +32,10 @@ public class ConvertedResult {
     private var _enWarmWaterNormalized:Number = 0;
     private var _enWarmWaterNormalizedHeatingSourceLoss:Number = 0;
 
+
+    private var _enSolGainAggregated:Number = 0;
+    private var _enHeatingProductAggregated:Number = 0;
+
     public function ConvertedResult() {
     }
 
@@ -76,6 +80,10 @@ public class ConvertedResult {
 
     public function getEnBalanceValueWithoutWarmWaterAndRecuperator():Number{
         return getEnLossesWithoutWarmWaterAndRecuperator() - getEnGainsWithoutCollectors();
+    }
+
+    public function getAllEnLosses():Number {
+        return getEnLosses() + _heatingSourceLoss + _warmWaterHeatingSourceLoss;
     }
 
     public function getEnLosses():Number {
@@ -124,6 +132,10 @@ public class ConvertedResult {
 
     public function getEnGainsWithoutCollectors():Number {
         return getEnGains() - Math.max(Math.min(_enCollectorSolarGain,_enWarmWater),0);
+    }
+
+    public function getYearlyAggregatedGains():Number {
+        return _enSolGainAggregated + _enHeatingProductAggregated + Math.min(_enCollectorSolarGain,_enWarmWater);
     }
 
     public function get enWalls():Number {
@@ -283,6 +295,23 @@ public class ConvertedResult {
 
     public function set enWarmWaterNormalizedHeatingSourceLoss(value:Number):void {
         _enWarmWaterNormalizedHeatingSourceLoss = value;
+    }
+
+
+    public function get enSolGainAggregated():Number {
+        return _enSolGainAggregated;
+    }
+
+    public function set enSolGainAggregated(value:Number):void {
+        _enSolGainAggregated = value;
+    }
+
+    public function get enHeatingProductAggregated():Number {
+        return _enHeatingProductAggregated;
+    }
+
+    public function set enHeatingProductAggregated(value:Number):void {
+        _enHeatingProductAggregated = value;
     }
 }
 }

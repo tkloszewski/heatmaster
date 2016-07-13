@@ -5,7 +5,7 @@
  * Time: 16:03
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.ui {
+package pl.znr.heatmaster.core {
 import avmplus.accessorXml;
 
 import mx.collections.ArrayList;
@@ -57,8 +57,8 @@ import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
-import pl.znr.heatmaster.ui.components.HouseStandardChangeListener;
-import pl.znr.heatmaster.ui.components.IHeatMasterListenerAware;
+import pl.znr.heatmaster.core.HouseStandardChangeListener;
+import pl.znr.heatmaster.core.IHeatMasterListenerAware;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
 import pl.znr.heatmaster.util.HouseStandardModelContainer;
@@ -477,7 +477,7 @@ public class HeatMasterChangeListener {
         writeCache(heatMasterController.getDataContext());
     }
 
-    public function applyConversionChangesToDataContext(dataContextToChange:DataContext, newUnit:int,unitName:String,shortUnitName:String):DataContext {
+    public function applyConversionChangesToDataContext(previousCalcState:int, dataContextToChange:DataContext, newUnit:int,unitName:String,shortUnitName:String):DataContext {
         var countryItem:CountryItem = housePopup.getSelectedCountry();
         if(ConversionUnits.isCostUnit(newUnit)){
             if(ConversionUnits.isLocalCurrencyCostUnit(newUnit)){
@@ -488,11 +488,22 @@ public class HeatMasterChangeListener {
                 dataContextToChange.currencyLocaleCode = HeatMaster.CURRENCY_EURO_LOCALE_CODE;
                 dataContextToChange.localCurrency = false;
             }
+
+            heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
+
+            dataContextToChange.conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
+            dataContextToChange.conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
+            dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);
         }
         dataContextToChange.conversionData.selectedUnit = newUnit;
         dataContextToChange.conversionData.unitName = unitName;
         dataContextToChange.conversionData.shortUnitName = shortUnitName;
         dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+
+
+        cacheManager.writeToSelectedStateCache(dataContextToChange,previousCalcState);
+
+
         return dataContextToChange;
     }
 
@@ -561,5 +572,6 @@ public class HeatMasterChangeListener {
             cacheManager.writeCache(dataContext);
         }
     }
+
 }
 }

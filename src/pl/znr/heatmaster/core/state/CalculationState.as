@@ -6,28 +6,28 @@ import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.ProcessingResult;
 
 public class CalculationState {
-    private var _processingResult:ProcessingResult;
-    private var _dataContext:DataContext;
+    private var _refProcessingResult:ProcessingResult;
+    private var _newProcessingResult:ProcessingResult;
 
-    public function CalculationState(processingResult:ProcessingResult, dataContext:DataContext) {
-        _processingResult = processingResult;
-        _dataContext = dataContext;
+    public function CalculationState(refProcessingResult:ProcessingResult, newProcessingResult:ProcessingResult) {
+        _refProcessingResult = refProcessingResult;
+        _newProcessingResult = newProcessingResult;
     }
 
-    public function get processingResult():ProcessingResult {
-        return _processingResult;
+    public function get refProcessingResult():ProcessingResult {
+        return _refProcessingResult;
     }
 
-    public function set processingResult(value:ProcessingResult):void {
-        _processingResult = value;
+    public function set refProcessingResult(value:ProcessingResult):void {
+        _refProcessingResult = value;
     }
 
-    public function get dataContext():DataContext {
-        return _dataContext;
+    public function get newProcessingResult():ProcessingResult {
+        return _newProcessingResult;
     }
 
-    public function set dataContext(value:DataContext):void {
-        _dataContext = value;
+    public function set newProcessingResult(value:ProcessingResult):void {
+        _newProcessingResult = value;
     }
 }
 }

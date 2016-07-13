@@ -12,6 +12,7 @@ import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
 import pl.znr.heatmaster.core.converter.ConvertedResult;
 import pl.znr.heatmaster.core.ProcessingResult;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
@@ -61,12 +62,12 @@ public class ConverterService {
             monthlyConvertedDataArray.push(monthlyConvertedResult);
         }
 
-
-
         processResult.monthlyConvertedData = monthlyConvertedDataArray;
+
+        aggregatedResult.enSolGainAggregated = BalanceValueHelper.calcBalanceEnSolGain(processResult);
+        aggregatedResult.enHeatingProductAggregated = BalanceValueHelper.calcBalanceEnByProductHeat(processResult);
+
         processResult.yearlyAggregatedConvertedData = aggregatedResult;
-
-
 
         return processResult;
     }

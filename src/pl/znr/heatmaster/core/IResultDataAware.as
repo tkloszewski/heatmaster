@@ -5,7 +5,7 @@
  * Time: 19:39
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.ui.components {
+package pl.znr.heatmaster.core {
 import pl.znr.heatmaster.core.ProcessingResult;
 
 public interface IResultDataAware {

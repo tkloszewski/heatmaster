@@ -5,8 +5,8 @@
  * Time: 16:10
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.ui.components {
-import pl.znr.heatmaster.ui.HeatMasterChangeListener;
+package pl.znr.heatmaster.core {
+import pl.znr.heatmaster.core.HeatMasterChangeListener;
 
 public interface IHeatMasterListenerAware {
     function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void;
