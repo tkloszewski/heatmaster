@@ -21,8 +21,13 @@
 
 
     <fx:Script><![CDATA[
+        import mx.core.IVisualElement;
+        import mx.core.IVisualElementContainer;
+
         import pl.znr.heatmaster.ui.plot.SplitColumnData;
         import pl.znr.heatmaster.util.HeatMasterFormatter;
+
+        import spark.components.supportClasses.GroupBase;
 
         [Bindable]
         private var _gridItemGap:int = 5;
@@ -42,10 +47,14 @@
         [Bindable]
         private var newSplitColumnData:SplitColumnData = new SplitColumnData();
 
-        [Bindable] private var rowWidth:Number = 300;
-        [Bindable] private var cell1Width:Number = 80;
-        [Bindable] private var cell2Width:Number = 70;
-        [Bindable] private var cell3Width:Number = 130;
+        [Bindable]
+        private var rowWidth:Number = 300;
+        [Bindable]
+        private var cell1Width:Number = 80;
+        [Bindable]
+        private var cell2Width:Number = 70;
+        [Bindable]
+        private var cell3Width:Number = 130;
 
         private var warmWaterLegendGroupVar:Group;
         private var collectorsLegendGroupVar:Group;
@@ -65,18 +74,18 @@
             heatingSourceLossLegendGroupVar = heatingSourceLossLegendGroup;
             heatingSourceGainLegendGroupVar = heatingSourceGainLegendGroup;
 
-            legendEnergyLossGroup.removeElement(heatingSourceLossLegendGroupVar);
-            legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
-            legendGainGroup.removeElement(collectorsLegendGroupVar);
-            legendGainGroup.removeElement(heatingSourceGainLegendGroupVar);
+            removeIfContains(legendEnergyLossGroup,heatingSourceLossLegendGroupVar);
+            removeIfContains(legendEnergyLossGroup,warmWaterLegendGroupVar);
+            removeIfContains(legendGainGroup,collectorsLegendGroupVar);
+            removeIfContains(legendGainGroup,heatingSourceGainLegendGroupVar);
 
             legendVerticalLayout.gap = 17;
         }
 
         public function adjustWarmWaterState(warmWaterIncluded:Boolean):void {
             if (!warmWaterIncluded) {
-                legendEnergyLossGroup.removeElement(warmWaterLegendGroupVar);
-                legendGainGroup.removeElement(collectorsLegendGroupVar);
+                removeIfContains(legendEnergyLossGroup,warmWaterLegendGroupVar);
+                removeIfContains(legendGainGroup,collectorsLegendGroupVar);
                 legendVerticalLayout.gap = 17;
             }
             else {
@@ -92,13 +101,13 @@
                 legendEnergyLossGroup.addElementAt(heatingSourceLossLegendGroupVar, 3);
             }
             else {
-                legendEnergyLossGroup.removeElement(heatingSourceLossLegendGroupVar);
+                removeIfContains(legendEnergyLossGroup,heatingSourceLossLegendGroupVar);
             }
         }
 
         public function setHeatingSourceGainsVisibility(visibility:Boolean):void {
-            if(!visibility){
-                legendGainGroup.removeElement(heatingSourceGainLegendGroupVar);
+            if (!visibility) {
+                removeIfContains(legendGainGroup,heatingSourceGainLegendGroupVar);
             }
             else {
                 legendGainGroup.addElement(heatingSourceGainLegendGroupVar)
@@ -125,6 +134,13 @@
         private function format(val:Number):String {
             return HeatMasterFormatter.formatHMValue(val);
         }
+
+        private function removeIfContains(group:Group,element:IVisualElement):void {
+            if(group.containsElement(element)){
+               group.removeElement(element);
+            }
+        }
+
         ]]></fx:Script>
 
 
@@ -161,8 +177,8 @@
                 <s:HorizontalLayout/>
             </s:layout>
 
-            <s:Label id="refInsulationAndWarmWaterGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell1Width}"/>
-            <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
+            <s:Label id="refInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell1Width}"/>
+            <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
 
             <s:RichText id="energyLegendText" styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}" width="{cell3Width}">
@@ -352,8 +368,8 @@
             <s:layout>
                 <s:HorizontalLayout/>
             </s:layout>
-            <s:Label id="refVentilationGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.ventilationGroup)}" width="{cell1Width}"/>
-            <s:Label id="newVentilationGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
+            <s:Label id="refVentilationGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.ventilationGroup)}" width="{cell1Width}"/>
+            <s:Label id="newVentilationGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.ventilation')}" width="{cell3Width}"/>
@@ -443,8 +459,8 @@
             <s:layout>
                 <s:HorizontalLayout/>
             </s:layout>
-            <s:Label id="refEnGainsGroupValueLabel" styleName="subHeaderLabel" text="{format(refSplitColumnData.enGainsGroup)}" width="{cell1Width}" />
-            <s:Label id="newEnGainsGroupValueLabel" styleName="subHeaderLabel" text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
+            <s:Label id="refEnGainsGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.enGainsGroup)}" width="{cell1Width}" />
+            <s:Label id="newEnGainsGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.energy_gain')}" width="{cell3Width}"/>

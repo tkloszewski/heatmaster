@@ -722,6 +722,16 @@
             if (heatingIdx != -1) {
                 warmWaterHeatingTypeDropDownList.selectedIndex = heatingIdx;
             }
+            else {
+                //get electric heating type
+                if (previousHouseType == HouseType.DETACHED) {
+                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(HeatingSourceType.ELECTRIC, warmWaterDetachedHeatingSourceList);
+                }
+                else {
+                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(HeatingSourceType.ELECTRIC, warmWaterMultiFamilyHeatingSourceList);
+                }
+                warmWaterHeatingTypeDropDownList.selectedIndex = heatingIdx;
+            }
             return heatingIdx != -1;
         }
 

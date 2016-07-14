@@ -40,12 +40,20 @@ public class TemperatureCalculator {
         var result:Array = new Array(12);
 
         var tAvg:Number = calcAvgTemperature(temperatures);
+        var diffArray:Array = new Array(12);
 
-        for(var i:int =0 ;i < temperatures.length; i++){
-            var previous:int = i == 0 ? temperatures.length - 1 : i-1;
-            var tGround:Number = tAvg + (2 * temperatures[previous] + temperatures[i])/3;
+        var i:int = 0;
+
+        for(i = 0 ;i < temperatures.length; i++){
+            diffArray[i] = 0.85 * (temperatures[i] - tAvg);
+        }
+
+        for(i = 0 ;i < diffArray.length; i++){
+            var previous:int = i == 0 ? diffArray.length - 1 : i-1;
+            var tGround:Number = tAvg + (2 * diffArray[previous] + diffArray[i])/3;
             result[i] = tGround;
         }
+
         return result;
     }
 }

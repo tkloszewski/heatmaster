@@ -83,7 +83,7 @@ public class ConvertedResult {
     }
 
     public function getAllEnLosses():Number {
-        return getEnLosses() + _heatingSourceLoss + _warmWaterHeatingSourceLoss;
+        return getEnLosses() + getEnHeatingSourceLoss();
     }
 
     public function getEnLosses():Number {
@@ -128,6 +128,14 @@ public class ConvertedResult {
     public function getEnGains():Number {
         return (_enElectricityGain + _enPersonGain + _enSolGain + _enWarmWaterGain +
                 Math.max(Math.min(_enCollectorSolarGain,_enWarmWater),0));
+    }
+
+    public function getEnHeatingSourceLoss():Number {
+        return Math.max(0,_heatingSourceLoss + _warmWaterHeatingSourceLoss);
+    }
+
+    public function getEnHeatingSourceGains():Number {
+        return Math.max(0,-(_heatingSourceLoss + _warmWaterHeatingSourceLoss));
     }
 
     public function getEnGainsWithoutCollectors():Number {

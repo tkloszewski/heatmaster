@@ -204,7 +204,7 @@ public class PlotDataProvider {
                 }
                 else {
                     if (ColumnMode.isAllComponentsMode(renderMode.columnMode)) {
-                        maxValue = convertedResult.getAllEnLosses() + convertedResult.getYearlyAggregatedGains();
+                        maxValue = convertedResult.getAllEnLosses() + convertedResult.getYearlyAggregatedGains() + convertedResult.getEnHeatingSourceGains();
                     }
                     else {
                         //user energy mode. Do not take enRecuperator and heating source energy loss
@@ -236,7 +236,7 @@ public class PlotDataProvider {
                 minValue = -convertedResult.getEnGains();
             }
             else {
-                minValue = -convertedResult.getYearlyAggregatedGains();
+                minValue = -convertedResult.getYearlyAggregatedGains() - convertedResult.getEnHeatingSourceGains();
             }
         }
         return minValue;

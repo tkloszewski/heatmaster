@@ -527,6 +527,11 @@
                 }
             }
 
+            for(i =0;i < stationsConfig.stations.length;i++){
+                var stationItem:StationItem = stationsConfig.stations.getItemAt(i) as StationItem;
+                stationItem.name = resourceManager.getString('hm',stationItem.localeCode);
+            }
+
             oldIdx = houseStandardDropDownList.selectedIndex;
             houseStandardTypeList.refresh();
             houseStandardDropDownList.selectedIndex = oldIdx;

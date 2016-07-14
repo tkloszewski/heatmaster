@@ -69,19 +69,21 @@
         newProcessingResult = resultData;
       }
       if (refProcessingResult != null && newProcessingResult != null) {
-        drawComparingPlot(new CalculationState(refProcessingResult, newProcessingResult));
+        doDrawComparingPlot(new CalculationState(refProcessingResult, newProcessingResult));
       }
-    }
-
-    override public function setupReferenceView(stateDataContext:StateDataContext):void {
-      //refProcessingResult = stateDataContext.ref
     }
 
     public function setCalculationStateController(calculationStateController:CalculationStateController):void {
       this.calculationStateController = calculationStateController;
     }
 
-    protected function drawComparingPlot(calculationState:CalculationState):void {
+    public function drawComparingPlot(calculationState:CalculationState):void {
+      refProcessingResult = calculationState.refProcessingResult;
+      newProcessingResult = calculationState.newProcessingResult;
+      doDrawComparingPlot(calculationState);
+    }
+
+    protected function doDrawComparingPlot(calculationState:CalculationState):void {
       var conversionData:ConversionData = calculationState.refProcessingResult.conversionData;
       var refDataContext:DataContext = calculationState.refProcessingResult.dataContext;
       var newDataContext:DataContext = calculationState.newProcessingResult.dataContext;
@@ -91,11 +93,6 @@
 
       setMaxPowerWarningInfoVisibility(refMaxPower, newMaxPower, refDataContext, newDataContext);
 
-      var newWarmWaterIncluded:Boolean = refDataContext.includeWarmWater || newDataContext.includeWarmWater;
-      if (warmWaterIncluded != newWarmWaterIncluded) {
-        warmWaterIncluded = newWarmWaterIncluded;
-        comparingLegend.adjustWarmWaterState(warmWaterIncluded);
-      }
 
       currencyCode = calculationState.refProcessingResult.dataContext.currencyLocaleCode;
       rawUnitName = getRawUnitName(conversionData.selectedUnit, currencyCode);
@@ -111,7 +108,12 @@
 
       var newHeatingSourceLossIncluded:Boolean = refSplitColumnData.enHeatingSourceLoss > 0 || newSplitColumnData.enHeatingSourceLoss > 0;
       var newHeatingSourceGainsIncluded:Boolean = refSplitColumnData.enHeatingSourceGain > 0 || newSplitColumnData.enHeatingSourceGain > 0;
+      var newWarmWaterIncluded:Boolean = refDataContext.includeWarmWater || newDataContext.includeWarmWater;
 
+      if (warmWaterIncluded != newWarmWaterIncluded) {
+        warmWaterIncluded = newWarmWaterIncluded;
+        comparingLegend.adjustWarmWaterState(warmWaterIncluded);
+      }
       if (newHeatingSourceLossIncluded != heatingSourceLossIncluded) {
         heatingSourceLossIncluded = newHeatingSourceLossIncluded;
         comparingLegend.setHeatingSourceLossVisibility(heatingSourceLossIncluded);

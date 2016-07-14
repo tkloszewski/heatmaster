@@ -439,12 +439,12 @@
                toolTip="{resourceManager.getString('hm','hm.tooltip.button.report-compare')}"/>
 
 
-    <s:Label id="refValueLabel" x="20" y="44"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="center" verticalAlign="middle"/>
-    <hmbtn:KeepDownStateButton id="switchToRefStateButton" visible="false" y="40" x="{refValueLabel.x + refValueLabel.width}" width="20" click="switchToReferenceState()"
+    <s:Label id="refValueLabel" x="10" y="44"  width="138" text="{formattedReferenceValue}" styleName="popupPanelHeader" fontSize="16" textAlign="right" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToRefStateButton" visible="false" y="40" x="{unitDropDownList.x + unitDropDownList.width - 20}" width="20" click="switchToReferenceState()"
             skinClass="pl.znr.heatmaster.ui.components.button.KeepDownStateButtonSkin" toolTip="{resourceManager.getString('hm','hm.tooltip.button.switch-reference')}"/>
 
-    <s:Label x="20" y="64" id="newValueLabel" visible="false" width="138" text="{formattedNewValue}" styleName="popupPanelHeader" color="yellow" fontSize="16" textAlign="center" verticalAlign="middle"/>
-    <hmbtn:KeepDownStateButton id="switchToNewStateButton" visible="false" y="60" x="{newValueLabel.x + newValueLabel.width}" width="20" click="switchToNewState()"
+    <s:Label x="10" y="64" id="newValueLabel" visible="false" width="138" text="{formattedNewValue}" styleName="popupPanelHeader" color="yellow" fontSize="16" textAlign="right" verticalAlign="middle"/>
+    <hmbtn:KeepDownStateButton id="switchToNewStateButton" visible="false" y="60" x="{unitDropDownList.x + unitDropDownList.width - 20}" width="20" click="switchToNewState()"
                                skinClass="pl.znr.heatmaster.ui.components.button.KeepDownStateButtonSkin" toolTip="{resourceManager.getString('hm','hm.tooltip.button.switch-new')}"/>
 
 

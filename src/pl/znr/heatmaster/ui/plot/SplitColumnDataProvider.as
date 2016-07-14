@@ -20,8 +20,8 @@ public class SplitColumnDataProvider {
 
         if(renderMode != null && ColumnMode.isAllComponentsMode(renderMode.columnMode)) {
             enVent = enVent + convertedResult.enRecuperator;
-            enHeatingSourceLoss = Math.max(0,convertedResult.heatingSourceLoss + convertedResult.warmWaterHeatingSourceLoss);
-            enHeatingSourceGain = -Math.min(0,convertedResult.heatingSourceLoss + convertedResult.warmWaterHeatingSourceLoss);
+            enHeatingSourceLoss = convertedResult.getEnHeatingSourceLoss();
+            enHeatingSourceGain = convertedResult.getEnHeatingSourceGains();
         }
         if(yearlyMode){
             enProductGain = convertedResult.enHeatingProductAggregated;
@@ -48,7 +48,7 @@ public class SplitColumnDataProvider {
                 splitColumnData.enWalls + splitColumnData.enRoof + splitColumnData.enFloor + splitColumnData.enWindows +
                 splitColumnData.enFoundations;
 
-        splitColumnData.ventilationGroup = splitColumnData.enVent + splitColumnData.enTightness + splitColumnData.enSolGain;
+        splitColumnData.ventilationGroup = splitColumnData.enVent + splitColumnData.enTightness + splitColumnData.enAir;
         splitColumnData.enGainsGroup = splitColumnData.enSolGain + splitColumnData.enProductGain + splitColumnData.enCollectorsGain +
                 splitColumnData.enHeatingSourceGain;
 

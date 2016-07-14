@@ -142,7 +142,7 @@
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
         private var calculationStateController:CalculationStateController;
 
-        private var stationsPanel:StationsPanel;
+        private var stationsPanel:StationsPanel = new StationsPanel();
         private var balanceReportPanel:BalanceReportPanel;
 
         private var cachedData:StateDataContext;
@@ -155,6 +155,9 @@
 
         [Bindable]
         private var comparingPlotVisible = false;
+
+        [Bindable]
+        private var stationsPanelVisible:Boolean = false;
 
         private var footerTip:IToolTip;
         private var myFooterText:RichText;
@@ -189,6 +192,7 @@
         public function showStationsMap(stationsConfig:StationsConfig, selectedStation:StationItem):void {
             if (stationsPanel.visible) {
                 stationsPanel.visible = false;
+                stationsPanelVisible = false;
                 this.removeElement(stationsPanel);
                 return;
             }
@@ -198,9 +202,9 @@
 
             stationsPanel.setStations(stationsConfig.stations, selectedStation);
             stationsPanel.mapImage = stationsConfig.mapImage;
-            stationsPanel.visible = true;
-
             this.addElement(stationsPanel);
+            stationsPanel.visible = true;
+            stationsPanelVisible = true;
         }
 
         public function groundBackgroundVisible(visible:Boolean):void {
@@ -224,12 +228,13 @@
 
         public function hideMap():void {
             stationsPanel.visible = false;
+            stationsPanelVisible = false;
             this.removeElement(stationsPanel);
         }
 
         public function showBalanceReport(calculationState:CalculationState):void {
             plotVisible = false;
-            //comparingPlotPanel.drawComparingPlot(calculationState);
+            comparingPlotPanel.drawComparingPlot(calculationState);
             comparingPlotVisible = true;
 
         }
@@ -248,8 +253,8 @@
             trace("Initializing HeatMaster...");
 
             stationsPanel = new StationsPanel();
-            stationsPanel.x = housePanel.x + 200;
-            stationsPanel.y = 60;
+            stationsPanel.x = Math.max(0, (this.width - stationsPanel.width) / 2);
+            stationsPanel.y = 30;
             stationsPanel.visible = false;
             stationsPanel.setHeatMasterListener(heatMasterListener);
 
