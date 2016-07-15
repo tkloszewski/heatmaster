@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
+import mx.utils.ObjectUtil;
+
 public class EnvironmentalData {
     public function EnvironmentalData() {
     }
@@ -18,6 +20,10 @@ public class EnvironmentalData {
     private var _tMin:Number = -1;
     private var _tMax:Number = -1;
     private var _tSigma:Number = -1;
+
+    public static function copy(envData:EnvironmentalData):EnvironmentalData {
+        return ObjectUtil.copy(envData) as EnvironmentalData;
+    }
 
 
     public function get insolationData():InsolationData {

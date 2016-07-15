@@ -188,8 +188,18 @@
         }
 
         public function calculationStateSwitched(stateFrozen:Boolean):void {
-            housePopupUpperGroup.enabled = !stateFrozen;
-            lowerBorderContainer.enabled = !stateFrozen;
+            countryDropDownList.enabled = !stateFrozen;
+            regionDropDownList.enabled = !stateFrozen;
+            stationButton.enabled = !stateFrozen;
+
+            if (houseDropDownList.enabled) {
+                houseDropDownList.enabled = false;
+            }
+            if (floorsCountNS.enabled) {
+                floorsCountNS.enabled = false;
+                floorsCountNS.textDisplay.editable = false;
+                floorsCountNS.textDisplay.enabled = false;
+            }
         }
 
         public function rollDownStartupPopup():void {
@@ -511,7 +521,7 @@
                 }
             }
 
-            countryList = SortingUtil.sortCountryListByName(countryList,resourceManager.getLocales()[0]);
+            countryList = SortingUtil.sortCountryListByName(countryList, resourceManager.getLocales()[0]);
             countryList.refresh();
             countryDropDownList.dataProvider = countryList;
             countryDropDownList.selectedIndex = getSelectedCountryIndex(countryList, selectedCountry.code);
@@ -527,9 +537,9 @@
                 }
             }
 
-            for(i =0;i < stationsConfig.stations.length;i++){
+            for (i = 0; i < stationsConfig.stations.length; i++) {
                 var stationItem:StationItem = stationsConfig.stations.getItemAt(i) as StationItem;
-                stationItem.name = resourceManager.getString('hm',stationItem.localeCode);
+                stationItem.name = resourceManager.getString('hm', stationItem.localeCode);
             }
 
             oldIdx = houseStandardDropDownList.selectedIndex;

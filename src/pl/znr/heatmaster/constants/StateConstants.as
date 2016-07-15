@@ -11,8 +11,12 @@ public class StateConstants {
     public function StateConstants() {
     }
 
-    public static function isInitialOrReference(state:int){
+    public static function isInitialOrReference(state:int):Boolean{
         return state == INITIAL_STATE || state == REFERENCE_SWITCHED;
+    }
+
+    public static function isInReferenceState(state:int):Boolean {
+        return state == REFERENCE_SWITCHED;
     }
 }
 }

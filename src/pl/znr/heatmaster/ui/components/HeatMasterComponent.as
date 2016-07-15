@@ -25,12 +25,14 @@ import pl.znr.heatmaster.core.StateDataContext;
 
 import pl.znr.heatmaster.core.HeatMasterChangeListener;
 import pl.znr.heatmaster.core.IDataContextAware;
+import pl.znr.heatmaster.core.state.CalculationStateController;
 import pl.znr.heatmaster.util.HeatMasterFormatter;
 
 import spark.components.Group;
 
 public class HeatMasterComponent extends Group implements IHeatMasterListenerAware,IDataContextAware,LangChangeListener{
 
+    protected var calculationStateController:CalculationStateController;
     protected var heatMasterListener:HeatMasterChangeListener;
 
     public function HeatMasterComponent() {
@@ -56,6 +58,10 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
 
     public function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void {
         this.heatMasterListener = heatMasterListener;
+    }
+
+    public function setCalculationStateController(calculationStateController:CalculationStateController):void {
+         this.calculationStateController = calculationStateController;
     }
 
     protected function formatHMValue(value:Number,precision:int = 0,useThousandSeparator:Boolean = false):String{

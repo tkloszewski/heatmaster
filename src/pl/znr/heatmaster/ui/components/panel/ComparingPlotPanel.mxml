@@ -20,11 +20,10 @@
     import pl.znr.heatmaster.core.StateDataContext;
     import pl.znr.heatmaster.core.calc.util.CalcUtils;
     import pl.znr.heatmaster.core.converter.ConversionData;
-    import pl.znr.heatmaster.core.state.CalculationState;
+    import pl.znr.heatmaster.core.state.ComparingProcessingResult;
     import pl.znr.heatmaster.core.state.CalculationStateController;
     import pl.znr.heatmaster.ui.plot.SplitColumnData;
 
-    private var calculationStateController:CalculationStateController;
 
     [Bindable]
     private var plotDataProvider:ArrayCollection = new ArrayCollection([]);
@@ -61,29 +60,32 @@
     private var refProcessingResult:ProcessingResult;
     private var newProcessingResult:ProcessingResult;
 
+
+    override public function comparingResultCalculated(comparingResult:ComparingProcessingResult, month:int):void {
+       refProcessingResult = comparingResult.refProcessingResult;
+       newProcessingResult = comparingResult.newProcessingResult;
+       doDrawComparingPlot(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
+    }
+
     override public function resultCalculated(resultData:ProcessingResult, month:int):void {
-      if (calculationStateController.isInInitialState() || calculationStateController.isInReferenceState()) {
+      if (calculationStateController.isInReferenceOrInitialState()) {
         refProcessingResult = resultData;
       }
       else {
         newProcessingResult = resultData;
       }
       if (refProcessingResult != null && newProcessingResult != null) {
-        doDrawComparingPlot(new CalculationState(refProcessingResult, newProcessingResult));
+        doDrawComparingPlot(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
       }
     }
 
-    public function setCalculationStateController(calculationStateController:CalculationStateController):void {
-      this.calculationStateController = calculationStateController;
-    }
-
-    public function drawComparingPlot(calculationState:CalculationState):void {
+    public function drawComparingPlot(calculationState:ComparingProcessingResult):void {
       refProcessingResult = calculationState.refProcessingResult;
       newProcessingResult = calculationState.newProcessingResult;
       doDrawComparingPlot(calculationState);
     }
 
-    protected function doDrawComparingPlot(calculationState:CalculationState):void {
+    protected function doDrawComparingPlot(calculationState:ComparingProcessingResult):void {
       var conversionData:ConversionData = calculationState.refProcessingResult.conversionData;
       var refDataContext:DataContext = calculationState.refProcessingResult.dataContext;
       var newDataContext:DataContext = calculationState.newProcessingResult.dataContext;

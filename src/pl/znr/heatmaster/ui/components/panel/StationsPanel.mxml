@@ -64,6 +64,9 @@
     [Bindable]
     private var stationClicked:Boolean;
 
+    [Bindable] private var mapMouseX:int;
+    [Bindable] private var mapMouseY:int;
+
     private var nearestStation:StationItem;
     private var nearestDistance:Number = NaN;
 
@@ -114,12 +117,13 @@
 
         formatAvgMinTempStrings();
       }
+      mapMouseX = map.mouseX;
+      mapMouseY = map.mouseY;
     }
 
     private function selectStation():void {
       hideMap();
-      nearestStation.temperatures = getUserSetTemperatures();
-      heatMasterListener.stationChanged(nearestStation, true);
+      heatMasterListener.stationChanged(nearestStation,getUserSetTemperatures(),true);
     }
 
     private function cancelSelection():void {
@@ -402,6 +406,11 @@
         <mx:Button buttonMode="true" color="gray" fontSize="10" fontWeight="bold"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/maps/cancel_button_mouseover.png')"
                   click="cancelSelection()"/>
+      </s:Group>
+
+      <s:Group x="{controllersGroup.x}" y="{controllersGroup.y}" >
+
+        <s:Label text="{mapMouseX}:{mapMouseY}"/>
       </s:Group>
 
     </s:BorderContainer>

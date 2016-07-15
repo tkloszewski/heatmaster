@@ -5,11 +5,11 @@ package pl.znr.heatmaster.core.state {
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.ProcessingResult;
 
-public class CalculationState {
+public class ComparingProcessingResult {
     private var _refProcessingResult:ProcessingResult;
     private var _newProcessingResult:ProcessingResult;
 
-    public function CalculationState(refProcessingResult:ProcessingResult, newProcessingResult:ProcessingResult) {
+    public function ComparingProcessingResult(refProcessingResult:ProcessingResult, newProcessingResult:ProcessingResult) {
         _refProcessingResult = refProcessingResult;
         _newProcessingResult = newProcessingResult;
     }

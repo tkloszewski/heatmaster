@@ -20,6 +20,7 @@ import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
 import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
 import pl.znr.heatmaster.config.RegionItem;
 import pl.znr.heatmaster.config.StationItem;
+import pl.znr.heatmaster.constants.StateConstants;
 
 import pl.znr.heatmaster.constants.combo.BuildingAge;
 
@@ -32,6 +33,7 @@ import pl.znr.heatmaster.constants.combo.InsulationElementType;
 import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
 import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.cache.CachedDataContextManager;
 import pl.znr.heatmaster.core.DataContext;
@@ -53,6 +55,7 @@ import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.WallElement;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 import pl.znr.heatmaster.core.model.WindowElement;
+import pl.znr.heatmaster.core.state.CalculationStateController;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
@@ -66,6 +69,7 @@ import pl.znr.heatmaster.util.HouseStandardModelContainer;
 public class HeatMasterChangeListener {
 
     private var heatMasterController:HeatMasterController;
+    private var calculationStateController:CalculationStateController;
     private var cacheManager:CachedDataContextManager;
     private var housePanel:HousePanel;
     private var heatingPopup:HeatingPopup;
@@ -83,6 +87,10 @@ public class HeatMasterChangeListener {
 
     public function setHeatMasterController(hmController:HeatMasterController):void {
         this.heatMasterController = hmController;
+    }
+
+    public function setCalculationStateController(calculationStateController:CalculationStateController):void {
+        this.calculationStateController = calculationStateController;
     }
 
     public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
@@ -110,13 +118,12 @@ public class HeatMasterChangeListener {
     }
 
     public function addHouseStandardChangeListener(houseStandardChangeListener:HouseStandardChangeListener):void {
-
         var placeIndex:int = houseStandardChangeListeners.length;
         for(var i:int = 0; i < houseStandardChangeListeners.length;i++){
             var standardChangeListener:HouseStandardChangeListener = houseStandardChangeListeners.getItemAt(i) as HouseStandardChangeListener;
             if(standardChangeListener.getOrder() >= houseStandardChangeListener.getOrder()){
-               placeIndex = i;
-               break;
+                placeIndex = i;
+                break;
             }
         }
 
@@ -195,14 +202,25 @@ public class HeatMasterChangeListener {
     public function countryChanged(countryItem:CountryItem,regionItem:RegionItem):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         var conversionData:ConversionData = dataContext.conversionData;
-        var envData:EnvironmentalData = dataContext.environmentalData;
         var conversionUnit:int = conversionData.selectedUnit;
+
+        var newDataContext:DataContext = null;
+        //we must also change country,environmental data and prices in new state
+        if(calculationStateController.isInReferenceState()){
+            newDataContext = calculationStateController.getPreviousDataContext();
+        }
 
 
         if (regionItem != null) {
             dataContext.selectedCountryRegion = regionItem.code;
             dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,regionItem);
             dataContext.selectedStation = null;
+
+            if(newDataContext != null){
+                newDataContext.selectedCountryRegion = dataContext.selectedCountryRegion;
+                newDataContext.environmentalData = EnvironmentalData.copy(dataContext.environmentalData);
+                newDataContext.selectedStation = null;
+            }
         }
         else {
             dataContext.selectedCountryRegion = countryItem.code;
@@ -215,6 +233,13 @@ public class HeatMasterChangeListener {
                 dataContext.selectedStation = null;
                 dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,countryItem);
             }
+
+            if(newDataContext != null){
+                newDataContext.selectedCountryRegion = dataContext.selectedCountryRegion;
+                newDataContext.countryCode = dataContext.countryCode;
+                newDataContext.selectedStation = dataContext.selectedStation;
+                newDataContext.environmentalData = EnvironmentalData.copy(dataContext.environmentalData);
+            }
         }
 
         var localCurrency:Boolean = ConversionUnits.isLocalCurrencyCostUnit(conversionUnit);
@@ -224,20 +249,40 @@ public class HeatMasterChangeListener {
             shortUnitName += ConversionUnits.isYearUnit(conversionUnit) ? 'year_cost' : 'month_cost';
             conversionData.shortUnitName = shortUnitName;
             dataContext.currencyLocaleCode = countryItem.currencyLocaleCode;
+
+            if(newDataContext != null){
+                newDataContext.conversionData.shortUnitName = shortUnitName;
+                newDataContext.currencyLocaleCode = dataContext.currencyLocaleCode;
+            }
         }
 
         heatingPopup.configChanged(countryItem,dataContext.localCurrency);
         energyMeter.countryChanged(countryItem);
         energyMeter.environmentalDataChanged(dataContext.environmentalData);
 
+        dataContext.heatingData.naturalUnitPrice = heatingPopup.getConfigAppliedNaturalUnitPrice();
         conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
         conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
         conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,localCurrency);
-
         conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
 
-        heatMasterController.calculate();
-        writeCache(dataContext);
+        if(newDataContext != null){
+            newDataContext.conversionData.pricePerKwh = conversionData.pricePerKwh;
+            newDataContext.conversionData.waterPricePerkWh = conversionData.waterPricePerkWh;
+            newDataContext.conversionData.electricityPricePerKwh = conversionData.electricityPricePerKwh;
+            newDataContext.conversionData.toPLNCurrencyExchangeRate = conversionData.toPLNCurrencyExchangeRate;
+            newDataContext.heatingData.naturalUnitPrice = dataContext.heatingData.naturalUnitPrice;
+        }
+
+        if(newDataContext != null){
+            heatMasterController.calculateAndPropagateComparingResult(dataContext,newDataContext);
+            cacheManager.writeToSelectedStateCache(dataContext,StateConstants.REFERENCE_SWITCHED);
+            cacheManager.writeToSelectedStateCache(newDataContext,StateConstants.NEW_SWITCHED);
+        }
+        else {
+            heatMasterController.calculate();
+            writeCache(dataContext);
+        }
     }
 
     public function regionChanged(regionItem:RegionItem):void {
@@ -245,24 +290,56 @@ public class HeatMasterChangeListener {
         dataContext.selectedCountryRegion = regionItem.code;
         dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,regionItem);
 
+        var newDataContext:DataContext = null;
+        if(calculationStateController.isInReferenceState()){
+            newDataContext = calculationStateController.getPreviousDataContext();
+        }
+
         energyMeter.environmentalDataChanged(dataContext.environmentalData);
 
-        heatMasterController.calculate();
-        writeCache(dataContext);
+        //We are in reference state so we must change environmental data in new state
+        if(newDataContext != null){
+            newDataContext.selectedCountryRegion = dataContext.selectedCountryRegion;
+            newDataContext.environmentalData = EnvironmentalData.copy(dataContext.environmentalData);
+
+            heatMasterController.calculateAndPropagateComparingResult(dataContext,newDataContext);
+            cacheManager.writeToSelectedStateCache(dataContext,StateConstants.REFERENCE_SWITCHED);
+            cacheManager.writeToSelectedStateCache(newDataContext,StateConstants.NEW_SWITCHED);
+        }
+        else {
+            heatMasterController.calculate();
+            writeCache(dataContext);
+        }
     }
 
-    public function stationChanged(stationItem:StationItem,notifyHousePopup:Boolean = false){
+    public function stationChanged(stationItem:StationItem,temperatures:Array,notifyHousePopup:Boolean = false):void{
         var dataContext:DataContext = heatMasterController.getDataContext();
         dataContext.selectedStation = stationItem.code;
         dataContext.environmentalData = EnvironmentalDataPreparer.prepareFromConfig(dataContext.environmentalData,stationItem);
+        dataContext.environmentalData.temperatures = temperatures;
 
         energyMeter.environmentalDataChanged(dataContext.environmentalData);
         if(notifyHousePopup){
-           housePopup.notifyStationChanged(stationItem);
+            housePopup.notifyStationChanged(stationItem);
         }
 
-        heatMasterController.calculate();
-        writeCache(dataContext);
+        var newDataContext:DataContext = null;
+        if(calculationStateController.isInReferenceState()){
+            newDataContext = calculationStateController.getPreviousDataContext();
+        }
+
+        if(newDataContext != null){
+            newDataContext.selectedStation = dataContext.selectedStation;
+            newDataContext.environmentalData = EnvironmentalData.copy(dataContext.environmentalData);
+
+            heatMasterController.calculateAndPropagateComparingResult(dataContext,newDataContext);
+            cacheManager.writeToSelectedStateCache(dataContext,StateConstants.REFERENCE_SWITCHED);
+            cacheManager.writeToSelectedStateCache(newDataContext,StateConstants.NEW_SWITCHED);
+        }
+        else {
+            heatMasterController.calculate();
+            writeCache(dataContext);
+        }
     }
 
     public function monthChanged(month:int):void {
@@ -446,8 +523,8 @@ public class HeatMasterChangeListener {
         var oldUnit:int = conversionData.selectedUnit;
         var conversionNotRequired:Boolean =
                 (ConversionUnits.isKiloWattsUnit(newUnit) && ConversionUnits.isKiloWattsUnit(oldUnit))
-                        || (ConversionUnits.isLocalCurrencyCostUnit(newUnit) && ConversionUnits.isLocalCurrencyCostUnit(oldUnit))
-                        || (ConversionUnits.isEuroCostUnit(newUnit) && ConversionUnits.isEuroCostUnit(oldUnit));
+                || (ConversionUnits.isLocalCurrencyCostUnit(newUnit) && ConversionUnits.isLocalCurrencyCostUnit(oldUnit))
+                || (ConversionUnits.isEuroCostUnit(newUnit) && ConversionUnits.isEuroCostUnit(oldUnit));
 
         var countryItem:CountryItem = housePopup.getSelectedCountry();
 
@@ -572,6 +649,8 @@ public class HeatMasterChangeListener {
             cacheManager.writeCache(dataContext);
         }
     }
+
+
 
 }
 }

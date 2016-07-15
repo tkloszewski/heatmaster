@@ -8,6 +8,7 @@
 package pl.znr.heatmaster.ui.components {
 import pl.znr.heatmaster.core.IResultDataAware;
 import pl.znr.heatmaster.core.ProcessingResult;
+import pl.znr.heatmaster.core.state.ComparingProcessingResult;
 
 public class HeatMasterResultComponent extends HeatMasterComponent implements IResultDataAware{
     public function HeatMasterResultComponent() {
@@ -16,7 +17,13 @@ public class HeatMasterResultComponent extends HeatMasterComponent implements IR
     public function resultCalculated(resultData:ProcessingResult, month:int):void {
     }
 
-    public function processPreviousResult(resultData:ProcessingResult):void {
+    public function comparingResultCalculated(comparingResult:ComparingProcessingResult, month:int):void {
+        if(calculationStateController.isInReferenceOrInitialState()){
+           resultCalculated(comparingResult.refProcessingResult,month);
+        }
+        else {
+           resultCalculated(comparingResult.newProcessingResult,month);
+        }
     }
 
     public function unitChanged(resultData:ProcessingResult, month:int, unit:int):void {

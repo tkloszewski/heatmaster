@@ -108,7 +108,7 @@
         import pl.znr.heatmaster.core.model.VentilationData;
         import pl.znr.heatmaster.core.model.WarmWaterData;
         import pl.znr.heatmaster.core.model.WindowElement;
-        import pl.znr.heatmaster.core.state.CalculationState;
+        import pl.znr.heatmaster.core.state.ComparingProcessingResult;
         import pl.znr.heatmaster.core.state.CalculationStateController;
         import pl.znr.heatmaster.core.state.ICalculationStateListener;
         import pl.znr.heatmaster.locale.HeatMasterLocaleManager;
@@ -232,7 +232,7 @@
             this.removeElement(stationsPanel);
         }
 
-        public function showBalanceReport(calculationState:CalculationState):void {
+        public function showBalanceReport(calculationState:ComparingProcessingResult):void {
             plotVisible = false;
             comparingPlotPanel.drawComparingPlot(calculationState);
             comparingPlotVisible = true;
@@ -341,7 +341,8 @@
         }
 
         private function preinitialize():void {
-
+            registerClassAlias("pl.znr.heatmaster.core.model.InsolationData", InsolationData);
+            registerClassAlias("pl.znr.heatmaster.core.model.EnvironmentalData", EnvironmentalData);
         }
 
         private function appInitialized():void {
@@ -349,7 +350,7 @@
             BrowserManager.getInstance().setTitle("HeatMaster");
 
             setUpHeatMasterListener();
-            injectHeatMasterListener(heatMasterContainer, heatMasterListener);
+            injectListenerAndStateController(heatMasterContainer, heatMasterListener,calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
             cachedData = cachedDataContextManager.readCache();
@@ -382,6 +383,7 @@
 
         private function setUpHeatMasterListener():void {
             heatMasterListener.setHeatMasterController(heatMasterController);
+            heatMasterListener.setCalculationStateController(calculationStateController);
             heatMasterListener.setConfigurationReader(configurationReader);
             heatMasterListener.setCacheManager(cachedDataContextManager);
             heatMasterListener.setHousePanel(housePanel);
@@ -435,10 +437,11 @@
             }
         }
 
-        private function injectHeatMasterListener(component:Object, hmListener:HeatMasterChangeListener):void {
+        private function injectListenerAndStateController(component:Object, hmListener:HeatMasterChangeListener, calculationStateController:CalculationStateController):void {
             if (component is HeatMasterComponent) {
                 var hmComponent:HeatMasterComponent = component as HeatMasterComponent;
                 hmComponent.setHeatMasterListener(hmListener);
+                hmComponent.setCalculationStateController(calculationStateController);
                 heatMasterController.addDataContextListener(hmComponent);
             }
             if (component is HeatMasterResultComponent) {
@@ -448,7 +451,7 @@
             if (component is IVisualElementContainer) {
                 var visualElementContainer:IVisualElementContainer = component as IVisualElementContainer;
                 for (var i:int = 0; i < visualElementContainer.numElements; i++) {
-                    injectHeatMasterListener(visualElementContainer.getElementAt(i), hmListener);
+                    injectListenerAndStateController(visualElementContainer.getElementAt(i),hmListener, calculationStateController);
                 }
             }
         }

@@ -78,7 +78,7 @@ public class CachedDataContextManager {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
         var flatDataContext:FlatDataContext = FlatDataContextBuilder.buildFlatDataContext(dataContext);
 
-        if(calculationStateController.isInReferenceState()){
+        if(calculationStateController.isInReferenceOrInitialState()){
             so.data.hmData = flatDataContext;
         }
         else {

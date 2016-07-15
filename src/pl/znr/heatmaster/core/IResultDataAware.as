@@ -7,12 +7,13 @@
  */
 package pl.znr.heatmaster.core {
 import pl.znr.heatmaster.core.ProcessingResult;
+import pl.znr.heatmaster.core.state.ComparingProcessingResult;
 
 public interface IResultDataAware {
 
     function resultCalculated(resultData:ProcessingResult,month:int):void;
 
-    function processPreviousResult(resultData:ProcessingResult):void;
+    function comparingResultCalculated(comparingResult:ComparingProcessingResult,month:int):void;
 
     function unitChanged(resultData:ProcessingResult,month:int,unit:int):void;
 }

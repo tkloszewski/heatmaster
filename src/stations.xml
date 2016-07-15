@@ -89,8 +89,8 @@
                <default_station>true</default_station>
                <name>hm.city.pl.warsaw</name>
                <position>
-                   <img_x>403</img_x>
-                   <img_y>234</img_y>
+                   <img_x>438</img_x>
+                   <img_y>269</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>

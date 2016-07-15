@@ -23,6 +23,7 @@ import pl.znr.heatmaster.core.converter.RatioClusterFactory;
 
 import pl.znr.heatmaster.core.IDataContextAware;
 import pl.znr.heatmaster.core.IResultDataAware;
+import pl.znr.heatmaster.core.state.ComparingProcessingResult;
 
 //stateful
 public class HeatMasterController {
@@ -58,6 +59,7 @@ public class HeatMasterController {
     }
 
     public function resetDataContext(dataContext:DataContext):void {
+        this.selectedMonth = dataContext.selectedMonth;
         this.dataContext = dataContext;
     }
 
@@ -107,6 +109,23 @@ public class HeatMasterController {
      */
     public function calculateStateless(dataContext:DataContext):ProcessingResult{
         return performActualCalculation(dataContext);
+    }
+
+    public function calculateAndPropagateComparingResult(refDataContext:DataContext,newDataContext:DataContext):void {
+        var refProcessingResult:ProcessingResult = calculateStateless(refDataContext);
+        var newProcessingResult:ProcessingResult = calculateStateless(newDataContext);
+        propagateComparingResult(new ComparingProcessingResult(refProcessingResult,newProcessingResult));
+    }
+
+    public function propagateComparingResult(comparingResult:ComparingProcessingResult):void {
+        try {
+            for(var i:int = 0; i < resultDataListeners.length;i++ ){
+                var resultDataListener:IResultDataAware = resultDataListeners.getItemAt(i) as IResultDataAware;
+                resultDataListener.comparingResultCalculated(comparingResult,selectedMonth);
+            }
+        } catch (e:Error) {
+            Alert.show("Error propagat: " + e.getStackTrace() + " " + e.message);
+        }
     }
 
     public function monthChanged(month:int):void{

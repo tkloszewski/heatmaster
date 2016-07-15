@@ -75,16 +75,7 @@ public class ReportDataCalculator {
         processingResult.finalEnergyConsumption = totalFinalEnergyConsumption;
         processingResult.primaryEnergyConsumption = primaryEnergyConsumption;
 
-
         processingResult.yearlyCost = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(costConvertedResult);
-
-
-        if(ConversionUnits.isGJUnit(conversionData.selectedUnit)){
-            var ratio:Number = RatioClusterFactory.getMonthlyGJRatioCluster(conversionData).tokWhRatio;
-            totalFinalEnergyClassAwareConsumption = totalFinalEnergyClassAwareConsumption * ratio;
-            primaryEnergyClassAwareConsumption = primaryEnergyClassAwareConsumption * ratio;
-        }
-
 
         processingResult.unitSurfaceFinalEnergyConsumption = totalFinalEnergyConsumption/totalSurface;
         processingResult.unitSurfacePrimaryEnergyConsumption = primaryEnergyConsumption/totalSurface;

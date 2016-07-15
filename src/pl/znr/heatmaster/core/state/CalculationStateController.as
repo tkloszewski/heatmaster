@@ -24,6 +24,9 @@ public class CalculationStateController {
     private var referenceDataContext:DataContext;
     private var newStateDataContext:DataContext;
 
+    private var referenceProcessingResult:ProcessingResult;
+    private var newProcessingResult:ProcessingResult;
+
     public function CalculationStateController(heatMasterController:HeatMasterController) {
         this.heatMasterController = heatMasterController;
     }
@@ -70,8 +73,12 @@ public class CalculationStateController {
         calculationStateListeners.addItem(listener);
     }
 
-    public function isInReferenceState():Boolean{
+    public function isInReferenceOrInitialState():Boolean{
         return StateConstants.isInitialOrReference(state);
+    }
+
+    public function isInReferenceState():Boolean {
+        return StateConstants.isInReferenceState(state);
     }
 
     public function getCurrentDataContext():DataContext {
@@ -96,7 +103,7 @@ public class CalculationStateController {
         if(isInInitialState()){
            return StateConstants.INITIAL_STATE;
         }
-        if(isInReferenceState()){
+        if(isInReferenceOrInitialState()){
             return StateConstants.NEW_SWITCHED;
         }
         return StateConstants.REFERENCE_SWITCHED;
@@ -129,8 +136,7 @@ public class CalculationStateController {
     }
 
     private function copyDataContext(dataContext:DataContext):DataContext {
-        var copied:DataContext = FlatDataContextBuilder.buildDataContext(FlatDataContextBuilder.buildFlatDataContext(dataContext));
-        return copied;
+        return FlatDataContextBuilder.buildDataContext(FlatDataContextBuilder.buildFlatDataContext(dataContext));
     }
 
 

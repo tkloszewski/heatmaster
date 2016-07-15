@@ -141,6 +141,8 @@
             this.setRecuperatorVisible(ventMechanical);
 
             heatMaster.groundBackgroundVisible(groundType);
+
+            groundHeatExchangerImg.visible = HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && dataContext.houseData.ventilationData.gwcSet;
         }
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {

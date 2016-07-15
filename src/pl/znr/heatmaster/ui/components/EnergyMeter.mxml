@@ -31,14 +31,13 @@
         import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
-        import pl.znr.heatmaster.core.state.CalculationState;
+        import pl.znr.heatmaster.core.state.ComparingProcessingResult;
         import pl.znr.heatmaster.core.state.CalculationStateController;
         import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyMeterToolTip;
 
         private var configuratioReader:HeatMasterConfigurationReader;
-        private var calculationStateController:CalculationStateController;
         private var heatMasterController:HeatMasterController;
         private var environmentalData:EnvironmentalData;
 
@@ -126,19 +125,18 @@
             }
         }
 
+        override public function comparingResultCalculated(comparingResult:ComparingProcessingResult, month:int):void {
+            refProcessingResult = comparingResult.refProcessingResult;
+            newProcessingResult = comparingResult.newProcessingResult;
+            formattedReferenceValue = createFormattedValue(getProperValue(refProcessingResult,month), refProcessingResult.conversionData.selectedUnit, refProcessingResult.dataContext.currencyLocaleCode);
+            formattedNewValue = createFormattedValue(getProperValue(newProcessingResult,month),newProcessingResult.conversionData.selectedUnit, newProcessingResult.dataContext.currencyLocaleCode);
+        }
+
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
             unit = resultData.conversionData.selectedUnit;
-            value = 0;
-            var convertedResult:ConvertedResult;
-            if (ConversionUnits.isYearUnit(unit)) {
-                value = BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
-            }
-            else {
-                convertedResult = resultData.monthlyConvertedData[month];
-                value = convertedResult.getEfficiencyAwareBalanceValue();
-            }
+            value = getProperValue(resultData,month);
 
-            if (calculationStateController.isInReferenceState()) {
+            if (calculationStateController.isInReferenceOrInitialState()) {
                 refProcessingResult = resultData;
             }
             else {
@@ -164,7 +162,7 @@
 
         public function setCalculatedValue(value:Number, unit:int, currencyLocaleCode:String, previousMode:Boolean = false):void {
             this.calculatedValue = value;
-            if (calculationStateController.isInReferenceState()) {
+            if (calculationStateController.isInReferenceOrInitialState()) {
                 if (!previousMode) {
                     formattedReferenceValue = createFormattedValue(value, unit, currencyLocaleCode);
                 }
@@ -190,18 +188,23 @@
             super.setHeatMasterListener(heatMasterListener);
         }
 
-        public function setCalculationStateController(calculationStateController:CalculationStateController):void {
-            this.calculationStateController = calculationStateController;
-        }
-
         public function setHeatMasterController(heatMasterController:HeatMasterController):void {
             this.heatMasterController = heatMasterController;
         }
 
+        private function getProperValue(resultData:ProcessingResult,month:int):Number {
+            if (ConversionUnits.isYearUnit(resultData.conversionData.selectedUnit)) {
+                return BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
+            }
+            else {
+                var convertedResult:ConvertedResult = resultData.monthlyConvertedData[month];
+                return convertedResult.getEfficiencyAwareBalanceValue();
+            }
+        }
 
         private function showBalanceReport():void {
             // var comparatorResult:ComparatorResult = new ProcessingResultComparator().compare(refProcessingResult, newProcessingResult);
-            HeatMaster.getInstance().showBalanceReport(new CalculationState(refProcessingResult, newProcessingResult));
+            HeatMaster.getInstance().showBalanceReport(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
         }
 
         private function freezeReferenceState():void {
@@ -264,8 +267,8 @@
                 if (!calculationStateController.isInInitialState()) {
                     var dataContext:DataContext = calculationStateController.getPreviousDataContext();
                     var previousState:int = calculationStateController.getPreviousState()
-                    dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState,dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
-                    var processingResult:ProcessingResult = calculationStateController.isInReferenceState() ? newProcessingResult : refProcessingResult;
+                    dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
+                    var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
                     processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
                     setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, dataContext.currencyLocaleCode, true);
                 }
