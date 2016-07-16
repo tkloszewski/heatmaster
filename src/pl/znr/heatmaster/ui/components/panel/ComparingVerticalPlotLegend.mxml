@@ -8,6 +8,7 @@
         .numericValueLabel {
             fontWeight: bold;
             fontSize: 12pt;
+            textAlign: center;
         }
         .mainHeaderLabel {
             fontWeight: bold;
@@ -50,11 +51,13 @@
         [Bindable]
         private var rowWidth:Number = 300;
         [Bindable]
-        private var cell1Width:Number = 80;
+        private var cell1Width:Number = 60;
         [Bindable]
-        private var cell2Width:Number = 70;
+        private var cell2Width:Number = 60;
         [Bindable]
         private var cell3Width:Number = 130;
+
+
 
         private var warmWaterLegendGroupVar:Group;
         private var collectorsLegendGroupVar:Group;
@@ -157,15 +160,15 @@
             <s:layout>
                 <s:HorizontalLayout/>
             </s:layout>
-            <s:RichText id="refStateLabel" styleName="mainHeaderLabel"
+            <s:RichText id="refStateLabel" styleName="mainHeaderLabel" textAlign="center"
                         text="{resourceManager.getString('hm','hm.state.reference')}" width="{cell1Width}">
             </s:RichText>
 
-            <s:RichText id="newStateLabel" styleName="mainHeaderLabel"
+            <s:RichText id="newStateLabel" styleName="mainHeaderLabel" textAlign="center"
                         text="{resourceManager.getString('hm','hm.state.new')}" width="{cell2Width}">
             </s:RichText>
 
-            <s:RichText id="elementLegendText" styleName="mainHeaderLabel"
+            <s:RichText id="elementLegendText" styleName="mainHeaderLabel" visible="false"
                         text="{resourceManager.getString('hm','hm.grid.header.element')}" width="130">
             </s:RichText>
         </s:Group>
@@ -177,8 +180,8 @@
                 <s:HorizontalLayout/>
             </s:layout>
 
-            <s:Label id="refInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell1Width}"/>
-            <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
+            <s:Label id="refInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(refSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell1Width}"/>
+            <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
 
             <s:RichText id="energyLegendText" styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}" width="{cell3Width}">
@@ -368,8 +371,8 @@
             <s:layout>
                 <s:HorizontalLayout/>
             </s:layout>
-            <s:Label id="refVentilationGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.ventilationGroup)}" width="{cell1Width}"/>
-            <s:Label id="newVentilationGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
+            <s:Label id="refVentilationGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(refSplitColumnData.ventilationGroup)}" width="{cell1Width}"/>
+            <s:Label id="newVentilationGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.ventilation')}" width="{cell3Width}"/>
@@ -459,8 +462,8 @@
             <s:layout>
                 <s:HorizontalLayout/>
             </s:layout>
-            <s:Label id="refEnGainsGroupValueLabel" styleName="numericValueLabel"  text="{format(refSplitColumnData.enGainsGroup)}" width="{cell1Width}" />
-            <s:Label id="newEnGainsGroupValueLabel" styleName="numericValueLabel"  text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
+            <s:Label id="refEnGainsGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(refSplitColumnData.enGainsGroup)}" width="{cell1Width}" />
+            <s:Label id="newEnGainsGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
                         text="{resourceManager.getString('hm','hm.label.energy_gain')}" width="{cell3Width}"/>

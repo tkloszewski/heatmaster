@@ -7,8 +7,8 @@
            <station>
                <name>hm.city.pl.leszno</name>
                <position>
-                   <img_x>159</img_x>
-                   <img_y>309</img_y>
+                   <img_x>158</img_x>
+                   <img_y>310</img_y>
                    <zone>2</zone>
                </position>
                <calc_temp>-18</calc_temp>
@@ -171,7 +171,7 @@
                <name>hm.city.pl.bialystok</name>
                <position>
                    <img_x>564</img_x>
-                   <img_y>170</img_y>
+                   <img_y>169</img_y>
                    <zone>4</zone>
                </position>
                <calc_temp>-22</calc_temp>
@@ -333,7 +333,7 @@
                <name>hm.city.pl.bydgoszcz</name>
                <position>
                    <img_x>257</img_x>
-                   <img_y>179</img_y>
+                   <img_y>180</img_y>
                    <zone>2</zone>
                </position>
                <calc_temp>-18</calc_temp>
@@ -494,7 +494,7 @@
 		   <station>
                <name>hm.city.pl.czestochowa</name>
                <position>
-                   <img_x>325</img_x>
+                   <img_x>324</img_x>
                    <img_y>409</img_y>
                    <zone>3</zone>
                </position>
@@ -818,8 +818,8 @@
 		   <station>
                <name>hm.city.pl.hel</name>
                <position>
-                   <img_x>304</img_x>
-                   <img_y>33</img_y>
+                   <img_x>310</img_x>
+                   <img_y>30</img_y>
                    <zone>1</zone>
                </position>
                <calc_temp>-16</calc_temp>
@@ -1223,7 +1223,7 @@
 		   <station>
                <name>hm.city.pl.ketrzyn</name>
                <position>
-                   <img_x>461</img_x>
+                   <img_x>462</img_x>
                    <img_y>80</img_y>
                    <zone>4</zone>
                </position>
@@ -1386,7 +1386,7 @@
                <name>hm.city.pl.klodzko</name>
                <position>
                    <img_x>162</img_x>
-                   <img_y>445</img_y>
+                   <img_y>447</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -1467,7 +1467,7 @@
                <name>hm.city.pl.kolo</name>
                <position>
                    <img_x>291</img_x>
-                   <img_y>274</img_y>
+                   <img_y>275</img_y>
                    <zone>2</zone>
                </position>
                <calc_temp>-18</calc_temp>
@@ -1952,7 +1952,7 @@
 		   <station>
                <name>hm.city.pl.lesko</name>
                <position>
-                   <img_x>529</img_x>
+                   <img_x>530</img_x>
                    <img_y>545</img_y>
                    <zone>4</zone>
                </position>
@@ -2357,8 +2357,8 @@
 		   <station>
                <name>hm.city.pl.mikolajki</name>
                <position>
-                   <img_x>462</img_x>
-                   <img_y>109</img_y>
+                   <img_x>464</img_x>
+                   <img_y>108</img_y>
                    <zone>4</zone>
                </position>
                <calc_temp>-22</calc_temp>
@@ -2438,8 +2438,8 @@
 		   <station>
                <name>hm.city.pl.mlawa</name>
                <position>
-                   <img_x>399</img_x>
-                   <img_y>181</img_y>
+                   <img_x>401</img_x>
+                   <img_y>179</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -2843,8 +2843,8 @@
 		   <station>
                <name>hm.city.pl.pila</name>
                <position>
-                   <img_x>179</img_x>
-                   <img_y>171</img_y>
+                   <img_x>182</img_x>
+                   <img_y>170</img_y>
                    <zone>2</zone>
                </position>
                <calc_temp>-18</calc_temp>
@@ -2924,8 +2924,8 @@
 		   <station>
                <name>hm.city.pl.plock</name>
                <position>
-                   <img_x>349</img_x>
-                   <img_y>237</img_y>
+                   <img_x>355</img_x>
+                   <img_y>238</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -3167,7 +3167,7 @@
 		   <station>
                <name>hm.city.pl.raciborz</name>
                <position>
-                   <img_x>260</img_x>
+                   <img_x>261</img_x>
                    <img_y>468</img_y>
                    <zone>3</zone>
                </position>
@@ -3410,7 +3410,7 @@
 		   <station>
                <name>hm.city.pl.sandomierz</name>
                <position>
-                   <img_x>492</img_x>
+                   <img_x>491</img_x>
                    <img_y>412</img_y>
                    <zone>3</zone>
                </position>
@@ -3654,7 +3654,7 @@
                <name>hm.city.pl.sulejow</name>
                <position>
                    <img_x>375</img_x>
-                   <img_y>356</img_y>
+                   <img_y>355</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -3734,7 +3734,7 @@
 		   <station>
                <name>hm.city.pl.suwalki</name>
                <position>
-                   <img_x>542</img_x>
+                   <img_x>543</img_x>
                    <img_y>77</img_y>
                    <zone>5</zone>
                </position>
@@ -3896,7 +3896,7 @@
 		   <station>
                <name>hm.city.pl.szczecinek</name>
                <position>
-                   <img_x>178</img_x>
+                   <img_x>177</img_x>
                    <img_y>119</img_y>
                    <zone>1</zone>
                </position>
@@ -3977,8 +3977,8 @@
 		   <station>
                <name>hm.city.pl.sniezka</name>
                <position>
-                   <img_x>104</img_x>
-                   <img_y>410</img_y>
+                   <img_x>106</img_x>
+                   <img_y>411</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -4059,7 +4059,7 @@
                <name>hm.city.pl.swinoujscie</name>
                <position>
                    <img_x>38</img_x>
-                   <img_y>101</img_y>
+                   <img_y>100</img_y>
                    <zone>1</zone>
                </position>
                <calc_temp>-16</calc_temp>
@@ -4139,8 +4139,8 @@
 		   <station>
                <name>hm.city.pl.tarnow</name>
                <position>
-                   <img_x>441</img_x>
-                   <img_y>489</img_y>
+                   <img_x>440</img_x>
+                   <img_y>488</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -4221,7 +4221,7 @@
                <name>hm.city.pl.terespol</name>
                <position>
                    <img_x>595</img_x>
-                   <img_y>280</img_y>
+                   <img_y>278</img_y>
                    <zone>4</zone>
                </position>
                <calc_temp>-22</calc_temp>
@@ -4301,8 +4301,8 @@
 		   <station>
                <name>hm.city.pl.torun</name>
                <position>
-                   <img_x>294</img_x>
-                   <img_y>186</img_y>
+                   <img_x>291</img_x>
+                   <img_y>189</img_y>
                    <zone>3</zone>
                </position>
                <calc_temp>-20</calc_temp>
@@ -4464,7 +4464,7 @@
                <name>hm.city.pl.wielun</name>
                <position>
                    <img_x>287</img_x>
-                   <img_y>367</img_y>
+                   <img_y>366</img_y>
                    <zone>2</zone>
                </position>
                <calc_temp>-18</calc_temp>
@@ -4544,7 +4544,7 @@
 		   <station>
                <name>hm.city.pl.wlodawa</name>
                <position>
-                   <img_x>595</img_x>
+                   <img_x>597</img_x>
                    <img_y>328</img_y>
                    <zone>3</zone>
                </position>
@@ -4868,7 +4868,7 @@
 		   <station>
                <name>hm.city.pl.zielonagora</name>
                <position>
-                   <img_x>102</img_x>
+                   <img_x>101</img_x>
                    <img_y>293</img_y>
                    <zone>2</zone>
                </position>

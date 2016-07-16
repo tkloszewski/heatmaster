@@ -98,28 +98,20 @@
         return;
       }
 
-      var findNearestStations:Boolean = true;
-      var nearestStationPosition:Position = new Position(nearestStation.mapX, nearestStation.mapY);
-      var currentPosition:Position = new Position(map.mouseX, map.mouseY);
+      var nearestStationDistance:StationDistance = stationLocator.findNearestStation(new Position(map.mouseX, map.mouseY));
+      trace("Nearest station distance: " + nearestStationDistance.distance + " station " + nearestStationDistance.station.name);
+      nearestStation = nearestStationDistance.station;
+      nearestDistance = nearestStationDistance.distance;
 
-      if (!isNaN(nearestDistance)) {
-        findNearestStations = currentPosition.distance(nearestStationPosition) > nearestDistance;
-      }
+      stationName = nearestStation.name;
+      stationModel = new StationModel(nearestStation.temperatures);
 
-      if (findNearestStations) {
-        var nearestStationDistance:StationDistance = stationLocator.findNearestStation(new Position(map.mouseX, map.mouseY));
+      formatAvgMinTempStrings();
 
-        nearestStation = nearestStationDistance.station;
-        nearestDistance = nearestStationDistance.distance;
-
-        stationName = nearestStation.name;
-        stationModel = new StationModel(nearestStation.temperatures);
-
-        formatAvgMinTempStrings();
-      }
       mapMouseX = map.mouseX;
       mapMouseY = map.mouseY;
     }
+
 
     private function selectStation():void {
       hideMap();
@@ -406,11 +398,6 @@
         <mx:Button buttonMode="true" color="gray" fontSize="10" fontWeight="bold"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/maps/cancel_button_mouseover.png')"
                   click="cancelSelection()"/>
-      </s:Group>
-
-      <s:Group x="{controllersGroup.x}" y="{controllersGroup.y}" >
-
-        <s:Label text="{mapMouseX}:{mapMouseY}"/>
       </s:Group>
 
     </s:BorderContainer>

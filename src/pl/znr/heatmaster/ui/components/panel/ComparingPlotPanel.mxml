@@ -90,8 +90,8 @@
       var refDataContext:DataContext = calculationState.refProcessingResult.dataContext;
       var newDataContext:DataContext = calculationState.newProcessingResult.dataContext;
 
-      refMaxPower = calculationState.refProcessingResult.wattsEnergyResult.heatingSourceMaxPower;
-      newMaxPower = calculationState.newProcessingResult.wattsEnergyResult.heatingSourceMaxPower;
+      refMaxPower = calculationState.refProcessingResult.wattsEnergyResult.heatingSourceMaxPower/1000;
+      newMaxPower = calculationState.newProcessingResult.wattsEnergyResult.heatingSourceMaxPower/1000;
 
       setMaxPowerWarningInfoVisibility(refMaxPower, newMaxPower, refDataContext, newDataContext);
 
@@ -270,6 +270,9 @@
           <mx:GridItem>
             <s:Label text="{formatHMValue(refMaxPower,1)}" fontWeight="bold"/>
           </mx:GridItem>
+          <mx:GridItem>
+            <s:Label text="kW" fontWeight="bold"/>
+          </mx:GridItem>
         </mx:GridRow>
         <mx:GridRow>
           <mx:GridItem>
@@ -277,6 +280,9 @@
           </mx:GridItem>
           <mx:GridItem>
             <s:Label text="{formatHMValue(newMaxPower,1)}" fontWeight="bold"/>
+          </mx:GridItem>
+          <mx:GridItem>
+            <s:Label text="kW" fontWeight="bold"/>
           </mx:GridItem>
         </mx:GridRow>
         <mx:GridRow>
