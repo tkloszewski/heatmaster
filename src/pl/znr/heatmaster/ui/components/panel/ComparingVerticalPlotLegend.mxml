@@ -8,7 +8,7 @@
         .numericValueLabel {
             fontWeight: bold;
             fontSize: 12pt;
-            textAlign: center;
+            textAlign: right;
         }
         .mainHeaderLabel {
             fontWeight: bold;
@@ -16,7 +16,8 @@
         }
         .subHeaderLabel {
             fontWeight: bold;
-            fontSize: 13pt;
+            fontSize: 14pt;
+            color: #FF6600;
         }
     </fx:Style>
 
@@ -61,7 +62,6 @@
 
         private var warmWaterLegendGroupVar:Group;
         private var collectorsLegendGroupVar:Group;
-        private var heatingSourceLossLegendGroupVar:Group;
         private var heatingSourceGainLegendGroupVar:Group;
 
         private var heatingSourceLossIncluded:Boolean = false;
@@ -74,10 +74,8 @@
         private function legendInitialize():void {
             warmWaterLegendGroupVar = warmWaterLegendGroup;
             collectorsLegendGroupVar = collectorsLegendGroup;
-            heatingSourceLossLegendGroupVar = heatingSourceLossLegendGroup;
             heatingSourceGainLegendGroupVar = heatingSourceGainLegendGroup;
 
-            removeIfContains(legendEnergyLossGroup,heatingSourceLossLegendGroupVar);
             removeIfContains(legendEnergyLossGroup,warmWaterLegendGroupVar);
             removeIfContains(legendGainGroup,collectorsLegendGroupVar);
             removeIfContains(legendGainGroup,heatingSourceGainLegendGroupVar);
@@ -92,19 +90,9 @@
                 legendVerticalLayout.gap = 17;
             }
             else {
-                legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, this.heatingSourceLossIncluded ? 4 : 3);
+                legendEnergyLossGroup.addElementAt(warmWaterLegendGroupVar, 4);
                 legendGainGroup.addElementAt(collectorsLegendGroupVar, 3);
                 legendVerticalLayout.gap = 12;
-            }
-        }
-
-        public function setHeatingSourceLossVisibility(visibility:Boolean):void {
-            this.heatingSourceLossIncluded = visibility;
-            if (this.heatingSourceLossIncluded) {
-                legendEnergyLossGroup.addElementAt(heatingSourceLossLegendGroupVar, 3);
-            }
-            else {
-                removeIfContains(legendEnergyLossGroup,heatingSourceLossLegendGroupVar);
             }
         }
 
@@ -157,19 +145,12 @@
         </s:layout>
 
         <s:Group width="{rowWidth}">
-            <s:layout>
-                <s:HorizontalLayout/>
-            </s:layout>
-            <s:RichText id="refStateLabel" styleName="mainHeaderLabel" textAlign="center"
-                        text="{resourceManager.getString('hm','hm.state.reference')}" width="{cell1Width}">
+            <s:RichText id="refStateLabel" x="22" styleName="mainHeaderLabel" textAlign="center"
+                        text="{resourceManager.getString('hm','hm.state.reference')}" width="50">
             </s:RichText>
 
-            <s:RichText id="newStateLabel" styleName="mainHeaderLabel" textAlign="center"
-                        text="{resourceManager.getString('hm','hm.state.new')}" width="{cell2Width}">
-            </s:RichText>
-
-            <s:RichText id="elementLegendText" styleName="mainHeaderLabel" visible="false"
-                        text="{resourceManager.getString('hm','hm.grid.header.element')}" width="130">
+            <s:RichText id="newStateLabel" x="{refStateLabel.x + refStateLabel.width + 15}" styleName="mainHeaderLabel" textAlign="center"
+                        text="{resourceManager.getString('hm','hm.state.new')}" width="50">
             </s:RichText>
         </s:Group>
 
@@ -184,7 +165,7 @@
             <s:Label id="newInsulationAndWarmWaterGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.insulationAndWarmWaterGroup)}" width="{cell2Width}"/>
 
             <s:RichText id="energyLegendText" styleName="subHeaderLabel"
-                        text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}" width="{cell3Width}">
+                        text="{resourceManager.getString('hm','hm.label.insulation_warm_water')}" width="{2 * cell3Width}">
             </s:RichText>
         </s:Group>
 
@@ -288,30 +269,7 @@
                          paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
             </s:Group>
         </s:Group>
-        <s:Group width="{rowWidth}">
-            <s:layout>
-                <s:HorizontalLayout/>
-            </s:layout>
 
-            <s:Label id="refFloorValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enFloor)}" width="{cell1Width}"/>
-            <s:Label id="newFloorValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enFloor)}" width="{cell2Width}"/>
-
-            <s:Group width="{cell3Width}">
-                <s:layout>
-                    <s:HorizontalLayout/>
-                </s:layout>
-                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
-                    <s:fill>
-                        <s:SolidColor color="0xFF8A8A"/>
-                    </s:fill>
-                    <s:stroke>
-                        <s:SolidColorStroke weight="1"/>
-                    </s:stroke>
-                </s:Rect>
-                <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
-                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
-            </s:Group>
-        </s:Group>
         <s:Group width="{rowWidth}">
             <s:layout>
                 <s:HorizontalLayout/>
@@ -326,7 +284,7 @@
                 </s:layout>
                 <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
                     <s:fill>
-                        <s:SolidColor color="0xFFC6C6"/>
+                        <s:SolidColor color="0xFF8A8A"/>
                     </s:fill>
                     <s:stroke>
                         <s:SolidColorStroke weight="1"/>
@@ -336,6 +294,32 @@
                          paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
             </s:Group>
         </s:Group>
+
+        <s:Group width="{rowWidth}">
+            <s:layout>
+                <s:HorizontalLayout/>
+            </s:layout>
+
+            <s:Label id="refFloorValueLabel" styleName="numericValueLabel" text="{format(refSplitColumnData.enFloor)}" width="{cell1Width}"/>
+            <s:Label id="newFloorValueLabel" styleName="numericValueLabel" text="{format(newSplitColumnData.enFloor)}" width="{cell2Width}"/>
+
+            <s:Group width="{cell3Width}">
+                <s:layout>
+                    <s:HorizontalLayout/>
+                </s:layout>
+                <s:Rect width="{_mainLegendRectWidth}" height="{_mainLegendRectHeight}">
+                    <s:fill>
+                        <s:SolidColor color="0xFFC6C6"/>
+                    </s:fill>
+                    <s:stroke>
+                        <s:SolidColorStroke weight="1"/>
+                    </s:stroke>
+                </s:Rect>
+                <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
+                         paddingTop="{_legendRectLabelPaddingTop}" styleName="numericValueLabel"/>
+            </s:Group>
+        </s:Group>
+
         <s:Group width="{rowWidth}">
             <s:layout>
                 <s:HorizontalLayout/>
@@ -375,7 +359,7 @@
             <s:Label id="newVentilationGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.ventilationGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
-                        text="{resourceManager.getString('hm','hm.label.ventilation')}" width="{cell3Width}"/>
+                        text="{resourceManager.getString('hm','hm.label.ventilation')}" width="{2 * cell3Width}"/>
         </s:Group>
 
         <s:Group width="{rowWidth}">
@@ -466,7 +450,7 @@
             <s:Label id="newEnGainsGroupValueLabel" styleName="numericValueLabel"  visible="false" text="{format(newSplitColumnData.enGainsGroup)}" width="{cell2Width}"/>
 
             <s:RichText styleName="subHeaderLabel"
-                        text="{resourceManager.getString('hm','hm.label.energy_gain')}" width="{cell3Width}"/>
+                        text="{resourceManager.getString('hm','hm.label.energy_gain')}" width="{2 * cell3Width}"/>
         </s:Group>
 
 

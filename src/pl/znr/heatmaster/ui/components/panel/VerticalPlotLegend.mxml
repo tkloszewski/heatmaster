@@ -123,6 +123,7 @@
       <s:Label text="{resourceManager.getString('hm','hm.label.roof')}"
                paddingTop="{_legendRectLabelPaddingTop}"/>
     </s:Group>
+
     <s:Group>
       <s:layout>
         <s:HorizontalLayout/>
@@ -135,9 +136,10 @@
           <s:SolidColorStroke weight="1"/>
         </s:stroke>
       </s:Rect>
-      <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
+      <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
                paddingTop="{_legendRectLabelPaddingTop}"/>
     </s:Group>
+
     <s:Group>
       <s:layout>
         <s:HorizontalLayout/>
@@ -150,9 +152,10 @@
           <s:SolidColorStroke weight="1"/>
         </s:stroke>
       </s:Rect>
-      <s:Label text="{resourceManager.getString('hm','hm.label.windows')}"
+      <s:Label text="{resourceManager.getString('hm','hm.label.floor')}"
                paddingTop="{_legendRectLabelPaddingTop}"/>
     </s:Group>
+
     <s:Group>
       <s:layout>
         <s:HorizontalLayout/>

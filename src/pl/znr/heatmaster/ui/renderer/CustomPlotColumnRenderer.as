@@ -87,10 +87,10 @@ public class CustomPlotColumnRenderer extends mx.skins.ProgrammaticSkin implemen
         ratio = splitColumnData.enRoof/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFF6464,ratio);
 
-        ratio = (splitColumnData.enFloor )/overallValue;
+        ratio = splitColumnData.enWindows/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFF8A8A,ratio);
 
-        ratio = splitColumnData.enWindows/overallValue;
+        ratio = (splitColumnData.enFloor )/overallValue;
         currentY = drawRect(g,unscaledWidth,unscaledHeight,0,currentY,0xFFC6C6,ratio);
 
         ratio = (splitColumnData.enFoundations)/overallValue;

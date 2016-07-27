@@ -116,10 +116,6 @@
         warmWaterIncluded = newWarmWaterIncluded;
         comparingLegend.adjustWarmWaterState(warmWaterIncluded);
       }
-      if (newHeatingSourceLossIncluded != heatingSourceLossIncluded) {
-        heatingSourceLossIncluded = newHeatingSourceLossIncluded;
-        comparingLegend.setHeatingSourceLossVisibility(heatingSourceLossIncluded);
-      }
       if (newHeatingSourceGainsIncluded != heatingSourceGainsIncluded) {
         heatingSourceLossIncluded = newHeatingSourceGainsIncluded;
         comparingLegend.setHeatingSourceGainsVisibility(heatingSourceLossIncluded);
