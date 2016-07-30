@@ -20,7 +20,7 @@ public class DoorType extends BaseComboObject{
     public static var NON_ENERGY_SAVING:DoorType = new DoorType("hm.door.energy_intensive",3.4);
     public static var STANDARD:DoorType = new DoorType("hm.door.standard",2.6);
     public static var ENERGY_SAVING:DoorType = new DoorType("hm.door.energy_saving",1.4);
-    public static var SUPER_ENERGY_SAVING:DoorType = new DoorType("hm.door.energy_intensive",0.8);
+    public static var SUPER_ENERGY_SAVING:DoorType = new DoorType("hm.door.super_energy_saving",0.8);
 
     public static function getDoorTypeById(id:String):DoorType {
         for(var i:int = 0;i < items.length;i++){
@@ -36,12 +36,6 @@ public class DoorType extends BaseComboObject{
         super(id);
         _uValue = uValue;
         items.addItem(this);
-    }
-
-
-    override public function dictionaryInitialized(config:DictionaryConfig):void {
-        var doorTypeConfig:DoorTypeConfig = config.getDoorTypeById(getId());
-        this._uValue = doorTypeConfig.uValue;
     }
 
     public function get uValue():Number {

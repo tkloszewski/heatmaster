@@ -31,11 +31,6 @@ public class InsulationMaterialType extends BaseComboObject {
         _values.addItem(this);
     }
 
-    override public function dictionaryInitialized(config:DictionaryConfig):void {
-        var insulationMaterialTypeCfg:InsulationMaterialTypeConfig = config.getInsulationMaterialTypeConfigById(getId());
-        this.heatTransferCoefficient = insulationMaterialTypeCfg.heatTransfer;
-    }
-
     public static function getMaterialInsulationTypeForHouseStandard(standardType:HouseStandardType):InsulationMaterialType {
         if(standardType == HouseStandardType.OLD_NON_INSULATED || standardType == HouseStandardType.OLD_INSULATED
                 || standardType == HouseStandardType.NEW_NORM_WT_2014){

@@ -47,11 +47,6 @@ public class SolarCollectorType extends BaseComboObject{
         items.addItem(this);
     }
 
-
-    override public function dictionaryInitialized(config:DictionaryConfig):void {
-
-    }
-
     public function isFlatCollector():Boolean {
         return type == FLAT_TYPE;
     }

@@ -15,38 +15,17 @@ import pl.znr.heatmaster.core.model.InsulationElement;
 import pl.znr.heatmaster.core.model.WindowElement;
 
 public class WindowElementPreparer implements IElementPreparer{
-    private var uValueMap:Dictionary = new Dictionary();
 
     public function WindowElementPreparer() {
-        uValueMap[WindowsType.ONE_PANE] = 5.2;
-        uValueMap[WindowsType.TWO_PANE_OLD] = 2.6;
-        uValueMap[WindowsType.TWO_PANE_NEW] = 1.4;
-        uValueMap[WindowsType.THREE_PANE] = 0.9;
-        uValueMap[WindowsType.THREE_PANE_SPECIAL] = 0.7;
+
     }
 
 
     public function prepare(element:InsulationElement):InsulationElement {
         var windowElement:WindowElement = element as WindowElement;
-        if(windowElement.uValue == -1){
-            windowElement.uValue = uValueMap[windowElement.windowType];
-        }
 
-        if(windowElement.windowType == WindowsType.ONE_PANE){
-            windowElement.winGain = 0.85;
-        }
-        if(windowElement.windowType == WindowsType.TWO_PANE_OLD){
-            windowElement.winGain = 0.75;
-        }
-        if(windowElement.windowType == WindowsType.TWO_PANE_NEW){
-            windowElement.winGain = 0.6;
-        }
-        if(windowElement.windowType == WindowsType.THREE_PANE){
-            windowElement.winGain = 0.55;
-        }
-        if(windowElement.windowType == WindowsType.THREE_PANE_SPECIAL){
-            windowElement.winGain = 0.62;
-        }
+        windowElement.uValue = windowElement.windowsType.uValue;
+        windowElement.winGain = windowElement.windowsType.winGain;
 
         return windowElement;
     }

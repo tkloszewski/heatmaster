@@ -6,19 +6,10 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import mx.controls.Alert;
-
 import pl.znr.heatmaster.constants.combo.BuildingAge;
-
 import pl.znr.heatmaster.constants.combo.DoorType;
-
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
 import pl.znr.heatmaster.constants.combo.HouseStandardType;
-import pl.znr.heatmaster.core.model.FloorElement;
-import pl.znr.heatmaster.core.model.RoofElement;
-import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.model.VentilationData;
-import pl.znr.heatmaster.core.model.WallElement;
 
 public class HouseData {
     private var _houseType:int;
@@ -40,21 +31,6 @@ public class HouseData {
     private var _foundationsUValue:Number;
 
     private var _tIn:Number;
-
-    public function toString():String{
-        var s:String = "SurfaceData= " + _surfaceData.toString() + "\n";
-
-        s += "wallElement: " + _wallElement.toString() + "\n";
-        s += "houseType: " + _houseType + "tIN: " + _tIn + "\n";
-        s += "ventilationData: " + _ventilationData.toString() + "\n";
-        /*
-                "floorElement: " + _floorElement.toString() + "\n" +
-                "windowElement: " + _windowElement.toString() + "\n" +
-                "houseType: " + _houseType + "tIN: " + _tIn;*/
-
-        return s;
-
-    }
 
     public function HouseData() {
     }

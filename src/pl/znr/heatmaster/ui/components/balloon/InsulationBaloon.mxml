@@ -390,17 +390,6 @@
 
         private function prepareElementForBuildingAge(buildingAge:BuildingAge):InsulationElement {
             var insulationElement:InsulationElement = createInsulationElement();
-            /*
-             if (_insulationElementType == InsulationElementType.WALL) {
-             insulationElement.uValue = buildingAge.uWalls;
-             }
-             else if (_insulationElementType == InsulationElementType.FLOOR) {
-             insulationElement.uValue = buildingAge.uFloor;
-             }
-             else if (_insulationElementType == InsulationElementType.ROOF) {
-             insulationElement.uValue = buildingAge.uRoof;
-             }
-             */
             insulationElement.width = 0;
             insulationElement.materialHeatTransfer = InsulationMaterialType.STANDARD.heatTransferCoefficient;
             return uValueElementPreparer.prepare(insulationElement);

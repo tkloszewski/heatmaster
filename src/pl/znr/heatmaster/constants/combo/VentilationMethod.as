@@ -8,10 +8,11 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.utils.NameUtil;
 
-public class VentilationMethod {
+public class VentilationMethod extends BaseComboObject{
 
 
-    public function VentilationMethod(type:int, efficiency:Number) {
+    public function VentilationMethod(id:String,type:int, efficiency:Number) {
+        super(id);
         _type = type;
         _efficiency = efficiency;
     }
@@ -28,11 +29,11 @@ public class VentilationMethod {
         return _efficiency;
     }
 
-    public static var NATURAL:VentilationMethod = new VentilationMethod(GRAVITATIONAL,0);
-    public static var NATURAL_REGULATED:VentilationMethod = new VentilationMethod(GRAVITATIONAL,0.1);
-    public static var MECHANICAL_60_PER_CENT:VentilationMethod = new VentilationMethod(MECHANICAL,0.6);
-    public static var MECHANICAL_75_PER_CENT:VentilationMethod = new VentilationMethod(MECHANICAL,0.75);
-    public static var MECHANICAL_85_PER_CENT:VentilationMethod = new VentilationMethod(MECHANICAL,0.85);
+    public static var NATURAL:VentilationMethod = new VentilationMethod("hm.ventilation-type.natural",GRAVITATIONAL,0);
+    public static var NATURAL_REGULATED:VentilationMethod = new VentilationMethod("hm.ventilation-type.natural_regulated",GRAVITATIONAL,0.1);
+    public static var MECHANICAL_60_PER_CENT:VentilationMethod = new VentilationMethod("hm.ventilation-type.mechanical_60",MECHANICAL,0.6);
+    public static var MECHANICAL_75_PER_CENT:VentilationMethod = new VentilationMethod("hm.ventilation-type.mechanical_75",MECHANICAL,0.75);
+    public static var MECHANICAL_85_PER_CENT:VentilationMethod = new VentilationMethod("hm.ventilation-type.mechanical_85",MECHANICAL,0.85);
 
 
     public static const GRAVITATIONAL:int = 1;

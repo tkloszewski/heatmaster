@@ -29,6 +29,7 @@
 
         <fx:XML id="countriesXML" format="e4x" source="/config.xml"/>
         <fx:XML id="stationsXML" format="e4x" source="/stations.xml"/>
+        <fx:XML id="dictionaryXML" format="e4x" source="/dictionaries.xml"/>
 
         <s:BitmapFill id="bgGrass"
                       source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_grass.png')"/>
@@ -77,6 +78,7 @@
         import pl.znr.heatmaster.config.RegionItem;
         import pl.znr.heatmaster.config.StationItem;
         import pl.znr.heatmaster.config.StationsConfig;
+        import pl.znr.heatmaster.config.dictionary.DictionaryConfigReader;
         import pl.znr.heatmaster.constants.combo.BaseComboObject;
         import pl.znr.heatmaster.constants.combo.BuildingAge;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
@@ -141,6 +143,7 @@
         private var configurationReader:HeatMasterConfigurationReader;
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
         private var calculationStateController:CalculationStateController;
+        private var dictionaryReader:DictionaryConfigReader;
 
         private var stationsPanel:StationsPanel = new StationsPanel();
         private var balanceReportPanel:BalanceReportPanel;
@@ -268,9 +271,11 @@
             calculationStateController.setCacheManager(cachedDataContextManager);
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
             configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
+            dictionaryReader = new DictionaryConfigReader(dictionaryXML, resourceManager);
 
             selectedLang = resourceManager.getLocales()[0];
             configItems = configurationReader.readConfig();
+            dictionaryReader.readConfig();
         }
 
         private function httpService_fault(evt:FaultEvent):void {
@@ -350,7 +355,7 @@
             BrowserManager.getInstance().setTitle("HeatMaster");
 
             setUpHeatMasterListener();
-            injectListenerAndStateController(heatMasterContainer, heatMasterListener,calculationStateController);
+            injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
             cachedData = cachedDataContextManager.readCache();
@@ -451,7 +456,7 @@
             if (component is IVisualElementContainer) {
                 var visualElementContainer:IVisualElementContainer = component as IVisualElementContainer;
                 for (var i:int = 0; i < visualElementContainer.numElements; i++) {
-                    injectListenerAndStateController(visualElementContainer.getElementAt(i),hmListener, calculationStateController);
+                    injectListenerAndStateController(visualElementContainer.getElementAt(i), hmListener, calculationStateController);
                 }
             }
         }

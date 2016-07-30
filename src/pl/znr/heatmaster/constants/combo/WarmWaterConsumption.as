@@ -8,17 +8,18 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.binding.utils.BindingUtils;
 
-public class WarmWaterConsumption {
+public class WarmWaterConsumption extends BaseComboObject{
 
-    public static var VERY_SMALL:WarmWaterConsumption = new WarmWaterConsumption(0.5);
-    public static var SMALL:WarmWaterConsumption = new WarmWaterConsumption(0.75);
-    public static var AVERAGE:WarmWaterConsumption = new WarmWaterConsumption(1.0);
-    public static var BIG:WarmWaterConsumption = new WarmWaterConsumption(1.5);
-    public static var VERY_BIG:WarmWaterConsumption = new WarmWaterConsumption(2.0);
+    public static var VERY_SMALL:WarmWaterConsumption = new WarmWaterConsumption("hm.warmwater.consuption.very_low",0.5);
+    public static var SMALL:WarmWaterConsumption = new WarmWaterConsumption("hm.warmwater.consuption.low",0.75);
+    public static var AVERAGE:WarmWaterConsumption = new WarmWaterConsumption("hm.warmwater.consuption.standard",1.0);
+    public static var BIG:WarmWaterConsumption = new WarmWaterConsumption("hm.warmwater.consuption.big",1.5);
+    public static var VERY_BIG:WarmWaterConsumption = new WarmWaterConsumption("hm.warmwater.consuption.very_big",2.0);
 
     private var _intensity:Number;
 
-    public function WarmWaterConsumption(intensity:Number) {
+    public function WarmWaterConsumption(id:String,intensity:Number) {
+        super(id);
         this._intensity = intensity;
     }
 

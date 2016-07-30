@@ -12,62 +12,82 @@ import pl.znr.heatmaster.constants.combo.DoorType;
 
 public class DictionaryConfig {
 
-    private var _doorTypesConfig:Dictionary;
-    private var _insulationMaterialTypesConfig:Dictionary;
-    private var _solarCollectorTypeConfig:Dictionary;
-    private var _thermalBridgesTypeConfig:Dictionary;
+    private var _doorTypeConfig:DoorTypeConfig;
+    private var _insulationMaterialTypeConfig:InsulationMaterialTypeConfig;
+    private var _solarCollectorsTypeConfig:SolarCollectorTypeConfig;
+    private var _thermalBridgesTypeConfig:ThermalBridgesTypeConfig;
+    private var _heatingSourceTypeConfiguration:HeatingSourceTypeConfig;
+    private var _waterStorageDistributionConfiguration:WaterStorageDistributionConfig;
+    private var _waterConsumptionConfiguration:WarmWaterConsumptionConfig;
+    private var _ventilationTypeConfiguration:VentilationTypeConfig;
 
     public function DictionaryConfig() {
     }
 
-    public function getDoorTypeById(id:String):DoorTypeConfig {
-        return _doorTypesConfig[id] as DoorTypeConfig;
+    public function get doorTypeConfig():DoorTypeConfig {
+        return _doorTypeConfig;
     }
 
-    public function getInsulationMaterialTypeConfigById(id:String):InsulationMaterialTypeConfig {
-        return _insulationMaterialTypesConfig[id] as InsulationMaterialTypeConfig;
+    public function set doorTypeConfig(value:DoorTypeConfig):void {
+        _doorTypeConfig = value;
     }
 
-    public function getSolarCollectorTypeConfigById(id:String):SolarCollectorTypeConfig {
-        return _solarCollectorTypeConfig[id] as SolarCollectorTypeConfig;
+    public function get solarCollectorsTypeConfig():SolarCollectorTypeConfig {
+        return _solarCollectorsTypeConfig;
     }
 
-    public function getThermalBridgesTypeById(id:String):ThermalBridgesTypeConfig {
-        return _thermalBridgesTypeConfig[id] as ThermalBridgesTypeConfig;
+    public function set solarCollectorsTypeConfig(value:SolarCollectorTypeConfig):void {
+        _solarCollectorsTypeConfig = value;
     }
 
-    public function get insulationMaterialTypesConfig():Dictionary {
-        return _insulationMaterialTypesConfig;
-    }
-
-    public function set insulationMaterialTypesConfig(value:Dictionary):void {
-        _insulationMaterialTypesConfig = value;
-    }
-
-    public function get doorTypesConfig():Dictionary {
-        return _doorTypesConfig;
-    }
-
-    public function set doorTypesConfig(value:Dictionary):void {
-        _doorTypesConfig = value;
-    }
-
-
-    public function get solarCollectorTypeConfig():Dictionary {
-        return _solarCollectorTypeConfig;
-    }
-
-    public function set solarCollectorTypeConfig(value:Dictionary):void {
-        _solarCollectorTypeConfig = value;
-    }
-
-
-    public function get thermalBridgesTypeConfig():Dictionary {
+    public function get thermalBridgesTypeConfig():ThermalBridgesTypeConfig {
         return _thermalBridgesTypeConfig;
     }
 
-    public function set thermalBridgesTypeConfig(value:Dictionary):void {
+    public function set thermalBridgesTypeConfig(value:ThermalBridgesTypeConfig):void {
         _thermalBridgesTypeConfig = value;
+    }
+
+    public function get insulationMaterialTypeConfig():InsulationMaterialTypeConfig {
+        return _insulationMaterialTypeConfig;
+    }
+
+    public function set insulationMaterialTypeConfig(value:InsulationMaterialTypeConfig):void {
+        _insulationMaterialTypeConfig = value;
+    }
+
+    public function get heatingSourceTypeConfiguration():HeatingSourceTypeConfig {
+        return _heatingSourceTypeConfiguration;
+    }
+
+    public function set heatingSourceTypeConfiguration(value:HeatingSourceTypeConfig):void {
+        _heatingSourceTypeConfiguration = value;
+    }
+
+    public function get waterStorageDistributionConfiguration():WaterStorageDistributionConfig {
+        return _waterStorageDistributionConfiguration;
+    }
+
+    public function set waterStorageDistributionConfiguration(value:WaterStorageDistributionConfig):void {
+        _waterStorageDistributionConfiguration = value;
+    }
+
+
+    public function get waterConsumptionConfiguration():WarmWaterConsumptionConfig {
+        return _waterConsumptionConfiguration;
+    }
+
+    public function set waterConsumptionConfiguration(value:WarmWaterConsumptionConfig):void {
+        _waterConsumptionConfiguration = value;
+    }
+
+
+    public function get ventilationTypeConfiguration():VentilationTypeConfig {
+        return _ventilationTypeConfiguration;
+    }
+
+    public function set ventilationTypeConfiguration(value:VentilationTypeConfig):void {
+        _ventilationTypeConfiguration = value;
     }
 }
 }

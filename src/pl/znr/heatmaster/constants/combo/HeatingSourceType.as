@@ -8,30 +8,32 @@
 package pl.znr.heatmaster.constants.combo {
 import mx.collections.ArrayList;
 
+import pl.znr.heatmaster.constants.HeatingType;
+
 import pl.znr.heatmaster.constants.NaturalUnit;
 
 public class HeatingSourceType extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
 
-    public static var BIOMASS_PELLETS:HeatingSourceType = new HeatingSourceType("1", NaturalUnit.TONNE, 500, 17500, 75, 0.403, 0.2, true,false,true,true,true,false);
-    public static var BIOMASS_WOOD:HeatingSourceType = new HeatingSourceType("2", NaturalUnit.TONNE, 360, 15600, 70, 0.403, 0.2, true,false,true,true,true,false);
-    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3", NaturalUnit.GJ, 50, 1000, 97, 0.449, 1.3, true,true,true,false, false, false);
-    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",NaturalUnit.GJ, 50, 1000, 97, 0.247, 0.8,true,true,true,true, false, false);
-    public static var FURNACE:HeatingSourceType = new HeatingSourceType("5", NaturalUnit.TONNE, 750, 26010, 40, 0.338, 1.1, true,false,false,false,true, true);
-    public static var COAL_OLD:HeatingSourceType = new HeatingSourceType("6", NaturalUnit.TONNE, 750, 26010, 60, 0.338, 1.1, true,false,false,false,true, true);
-    public static var COAL_MODERN:HeatingSourceType = new HeatingSourceType("7", NaturalUnit.TONNE, 750, 26010, 80, 0.338, 1.1, true,false,false,false,true, true);
-    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8", NaturalUnit.M3, 2, 36.03, 65, 0.202, 1.1, true,true,true,true,true, false);
-    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9", NaturalUnit.M3, 2, 36.03, 85, 0.202, 1.1, true,true,true,true,true, false);
-    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10", NaturalUnit.M3, 2, 36.03, 95, 0.202, 1.1, true,true,true,true,true, false);
-    public static var BOILER_PROPAN_STANDARD:HeatingSourceType = new HeatingSourceType("11", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true,true,true,true,true, false);
-    public static var BOILER_PROPAN_CONDENSING:HeatingSourceType = new HeatingSourceType("12", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true,true,true,true,true, false);
-    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13", NaturalUnit.M3, 2, 36.03, 90, 0.202, 1.1, false,false,true,false,true, false);
-    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14", NaturalUnit.M3, 2, 36.03, 70, 0.202, 1.1, false,false,true,false,true, false);
-    public static var BOILER_OIL_LIGHT:HeatingSourceType = new HeatingSourceType("15", NaturalUnit.KG, 4.75, 43, 85, 0.266, 1.1, true,true,true,true,true, false);
-    public static var BOILER_OIL_HEAVY:HeatingSourceType = new HeatingSourceType("18", NaturalUnit.TONNE, 4000, 40400, 85, 0.278, 1.1, true,true,true,true,true, false);
-    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16", NaturalUnit.KWH, 0.6, 3.6, 100, 0.890, 3.0, true,true,true,true, false, false);
-    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",NaturalUnit.KWH, 0.6, 3.6, 350, 0.890, 3.0, true,true,true,true, false, false);
+    public static var BIOMASS_PELLETS:HeatingSourceType = new HeatingSourceType("1", NaturalUnit.TONNE, 500, 17500, 75, 0.403, 0.2, true,false);
+    public static var BIOMASS_WOOD:HeatingSourceType = new HeatingSourceType("2", NaturalUnit.TONNE, 360, 15600, 70, 0.403, 0.2, true,false);
+    public static var COMBINED_HEAT:HeatingSourceType = new HeatingSourceType("3", NaturalUnit.GJ, 50, 1000, 97, 0.449, 1.3, false, false);
+    public static var COMBINED_ELECTRIC_HEAT:HeatingSourceType = new HeatingSourceType("4",NaturalUnit.GJ, 50, 1000, 97, 0.247, 0.8, false, false);
+    public static var FURNACE:HeatingSourceType = new HeatingSourceType("5", NaturalUnit.TONNE, 750, 26010, 40, 0.338, 1.1, true, true);
+    public static var COAL_OLD:HeatingSourceType = new HeatingSourceType("6", NaturalUnit.TONNE, 750, 26010, 60, 0.338, 1.1, true, true);
+    public static var COAL_MODERN:HeatingSourceType = new HeatingSourceType("7", NaturalUnit.TONNE, 750, 26010, 80, 0.338, 1.1, true, true);
+    public static var BOILER_GAS_OLD:HeatingSourceType = new HeatingSourceType("8", NaturalUnit.M3, 2, 36.03, 65, 0.202, 1.1, true, false);
+    public static var BOILER_GAS_MODERN:HeatingSourceType = new HeatingSourceType("9", NaturalUnit.M3, 2, 36.03, 85, 0.202, 1.1, true, false);
+    public static var BOILER_GAS_CONDENSING:HeatingSourceType = new HeatingSourceType("10", NaturalUnit.M3, 2, 36.03, 95, 0.202, 1.1, true, false);
+    public static var BOILER_PROPAN_STANDARD:HeatingSourceType = new HeatingSourceType("11", NaturalUnit.KG, 2, 47.3, 85, 0.227, 1.1, true, false);
+    public static var BOILER_PROPAN_CONDENSING:HeatingSourceType = new HeatingSourceType("12", NaturalUnit.KG, 2, 47.3, 95, 0.227, 1.1, true, false);
+    public static var GAS_ELECTRIC_HEATER:HeatingSourceType = new HeatingSourceType("13", NaturalUnit.M3, 2, 36.03, 90, 0.202, 1.1, true, false);
+    public static var GAS_HEATER:HeatingSourceType = new HeatingSourceType("14", NaturalUnit.M3, 2, 36.03, 70, 0.202, 1.1, true, false);
+    public static var BOILER_OIL_LIGHT:HeatingSourceType = new HeatingSourceType("15", NaturalUnit.KG, 4.75, 43, 85, 0.266, 1.1, true, false);
+    public static var BOILER_OIL_HEAVY:HeatingSourceType = new HeatingSourceType("18", NaturalUnit.TONNE, 4000, 40400, 85, 0.278, 1.1, true, false);
+    public static var ELECTRIC:HeatingSourceType = new HeatingSourceType("16", NaturalUnit.KWH, 0.6, 3.6, 100, 0.890, 3.0, false, false);
+    public static var HEAT_PUMP:HeatingSourceType = new HeatingSourceType("17",NaturalUnit.KWH, 0.6, 3.6, 350, 0.890, 3.0, false, false);
 
     private var _efficiency:Number = 1;
     private var _naturalUnit:NaturalUnit;
@@ -40,14 +42,10 @@ public class HeatingSourceType extends BaseComboObject{
     private var _emissionPerKWh:Number;
     private var _finalToPrimaryCoefficient:Number;
     private var _pricePerKWh:Number;
-
-    private var _detachedAirHeatType:Boolean;
-    private var _multiFamilyAirHeatType:Boolean;
-    private var _detachedWarmHeatType:Boolean;
-    private var _multiFamilyHeatType:Boolean;
-
     private var _showNaturalUnit:Boolean;
     private var _heatingValueEditable:Boolean;
+
+    private var _heatingType:HeatingType;
 
     public static function getHeatingSourceTypeById(_id:String):HeatingSourceType {
         for(var i:int = 0;i < items.length;i++){
@@ -98,8 +96,7 @@ public class HeatingSourceType extends BaseComboObject{
     }
 
     function HeatingSourceType(_id:String,naturalUnit:NaturalUnit,naturalUnitPrice:Number,heatingValueMJ:Number, efficiency:Number,emissionPerKWh:Number, finalToPrimaryCoefficient:Number,
-                               detachedAirHeatType:Boolean, multiFamilyAirHeatType:Boolean, detachedWarmHeatType:Boolean, multiFamilyHeatType:Boolean,showNaturalUnit:Boolean,
-                               heatingValueEditable:Boolean)
+                               showNaturalUnit:Boolean,heatingValueEditable:Boolean)
     {
         super(_id);
         _naturalUnit = naturalUnit;
@@ -108,10 +105,6 @@ public class HeatingSourceType extends BaseComboObject{
         _efficiency = efficiency;
         _emissionPerKWh = emissionPerKWh;
         _finalToPrimaryCoefficient = finalToPrimaryCoefficient;
-        _detachedAirHeatType = detachedAirHeatType;
-        _multiFamilyAirHeatType = multiFamilyAirHeatType;
-        _detachedWarmHeatType = detachedWarmHeatType;
-        _multiFamilyHeatType = multiFamilyHeatType;
         _pricePerKWh = toPricePerKWh(naturalUnitPrice,heatingValueMJ);
         _showNaturalUnit = showNaturalUnit;
         _heatingValueEditable = heatingValueEditable;
@@ -134,22 +127,6 @@ public class HeatingSourceType extends BaseComboObject{
         return _finalToPrimaryCoefficient;
     }
 
-    public function get detachedAirHeatType():Boolean {
-        return _detachedAirHeatType;
-    }
-
-    public function get multiFamilyAirHeatType():Boolean {
-        return _multiFamilyAirHeatType;
-    }
-
-    public function get detachedWarmHeatType():Boolean {
-        return _detachedWarmHeatType;
-    }
-
-    public function get multiFamilyHeatType():Boolean {
-        return _multiFamilyHeatType;
-    }
-
     public function get naturalUnitPrice():Number {
         return _naturalUnitPrice;
     }
@@ -168,6 +145,14 @@ public class HeatingSourceType extends BaseComboObject{
 
     public function get heatingValueEditable():Boolean {
         return _heatingValueEditable;
+    }
+
+    public function get heatingType():HeatingType {
+        return _heatingType;
+    }
+
+    public function set heatingType(value:HeatingType):void {
+        _heatingType = value;
     }
 }
 }

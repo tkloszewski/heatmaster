@@ -36,7 +36,7 @@ public class HouseStandardTypeModel {
     private var _airTightness:Number;
 
     private var _thermalBridges:ThermalBridgesType;
-    private var _windowsType:int;
+    private var _windowsType:WindowsType;
     private var _shuttersEnabled:Boolean;
 
     private var _heatingSourceType:HeatingSourceType;
@@ -52,7 +52,9 @@ public class HouseStandardTypeModel {
 
     private var _carbonDioxideSensor:Boolean;
 
-    public function HouseStandardTypeModel(roofInsulationMaterialType:InsulationMaterialType, wallInsulationMaterialType:InsulationMaterialType, floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:int, thermalBridges:ThermalBridgesType, doorType:DoorType, windowsType:int,
+    public function HouseStandardTypeModel(roofInsulationMaterialType:InsulationMaterialType, wallInsulationMaterialType:InsulationMaterialType,
+                                           floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:int,
+                                           thermalBridges:ThermalBridgesType, doorType:DoorType, windowsType:WindowsType,
                                            heatingSourceType:HeatingSourceType,multiFamilyHeatingSourceType:HeatingSourceType,
                                            warmWaterHeatingSourceType:HeatingSourceType,multiFamilyWarmWaterHeatingSourceType:HeatingSourceType,
                                            solarCollectorData:SolarCollectorData, warmWaterDistribution:WarmWaterDistribution,
@@ -117,7 +119,7 @@ public class HouseStandardTypeModel {
         return _doorType;
     }
 
-    public function get windowsType():int {
+    public function get windowsType():WindowsType {
         return _windowsType;
     }
 

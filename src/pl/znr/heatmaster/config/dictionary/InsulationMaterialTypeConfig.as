@@ -2,30 +2,18 @@
  * Created by Dom on 2016-06-15.
  */
 package pl.znr.heatmaster.config.dictionary {
-public class InsulationMaterialTypeConfig {
+import mx.collections.ArrayCollection;
 
-    private var _id:String;
-    private var _heatTransfer:Number;
+public class InsulationMaterialTypeConfig extends BaseTypeConfig{
 
-    public function InsulationMaterialTypeConfig(id:String, heatTransfer:Number) {
-        _id = id;
-        _heatTransfer = heatTransfer;
+    private var _insulationMaterialTypes:ArrayCollection;
+
+    public function get insulationMaterialTypes():ArrayCollection {
+        return _insulationMaterialTypes;
     }
 
-    public function get id():String {
-        return _id;
-    }
-
-    public function set id(value:String):void {
-        _id = value;
-    }
-
-    public function get heatTransfer():Number {
-        return _heatTransfer;
-    }
-
-    public function set heatTransfer(value:Number):void {
-        _heatTransfer = value;
+    public function set insulationMaterialTypes(value:ArrayCollection):void {
+        _insulationMaterialTypes = value;
     }
 }
 }

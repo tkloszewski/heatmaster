@@ -10,11 +10,11 @@
 
     <fx:Declarations>
         <s:ArrayCollection id="windowsList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.one_pane')}" data="{WindowsType.ONE_PANE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.old')}" data="{WindowsType.TWO_PANE_OLD}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.new')}" data="{WindowsType.TWO_PANE_NEW}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.three_panes')}" data="{WindowsType.THREE_PANE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdow.windows.three_panes.special')}" data="{WindowsType.THREE_PANE_SPECIAL}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.one_pane')}" data="{WindowsType.ONE_PANE_WINDOWS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.old')}" data="{WindowsType.TWO_PANE_OLD_WINDOWS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.new')}" data="{WindowsType.TWO_PANE_NEW_WINDOWS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.three_panes')}" data="{WindowsType.THREE_PANE_WINDOWS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdow.windows.three_panes.special')}" data="{WindowsType.THREE_PANE_SPECIAL_WINDOWS}"/>
         </s:ArrayCollection>
 
         <s:ArrayCollection id="thermalBridgesList">
@@ -97,7 +97,7 @@
 
         private function createWindowElement():WindowElement {
             var windowElement:WindowElement = new WindowElement(windowDropDownList.selectedItem.data);
-            windowElement = windowElementPreparer.prepare(windowElement) as WindowElement;
+            //windowElement = windowElementPreparer.prepare(windowElement) as WindowElement;
             windowElement.shutters = blindsCheckBox.selected;
             windowElement.thermalBridgesType = thermalBridgesDropDownList.selectedItem.data;
             return windowElement;
@@ -112,7 +112,7 @@
         override public function setupView(dataContext:DataContext):void {
             try {
                 var windowElement:WindowElement = dataContext.houseData.windowElement;
-                setWindowElementType(windowElement.windowType);
+                setWindowElementType(windowElement.windowsType);
                 setThermalBridgesType(windowElement.thermalBridgesType);
                 blindsCheckBox.selected = windowElement.shutters;
 
@@ -134,10 +134,11 @@
             return 1;
         }
 
-        private function setWindowElementType(winType:int):void {
+        private function setWindowElementType(windowsType:WindowsType):void {
             for (var i:int = 0; i < windowDropDownList.dataProvider.length; i++) {
                 var item:Object = windowDropDownList.dataProvider.getItemAt(i);
-                if (item.data == winType) {
+                var winType:WindowsType = item.data as WindowsType;
+                if (winType.id == windowsType.id) {
                     windowDropDownList.selectedIndex = i;
                     break;
                 }

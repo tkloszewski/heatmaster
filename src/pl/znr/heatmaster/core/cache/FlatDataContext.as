@@ -100,9 +100,7 @@ public class FlatDataContext {
     private var _floorHeatTransfer:Number;
 
     //windowElement
-    private var _windowsUValue:Number;
-    private var _windowType:int;
-    private var _winGain:Number;
+    private var _windowsTypeId:String;
     private var _shutters:Boolean;
     private var _thermalBridgesId:String;
 
@@ -561,28 +559,12 @@ public class FlatDataContext {
         _floorInsulationQualityId = value;
     }
 
-    public function get windowsUValue():Number {
-        return _windowsUValue;
+    public function get windowsTypeId():String {
+        return _windowsTypeId;
     }
 
-    public function set windowsUValue(value:Number):void {
-        _windowsUValue = value;
-    }
-
-    public function get windowType():int {
-        return _windowType;
-    }
-
-    public function set windowType(value:int):void {
-        _windowType = value;
-    }
-
-    public function get winGain():Number {
-        return _winGain;
-    }
-
-    public function set winGain(value:Number):void {
-        _winGain = value;
+    public function set windowsTypeId(value:String):void {
+        _windowsTypeId = value;
     }
 
     public function get shutters():Boolean {
@@ -592,7 +574,6 @@ public class FlatDataContext {
     public function set shutters(value:Boolean):void {
         _shutters = value;
     }
-
 
     public function get thermalBridgesId():String {
         return _thermalBridgesId;

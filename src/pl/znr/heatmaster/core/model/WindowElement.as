@@ -8,12 +8,14 @@
 package pl.znr.heatmaster.core.model {
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
 import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
+import pl.znr.heatmaster.constants.combo.WindowsType;
 
 public class WindowElement extends InsulationElement{
     private var _windowType:int = -1;
     private var _winGain:Number = 0;
     private var _shutters:Boolean = false;
 
+    private var _windowsType:WindowsType;
     private var _thermalBridgesType:ThermalBridgesType;
 
 
@@ -21,8 +23,10 @@ public class WindowElement extends InsulationElement{
         return "WindowElement: = {" + super.toString() + " [windowType=" +_windowType + ",winGain=" + _winGain + "]}";
     }
 
-    public function WindowElement(windowType:int) {
-        _windowType = windowType;
+    public function WindowElement(windowsTypes:WindowsType) {
+        _windowsType = windowsTypes;
+        _uValue = windowsTypes.uValue;
+        _winGain = windowsTypes.winGain;
     }
 
     override public function getElementType():int {
@@ -61,6 +65,14 @@ public class WindowElement extends InsulationElement{
 
     public function set thermalBridgesType(value:ThermalBridgesType):void {
         _thermalBridgesType = value;
+    }
+
+    public function get windowsType():WindowsType {
+        return _windowsType;
+    }
+
+    public function set windowsType(value:WindowsType):void {
+        _windowsType = value;
     }
 }
 }

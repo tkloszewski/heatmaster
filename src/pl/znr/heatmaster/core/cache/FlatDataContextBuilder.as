@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.cache {
+import pl.znr.heatmaster.constants.combo.WindowsType;
 import pl.znr.heatmaster.core.*;
 
 import mx.controls.Alert;
@@ -187,9 +188,7 @@ public class FlatDataContextBuilder {
         var windowElement:WindowElement = houseData.windowElement;
 
         try {
-            flatDataContext.windowsUValue = windowElement.uValue;
-            flatDataContext.windowType = windowElement.windowType;
-            flatDataContext.winGain = windowElement.winGain;
+            flatDataContext.windowsTypeId = windowElement.windowsType.id;
             flatDataContext.shutters = windowElement.shutters;
             flatDataContext.thermalBridgesId = windowElement.thermalBridgesType.getId();
         } catch (e:Error) {
@@ -394,12 +393,9 @@ public class FlatDataContextBuilder {
         houseData.floorElement = floorElement;
 
 
-        var windowElement:WindowElement = new WindowElement(flatDataContext.windowsUValue);
+        var windowElement:WindowElement = new WindowElement(WindowsType.getWindowsTypeById(flatDataContext.windowsTypeId));
 
         try {
-            windowElement.uValue = flatDataContext.windowsUValue;
-            windowElement.windowType = flatDataContext.windowType;
-            windowElement.winGain = flatDataContext.winGain;
             windowElement.shutters = flatDataContext.shutters;
             windowElement.thermalBridgesType = ThermalBridgesType.getThermalBridgesTypeById(flatDataContext.thermalBridgesId);
         } catch (e:Error) {
