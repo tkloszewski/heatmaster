@@ -37,7 +37,7 @@ public class FloorEnergyCalculator implements IMonthEnergyCalculator{
         var enFloorEdge:Number = 0;
         var isGroundType:Boolean = HouseTypeHelper.isGroundType(houseData.houseType);
 
-        var foundationsEnabled:Boolean =  isGroundType && houseData.foundationsEnabled;
+        var foundationsEnabled:Boolean =  isGroundType && houseData.foundationType.isFoundationsEnabled();
 
         if(foundationsEnabled){
             enFloorCenter = (sideLength - 0.6) * (sideLength - 0.6) * uValue * (houseData.tIn - tAvg);

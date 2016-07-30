@@ -60,8 +60,8 @@ public class FlatDataContext {
     private var _buildingAgeId:String;
     private var _doorTypeId:String;
     private var _personNumber:int = 2;
-    private var _foundationsEnabled:Boolean;
-    private var _foundationsUValue:Number;
+    private var _foundationsTypeId:String;
+
     private var _tIn:Number;
     private var _houseStandardTypeId:String;
 
@@ -79,7 +79,7 @@ public class FlatDataContext {
     private var _ventilationFreq:int;
     private var _recuperateEfficiency:Number;
     private var _co2Sensor:Boolean;
-    private var _tightness:Number;
+    private var _tightnessId:String;
 
     //wallElement
     private var _wallWidth:Number;
@@ -375,12 +375,13 @@ public class FlatDataContext {
         _personNumber = value;
     }
 
-    public function get foundationsEnabled():Boolean {
-        return _foundationsEnabled;
+
+    public function get foundationsTypeId():String {
+        return _foundationsTypeId;
     }
 
-    public function set foundationsEnabled(value:Boolean):void {
-        _foundationsEnabled = value;
+    public function set foundationsTypeId(value:String):void {
+        _foundationsTypeId = value;
     }
 
     public function get tIn():Number {
@@ -479,12 +480,12 @@ public class FlatDataContext {
         _co2Sensor = value;
     }
 
-    public function get tightness():Number {
-        return _tightness;
+    public function get tightnessId():String {
+        return _tightnessId;
     }
 
-    public function set tightness(value:Number):void {
-        _tightness = value;
+    public function set tightnessId(value:String):void {
+        _tightnessId = value;
     }
 
     public function get wallWidth():Number {
@@ -869,15 +870,6 @@ public class FlatDataContext {
     public function set floorHeatTransfer(value:Number):void {
         _floorHeatTransfer = value;
     }
-
-    public function get foundationsUValue():Number {
-        return _foundationsUValue;
-    }
-
-    public function set foundationsUValue(value:Number):void {
-        _foundationsUValue = value;
-    }
-
 
     public function get houseStandardTypeId():String {
         return _houseStandardTypeId;

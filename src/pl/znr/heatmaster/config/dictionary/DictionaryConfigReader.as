@@ -7,14 +7,16 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.reader.DictionaryReader;
 import pl.znr.heatmaster.config.dictionary.reader.DoorTypeConfigReader;
+import pl.znr.heatmaster.config.dictionary.reader.FoundationsTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.HeatingSourceTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.InsulationMaterialTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.SolarCollectorTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.ThermalBridgesTypeConfigReader;
+import pl.znr.heatmaster.config.dictionary.reader.TightnessConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.VentilationTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.WarmWaterConsumptionConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.WaterStorageDistributionConfigReader;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.reader.WindowTypeConfigReader;
 
 public class DictionaryConfigReader {
 
@@ -31,6 +33,10 @@ public class DictionaryConfigReader {
         dictionaryConfigurationReaders.addItem(new SolarCollectorTypeConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new ThermalBridgesTypeConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new VentilationTypeConfigReader(resourceManager));
+        dictionaryConfigurationReaders.addItem(new WindowTypeConfigReader(resourceManager));
+        dictionaryConfigurationReaders.addItem(new TightnessConfigReader(resourceManager));
+        dictionaryConfigurationReaders.addItem(new FoundationsTypeConfigReader(resourceManager));
+
         dictionaryConfigurationReaders.addItem(new HeatingSourceTypeConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new WaterStorageDistributionConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new WarmWaterConsumptionConfigReader(resourceManager));

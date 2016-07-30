@@ -8,12 +8,12 @@
     <fx:Declarations>
 
         <s:ArrayCollection id="tightnessList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE_TIGHTNESS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE_TIGHTNESS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW_TIGHTNESS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP_TIGHTNESS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP_TIGHTNESS}"/>
+            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE_TIGHTNESS}"/>
         </s:ArrayCollection>
 
     </fx:Declarations>
@@ -55,12 +55,25 @@
             _infoIconVisible = value;
         }
 
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = dataContext.houseData;
+                houseData.ventilationData.ventilationMethodObject = ventilationDropDown.selectedItem.data;
+
+                houseData.ventilationData.airTightness = tightnessDropDown.selectedItem.data;
+                heatMasterListener.initVentilationMethod(ventilationDropDown.selectedItem.data);
+            } catch (e:Error) {
+
+            }
+            return dataContext;
+        }
+
         override public function setupView(dataContext:DataContext):void {
             try {
                 groundType = HouseTypeHelper.isGroundType(dataContext.houseData.houseType);
                 var ventilationData:VentilationData = dataContext.houseData.ventilationData;
-                var tightness:Number = ventilationData.tightness;
-                var ventilationMethod:VentilationMethod = ventilationData.ventilationMethodObject
+                var tightness:AirTightness = ventilationData.airTightness;
+                var ventilationMethod:VentilationMethod = ventilationData.ventilationMethodObject;
                 setVentilationDropDownList(ventilationMethod);
                 setTightnessDropDownList(tightness);
                 groundHeatExchangerCheckBox.selected = ventilationData.gwcSet;
@@ -92,7 +105,7 @@
 
             var ventilationData:VentilationData = dataContext.houseData.ventilationData;
             ventilationData.ventilationMethodObject = context.model.ventilationMethod;
-            ventilationData.tightness = context.model.airTightness;
+            ventilationData.airTightness = context.model.airTightness;
             ventilationData.co2Sensor = context.model.carbonDioxideSensor;
         }
 
@@ -120,10 +133,11 @@
             }
         }
 
-        private function setTightnessDropDownList(tightness:Number):void {
+        private function setTightnessDropDownList(tightness:AirTightness):void {
             for (var i:int = 0; i < tightnessDropDown.dataProvider.length; i++) {
                 var item:Object = tightnessDropDown.dataProvider.getItemAt(i);
-                if (item.data == tightness) {
+                var at:AirTightness = item.data as AirTightness;
+                if (at.id == tightness.id) {
                     tightnessDropDown.selectedIndex = i;
                     break;
                 }
@@ -154,20 +168,6 @@
 
         private function groundHeatExchangerChanged():void {
             heatMasterListener.groundHeatExchangerEnabled(groundHeatExchangerCheckBox.selected);
-        }
-
-
-        override public function initData(dataContext:DataContext):DataContext {
-            try {
-                var houseData:HouseData = dataContext.houseData;
-                houseData.ventilationData.ventilationMethodObject = ventilationDropDown.selectedItem.data;
-
-                houseData.ventilationData.tightness = 2;
-                heatMasterListener.initVentilationMethod(ventilationDropDown.selectedItem.data);
-            } catch (e:Error) {
-
-            }
-            return dataContext;
         }
 
         private function getDropDownListData():int {

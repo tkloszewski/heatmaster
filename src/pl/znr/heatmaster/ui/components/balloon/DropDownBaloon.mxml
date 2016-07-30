@@ -156,7 +156,7 @@
                     houseData.ventilationData.ventilationFreq = dropDownList.selectedItem.data;
                 }
                 else if (type == DropDownType.TIGHTNESS) {
-                    houseData.ventilationData.tightness = dropDownList.selectedItem.data;
+                    houseData.ventilationData.airTightness = dropDownList.selectedItem.data;
                 }
                 else if (type == DropDownType.WARM_WATER) {
                     var intensity:Number = dropDownList.selectedItem.data.intensity;

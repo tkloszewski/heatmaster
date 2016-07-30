@@ -9,6 +9,7 @@ package pl.znr.heatmaster.core.model {
 import pl.znr.heatmaster.constants.combo.BuildingAge;
 import pl.znr.heatmaster.constants.combo.DoorType;
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
+import pl.znr.heatmaster.constants.combo.FoundationsType;
 import pl.znr.heatmaster.constants.combo.HouseStandardType;
 
 public class HouseData {
@@ -27,8 +28,7 @@ public class HouseData {
     private var _electricityConsumption:int = ElectricityConsumption.AVERAGE;
     private var _personNumber:int = 2;
 
-    private var _foundationsEnabled:Boolean;
-    private var _foundationsUValue:Number;
+    private var _foundationType:FoundationsType;
 
     private var _tIn:Number;
 
@@ -92,14 +92,6 @@ public class HouseData {
         _floorElement = value;
     }
 
-    public function get foundationsEnabled():Boolean {
-        return _foundationsEnabled;
-    }
-
-    public function set foundationsEnabled(value:Boolean):void {
-        _foundationsEnabled = value;
-    }
-
     public function get warmWaterData():WarmWaterData {
         return _warmWaterData;
     }
@@ -149,12 +141,12 @@ public class HouseData {
         _buildingAge = value;
     }
 
-    public function get foundationsUValue():Number {
-        return _foundationsUValue;
+    public function get foundationType():FoundationsType {
+        return _foundationType;
     }
 
-    public function set foundationsUValue(value:Number):void {
-        _foundationsUValue = value;
+    public function set foundationType(value:FoundationsType):void {
+        _foundationType = value;
     }
 
     public function get standardType():HouseStandardType {

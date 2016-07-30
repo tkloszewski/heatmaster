@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.cache {
+import pl.znr.heatmaster.constants.combo.AirTightness;
+import pl.znr.heatmaster.constants.combo.FoundationsType;
 import pl.znr.heatmaster.constants.combo.WindowsType;
 import pl.znr.heatmaster.core.*;
 
@@ -112,9 +114,8 @@ public class FlatDataContextBuilder {
             flatDataContext.buildingAgeId = houseData.buildingAge.getId();
             flatDataContext.doorTypeId = houseData.doorType.getId();
             flatDataContext.personNumber = houseData.personNumber;
-            flatDataContext.foundationsEnabled = houseData.foundationsEnabled;
+            flatDataContext.foundationsTypeId = houseData.foundationType.id;
             flatDataContext.tIn = houseData.tIn;
-            flatDataContext.foundationsUValue = houseData.foundationsUValue;
             flatDataContext.houseStandardTypeId = houseData.standardType.getId();
         } catch (e:Error) {
             Alert.show("Error writing generalHouseData: " + e.message);
@@ -143,7 +144,7 @@ public class FlatDataContextBuilder {
             flatDataContext.ventilationFreq = ventilationData.ventilationFreq;
             flatDataContext.recuperateEfficiency = ventilationData.ventilationMethodObject.efficiency;
             flatDataContext.co2Sensor = ventilationData.co2Sensor;
-            flatDataContext.tightness = ventilationData.tightness;
+            flatDataContext.tightnessId = ventilationData.airTightness.id;
         } catch (e:Error) {
             Alert.show("Error wring ventilationData: " + e.message);
         }
@@ -319,8 +320,7 @@ public class FlatDataContextBuilder {
             houseData.buildingAge = BuildingAge.getBuildingAgeById(flatDataContext.buildingAgeId);
             houseData.doorType = DoorType.getDoorTypeById(flatDataContext.doorTypeId);
             houseData.personNumber = flatDataContext.personNumber;
-            houseData.foundationsEnabled = flatDataContext.foundationsEnabled;
-            houseData.foundationsUValue = flatDataContext.foundationsUValue;
+            houseData.foundationType = FoundationsType.getFoundationById(flatDataContext.foundationsTypeId);
             houseData.tIn = flatDataContext.tIn;
             houseData.standardType = HouseStandardType.getHouseStandardTypeById(flatDataContext.houseStandardTypeId);
         } catch (e:Error) {
@@ -348,7 +348,7 @@ public class FlatDataContextBuilder {
             ventilationData.ventilationMethodObject = VentilationMethod.getVentilationMethodForEfficiency(flatDataContext.recuperateEfficiency);
             ventilationData.ventilationFreq = flatDataContext.ventilationFreq;
             ventilationData.co2Sensor = flatDataContext.co2Sensor;
-            ventilationData.tightness = flatDataContext.tightness;
+            ventilationData.airTightness = AirTightness.getAirTightnessById(flatDataContext.tightnessId);
         } catch (e:Error) {
             Alert.show("Error building ventilationData: " + ventilationData);
         }

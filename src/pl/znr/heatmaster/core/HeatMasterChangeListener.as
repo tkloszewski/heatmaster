@@ -6,62 +6,42 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core {
-import avmplus.accessorXml;
-
 import mx.collections.ArrayList;
-
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.HeatMaster;
-
 import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.config.CountryItemHelper;
 import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
-import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
 import pl.znr.heatmaster.config.RegionItem;
 import pl.znr.heatmaster.config.StationItem;
 import pl.znr.heatmaster.constants.StateConstants;
-
+import pl.znr.heatmaster.constants.combo.AirTightness;
 import pl.znr.heatmaster.constants.combo.BuildingAge;
-
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 import pl.znr.heatmaster.constants.combo.DoorType;
 import pl.znr.heatmaster.constants.combo.FoundationsType;
 import pl.znr.heatmaster.constants.combo.HouseStandardType;
-
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
 import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
 import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.cache.CachedDataContextManager;
-import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.HeatMasterController;
-import pl.znr.heatmaster.core.HouseStandardTypeContext;
-import pl.znr.heatmaster.core.IBuildingAgeChangeListener;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.converter.ConverterHelper;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.model.FloorElement;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
-import pl.znr.heatmaster.core.model.InsolationData;
 import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.model.RoofElement;
 import pl.znr.heatmaster.core.model.SolarCollectorData;
 import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.model.WallElement;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 import pl.znr.heatmaster.core.model.WindowElement;
 import pl.znr.heatmaster.core.state.CalculationStateController;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
-import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
-import pl.znr.heatmaster.core.HouseStandardChangeListener;
-import pl.znr.heatmaster.core.IHeatMasterListenerAware;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
 import pl.znr.heatmaster.util.HouseStandardModelContainer;
@@ -445,12 +425,11 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function foundationsChanged(enabled:Boolean,uValue:Number,type:int,insulationElement:InsulationElement):void {
+    public function foundationsChanged(foundationsType:FoundationsType,insulationElement:InsulationElement):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.foundationsEnabled = enabled;
-        dataContext.houseData.foundationsUValue = uValue;
-        housePanel.foundationsChanged(enabled,enabled);
-        housePanel.insulationElementChanged(insulationElement,InsulationElementType.FLOOR,type);
+        dataContext.houseData.foundationType = foundationsType;
+        housePanel.foundationsChanged(foundationsType.isFoundationsEnabled(),foundationsType.isFoundationsEnabled());
+        housePanel.insulationElementChanged(insulationElement,InsulationElementType.FLOOR,foundationsType);
         heatMasterController.calculate();
         writeCache(dataContext);
     }
@@ -470,14 +449,14 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function tightnessChanged(tightness:Number):void {
+    public function tightnessChanged(tightness:AirTightness):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.ventilationData.tightness = tightness;
+        dataContext.houseData.ventilationData.airTightness = tightness;
         heatMasterController.calculate();
         writeCache(dataContext);
     }
 
-    public function insulationElementChanged(insulationElement:InsulationElement,type:int,calculationRequired:Boolean = true,writeCacheRequired:Boolean = true,foundationsType:int = FoundationsType.TRADITIONAL_INSULATED):void {
+    public function insulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:FoundationsType,calculationRequired:Boolean = true,writeCacheRequired:Boolean = true):void {
         var dataContext:DataContext =  heatMasterController.getDataContext();
         if(type == InsulationElementType.WALL){
             dataContext.houseData.wallElement = insulationElement;
@@ -487,6 +466,10 @@ public class HeatMasterChangeListener {
         }
         else if(type == InsulationElementType.ROOF){
             dataContext.houseData.roofElement = insulationElement;
+        }
+
+        if(foundationsType == null){
+           foundationsType = FoundationsType.TRADITIONAL_INSULATED;
         }
 
         housePanel.insulationElementChanged(insulationElement,type,foundationsType);
@@ -620,7 +603,7 @@ public class HeatMasterChangeListener {
         housePanel.ventilationTypeChanged(ventMethod.type == VentilationMethod.MECHANICAL);
     }
 
-    public function initInsulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:int):void {
+    public function initInsulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:FoundationsType):void {
         housePanel.insulationElementChanged(insulationElement,type,foundationsType);
     }
 

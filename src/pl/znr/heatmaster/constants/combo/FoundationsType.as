@@ -6,39 +6,45 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.constants.combo {
-import flash.filters.BitmapFilterType;
+import flash.utils.Dictionary;
 
-public class FoundationsType {
+public class FoundationsType extends BaseComboObject{
 
-    public static const TRADITIONAL:int = 1;
-    public static const SLAB:int = 2;
-    public static const TRADITIONAL_INSULATED:int = 3;
+    private static const TRADITIONAL_TYPE:int = 1;
+    private static const SLAB_TYPE:int = 2;
 
-    public function FoundationsType() {
+    public static const valuesMap:Dictionary = new Dictionary();
+
+    public static const TRADITIONAL:FoundationsType = new FoundationsType("hm.foundations.traditional",TRADITIONAL_TYPE,0.75);
+    public static const TRADITIONAL_INSULATED:FoundationsType = new FoundationsType("hm.foundations.traditional_insulated",TRADITIONAL_TYPE,0.5);
+    public static const SLAB:FoundationsType = new FoundationsType("hm.foundations.slab",SLAB_TYPE,0.0);
+
+    private var _uValue:Number;
+    private var _fType:int;
+
+    public function FoundationsType(id:String,fType:int,uValue:Number) {
+        super(id);
+        valuesMap[id] = this;
+        this._fType = fType;
+        this._uValue = uValue;
     }
 
-    public static function getUValueForTraditionalType(type:int):Number{
-      if(type == TRADITIONAL){
-         return 0.75;
-      }
-      if(type == TRADITIONAL_INSULATED){
-          return 0.5;
-      }
-      return 0.0;
-   }
-
-    public static function getTypeForUValue(uValue:Number):int{
-        if(uValue == 0.75){
-           return TRADITIONAL;
-        }
-        if(uValue == 0.5){
-           return TRADITIONAL_INSULATED;
-        }
-        return SLAB;
+    public function get uValue():Number {
+        return _uValue;
     }
 
-    public static function isFoundationsEnabledForType(fType:int){
-        return fType == TRADITIONAL || fType == TRADITIONAL_INSULATED;
+    public function get fType():int {
+        return _fType;
     }
+
+    public function isFoundationsEnabled():Boolean{
+        return fType == TRADITIONAL_TYPE;
+    }
+
+    public static function getFoundationById(id:String):FoundationsType {
+        return valuesMap[id] as FoundationsType;
+    }
+
+
 }
 }

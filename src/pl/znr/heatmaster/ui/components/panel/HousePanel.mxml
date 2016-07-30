@@ -129,7 +129,7 @@
             }
 
             this.groundHeatExchangerEnabled = gwcSet;
-            this.foundationsEnabled = dataContext.houseData.foundationsEnabled;
+            this.foundationsEnabled = dataContext.houseData.foundationType.isFoundationsEnabled();
 
             this.houseTypeChanged(houseType);
             this.collectorDataChanged(collectorData);
@@ -146,13 +146,13 @@
         }
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
-            var foundationsEnabled:Boolean = FoundationsType.isFoundationsEnabledForType(context.model.foundationsType);
+            var foundationsEnabled:Boolean = context.model.foundationsType.isFoundationsEnabled();
 
-            this.insulationElementChanged(context.wallInsulationElement,InsulationElementType.WALL,context.model.foundationsType);
-            this.insulationElementChanged(context.roofInsulationElement,InsulationElementType.ROOF,context.model.foundationsType);
-            this.insulationElementChanged(context.floorInsulationElement,InsulationElementType.FLOOR,context.model.foundationsType);
+            this.insulationElementChanged(context.wallInsulationElement, InsulationElementType.WALL, context.model.foundationsType);
+            this.insulationElementChanged(context.roofInsulationElement, InsulationElementType.ROOF, context.model.foundationsType);
+            this.insulationElementChanged(context.floorInsulationElement, InsulationElementType.FLOOR, context.model.foundationsType);
             this.collectorDataChanged(context.model.solarCollectorData);
-            this.foundationsChanged(HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && foundationsEnabled,foundationsEnabled);
+            this.foundationsChanged(HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && foundationsEnabled, foundationsEnabled);
 
             this.shuttersEnabled = context.model.shuttersEnabled;
 
@@ -160,11 +160,11 @@
 
             var windowsOpen:Boolean = false;
             var ventGravitational:Boolean = context.model.ventilationMethod.type == VentilationMethod.GRAVITATIONAL;
-            if(ventGravitational){
-               var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
-               if(ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN || ventFreq == VentilationFrequency.NON_STOP){
-                  windowsOpen = true;
-               }
+            if (ventGravitational) {
+                var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
+                if (ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN || ventFreq == VentilationFrequency.NON_STOP) {
+                    windowsOpen = true;
+                }
             }
 
             this.setOpenWindowVisible(windowsOpen);
@@ -201,7 +201,7 @@
         }
 
 
-        public function insulationElementChanged(insulationElement:InsulationElement, type:int, foundationsType:int):void {
+        public function insulationElementChanged(insulationElement:InsulationElement, type:int, foundationsType:FoundationsType):void {
             var newWidth:int = 0.75 * insulationElement.width;
             if (type == InsulationElementType.WALL) {
                 var oldRightWidth:Number = wallRightInsulationImg.width;
@@ -256,7 +256,7 @@
             }
             else if (type == InsulationElementType.FLOOR) {
                 var oldFloorHeight:Number = floorInsulationImg.height;
-                var wallExtension:int = foundationsType != FoundationsType.TRADITIONAL_INSULATED ? newWidth : FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION;
+                var wallExtension:int = foundationsType.id != FoundationsType.TRADITIONAL_INSULATED.id ? newWidth : FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION;
                 wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + wallExtension;
                 if (!HouseTypeHelper.hasNeighboursUp(this.currentHouseType)) {
                     wallRightInsulationImg.height = originalInsulationRightHeight + wallExtension;
@@ -320,7 +320,7 @@
             collectorSolarGainArrow.visible = visible;
         }
 
-        public function foundationsChanged(visible:Boolean,enabled:Boolean):void {
+        public function foundationsChanged(visible:Boolean, enabled:Boolean):void {
             foundationsVisible = visible;
             foundationsEnabled = enabled;
         }

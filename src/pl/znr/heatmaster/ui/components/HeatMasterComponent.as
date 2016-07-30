@@ -17,6 +17,7 @@ import mx.utils.StringUtil;
 import org.osmf.utils.OSMFStrings;
 
 import pl.znr.heatmaster.constants.StateConstants;
+import pl.znr.heatmaster.constants.combo.BaseComboObject;
 
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.IHeatMasterListenerAware;
@@ -82,6 +83,17 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
         for (var i:int = 0; i < dataItemList.length; i++) {
             var item:Object = dataItemList.getItemAt(i);
             if (item.data == dataObject) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    protected function getComboItemIndexForCollectionById(id:String,dataItemList:ArrayCollection):int {
+        for (var i:int = 0; i < dataItemList.length; i++) {
+            var item:Object = dataItemList.getItemAt(i);
+            var data:BaseComboObject = item.data as BaseComboObject
+            if (data.id == id) {
                 return i;
             }
         }

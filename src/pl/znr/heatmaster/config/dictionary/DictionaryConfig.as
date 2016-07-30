@@ -20,6 +20,9 @@ public class DictionaryConfig {
     private var _waterStorageDistributionConfiguration:WaterStorageDistributionConfig;
     private var _waterConsumptionConfiguration:WarmWaterConsumptionConfig;
     private var _ventilationTypeConfiguration:VentilationTypeConfig;
+    private var _windowTypeConfiguration:WindowTypeConfig;
+    private var _tightnessConfiguration:TightnessConfig;
+    private var _foundationConfiguration:FoundationsTypeConfig;
 
     public function DictionaryConfig() {
     }
@@ -88,6 +91,30 @@ public class DictionaryConfig {
 
     public function set ventilationTypeConfiguration(value:VentilationTypeConfig):void {
         _ventilationTypeConfiguration = value;
+    }
+
+    public function get windowTypeConfiguration():WindowTypeConfig {
+        return _windowTypeConfiguration;
+    }
+
+    public function set windowTypeConfiguration(value:WindowTypeConfig):void {
+        _windowTypeConfiguration = value;
+    }
+
+    public function get tightnessConfiguration():TightnessConfig {
+        return _tightnessConfiguration;
+    }
+
+    public function set tightnessConfiguration(value:TightnessConfig):void {
+        _tightnessConfiguration = value;
+    }
+
+    public function get foundationConfiguration():FoundationsTypeConfig {
+        return _foundationConfiguration;
+    }
+
+    public function set foundationConfiguration(value:FoundationsTypeConfig):void {
+        _foundationConfiguration = value;
     }
 }
 }

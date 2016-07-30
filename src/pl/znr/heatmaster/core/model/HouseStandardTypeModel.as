@@ -30,10 +30,10 @@ public class HouseStandardTypeModel {
 
     private var _floorInsulationMaterialType:InsulationMaterialType;
     private var _floorUValue:Number;
-    private var _foundationsType:int;
+    private var _foundationsType:FoundationsType;
 
     private var _ventilationMethod:VentilationMethod;
-    private var _airTightness:Number;
+    private var _airTightness:AirTightness;
 
     private var _thermalBridges:ThermalBridgesType;
     private var _windowsType:WindowsType;
@@ -53,13 +53,13 @@ public class HouseStandardTypeModel {
     private var _carbonDioxideSensor:Boolean;
 
     public function HouseStandardTypeModel(roofInsulationMaterialType:InsulationMaterialType, wallInsulationMaterialType:InsulationMaterialType,
-                                           floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:int,
+                                           floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:FoundationsType,
                                            thermalBridges:ThermalBridgesType, doorType:DoorType, windowsType:WindowsType,
                                            heatingSourceType:HeatingSourceType,multiFamilyHeatingSourceType:HeatingSourceType,
                                            warmWaterHeatingSourceType:HeatingSourceType,multiFamilyWarmWaterHeatingSourceType:HeatingSourceType,
                                            solarCollectorData:SolarCollectorData, warmWaterDistribution:WarmWaterDistribution,
                                            warmWaterStorage:WarmWaterStorage, roofUValue:Number, wallUValue:Number, floorUValue:Number,
-                                           airTightness:Number, southWindowSurfaceFactor:Number, northWindowSurfaceFactor:Number, shuttersEnabled:Boolean,carbonDioxideSensor:Boolean) {
+                                           airTightness:AirTightness, southWindowSurfaceFactor:Number, northWindowSurfaceFactor:Number, shuttersEnabled:Boolean,carbonDioxideSensor:Boolean) {
 
 
         _roofInsulationMaterialType = roofInsulationMaterialType;
@@ -103,7 +103,7 @@ public class HouseStandardTypeModel {
         return _ventilationMethod;
     }
 
-    public function get foundationsType():int {
+    public function get foundationsType():FoundationsType {
         return _foundationsType;
     }
 
@@ -111,7 +111,7 @@ public class HouseStandardTypeModel {
         return _thermalBridges;
     }
 
-    public function get airTightness():Number {
+    public function get airTightness():AirTightness {
         return _airTightness;
     }
 

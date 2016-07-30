@@ -34,12 +34,40 @@
         <ventilation_type id="hm.ventilation-type.mechanical_85" label_key="hm.dropdown.ventilation.mechanical_85" type="2" efficiency="0.85"/>
     </ventilation_types>
 
+    <!--Tightness configuration-->
+    <tightness_configuration>
+        <tightness_item id="hm.tightness.very_loose" label_key="hm.dropdown.tightness.very_poor" value="10"/>
+        <tightness_item id="hm.tightness.loose" label_key="hm.dropdown.tightness.poor" value="7"/>
+        <tightness_item id="hm.tightness.standard_new" label_key="hm.dropdown.tightness.new_typical" value="5"/>
+        <tightness_item id="hm.tightness.tight_no_recup" label_key="hm.dropdown.tightness.tight_no_recuperation" value="3"/>
+        <tightness_item id="hm.tightness.tight_recup" label_key="hm.dropdown.tightness.tight_recuperation" value="1.5"/>
+        <tightness_item id="hm.tightness.standard_passive" label_key="hm.dropdown.tightness.passive" value="0.6"/>
+    </tightness_configuration>
+
     <!--Thermal bridges types configuration-->
-    <thermal_bridges_types>
+    <thermal_bridges_types selected_index="0">
         <thermal_bridges_type id="hm.thermal-bridge.max" label_key="hm.dropdown.windows.thermal_brdiges_max" u_value="0.45"/>
         <thermal_bridges_type id="hm.thermal-bridge.avg" label_key="hm.dropdown.windows.thermal_brdiges_avg" u_value="0.2"/>
         <thermal_bridges_type id="hm.thermal-bridge.min" label_key="hm.dropdown.windows.thermal_brdiges_min" u_value="0.08"/>
     </thermal_bridges_types>
+
+    <!--Window types configuration-->
+    <window_types selected_index="2">
+        <window_type id="hm.windows.type.one_pane" label_key="hm.dropdown.windows.one_pane" u_value="5.2" win_gain="0.85"/>
+        <window_type id="hm.windows.type.two_pane_old" label_key="hm.dropdown.windows.two_panes.old" u_value="2.6" win_gain="0.75"/>
+        <window_type id="hm.windows.type.two_pane_new" label_key="hm.dropdown.windows.two_panes.new" u_value="1.4" win_gain="0.6"/>
+        <window_type id="hm.windows.type.three_pane" label_key="hm.dropdown.windows.three_panes" u_value="0.9" win_gain="0.55"/>
+        <window_type id="hm.windows.type.three_pane_special" label_key="hm.dropdow.windows.three_panes.special" u_value="0.7" win_gain="0.62"/>
+    </window_types>
+
+    <!--Foundation configuration
+      type: 1=>TRADITIONAL, 2=>SLAB
+    -->
+    <foundation_types selected_index="0">
+        <foundation_type id="hm.foundations.traditional" label_key="hm.dropdown.foundations.traditional" type="1" u_value="0.75"/>
+        <foundation_type id="hm.foundations.traditional_insulated" label_key="hm.dropdown.foundations.traditional_insulated" type="1" u_value="0.5"/>
+        <foundation_type id="hm.foundations.slab" label_key="hm.dropdown.foundations.slab" type="2" u_value="0.0"/>
+    </foundation_types>
 
 
     <!--Heating source types configuration
