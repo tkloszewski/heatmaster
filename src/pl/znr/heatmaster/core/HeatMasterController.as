@@ -9,6 +9,10 @@ package pl.znr.heatmaster.core {
 import mx.collections.ArrayList;
 import mx.controls.Alert;
 
+import pl.znr.heatmaster.config.BusinessConfiguration;
+
+import pl.znr.heatmaster.config.BusinessConfigurationReaderListener;
+
 import pl.znr.heatmaster.config.CountryItem;
 
 import pl.znr.heatmaster.constants.GlobalValues;
@@ -32,6 +36,7 @@ public class HeatMasterController {
     private var reportDataCalculator:ReportDataCalculator = new ReportDataCalculator();
     private var converterService:ConverterService = new ConverterService();
 
+    private var businessConfigurationListeners:ArrayList = new ArrayList();
     private var dataContextListeners:ArrayList = new ArrayList();
     private var resultDataListeners:ArrayList = new ArrayList();
 
@@ -42,12 +47,23 @@ public class HeatMasterController {
 
     private var started:Boolean = false;
 
+    public function addBusinessConfigurationListener(listener:BusinessConfigurationReaderListener):void {
+        businessConfigurationListeners.addItem(listener);
+    }
+
     public function addDataContextListener(dataContextListener:IDataContextAware):void {
         dataContextListeners.addItem(dataContextListener);
     }
 
     public function addResultDataListener(resultDataListener:IResultDataAware):void {
         resultDataListeners.addItem(resultDataListener);
+    }
+
+    public function propagateBusinessConfiguration(businessConfig:BusinessConfiguration):void {
+        for(var i:int = 0;i < businessConfigurationListeners.length;i++){
+            var businessConfigListener:BusinessConfigurationReaderListener = businessConfigurationListeners.getItemAt(i) as BusinessConfigurationReaderListener;
+            businessConfigListener.configurationRead(businessConfig);
+        }
     }
 
     public function getDataContext():DataContext {

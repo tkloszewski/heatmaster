@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.cache {
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
 import pl.znr.heatmaster.constants.combo.AirTightness;
 import pl.znr.heatmaster.constants.combo.FoundationsType;
 import pl.znr.heatmaster.constants.combo.WindowsType;
@@ -322,7 +323,7 @@ public class FlatDataContextBuilder {
             houseData.personNumber = flatDataContext.personNumber;
             houseData.foundationType = FoundationsType.getFoundationById(flatDataContext.foundationsTypeId);
             houseData.tIn = flatDataContext.tIn;
-            houseData.standardType = HouseStandardType.getHouseStandardTypeById(flatDataContext.houseStandardTypeId);
+            houseData.standardType = HouseStandardTypeItem.getHouseStandardTypeItemById(flatDataContext.houseStandardTypeId);
         } catch (e:Error) {
             Alert.show("Error building generalHouseData: " + e.message)
         }

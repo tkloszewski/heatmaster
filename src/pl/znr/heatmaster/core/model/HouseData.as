@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
 import pl.znr.heatmaster.constants.combo.BuildingAge;
 import pl.znr.heatmaster.constants.combo.DoorType;
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
@@ -14,7 +15,7 @@ import pl.znr.heatmaster.constants.combo.HouseStandardType;
 
 public class HouseData {
     private var _houseType:int;
-    private var _standardType:HouseStandardType;
+    private var _standardType:HouseStandardTypeItem;
     private var _buildingAge:BuildingAge;
 
     private var _surfaceData:SurfaceData;
@@ -149,11 +150,11 @@ public class HouseData {
         _foundationType = value;
     }
 
-    public function get standardType():HouseStandardType {
+    public function get standardType():HouseStandardTypeItem {
         return _standardType;
     }
 
-    public function set standardType(value:HouseStandardType):void {
+    public function set standardType(value:HouseStandardTypeItem):void {
         _standardType = value;
     }
 }

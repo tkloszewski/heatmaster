@@ -110,6 +110,7 @@
 
         import pl.znr.heatmaster.HeatMaster;
         import pl.znr.heatmaster.config.CountryItem;
+        import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.NaturalUnit;
         import pl.znr.heatmaster.constants.combo.HeatingSourceType;
@@ -405,12 +406,12 @@
             return 0;
         }
 
-        public function houseTypeChanged(houseType:int, standardType:HouseStandardType):WarmWaterData {
+        public function houseTypeChanged(houseType:int, standardTypeItem:HouseStandardTypeItem):WarmWaterData {
             var currentHeatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type;
             var warmWaterHeatingSourceType:HeatingSourceType = warmWaterHeatingTypeDropDownList.selectedItem.data.type;
             var warmWaterDistribution:WarmWaterDistribution = warmWaterDistributionDropDownList.selectedItem.data;
 
-            var houseStandardModel:HouseStandardTypeModel = HouseStandardModelContainer.getHouseStandardTypeModelForStandardType(standardType);
+            var houseStandardModel:HouseStandardTypeModel = standardTypeItem.houseStandardTypeModel;
 
             var heatingTypeChanged:Boolean = false;
 
@@ -993,7 +994,7 @@
             for (var i:int = 0; i < dataItemList.length; i++) {
                 var item:Object = dataItemList.getItemAt(i);
                 var itemType:HeatingSourceTypeItem = item.data as HeatingSourceTypeItem;
-                if (itemType.type == dataObject) {
+                if (itemType.type.id == dataObject.id) {
                     return i;
                 }
             }
