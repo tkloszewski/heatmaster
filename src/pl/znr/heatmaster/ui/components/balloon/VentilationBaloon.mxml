@@ -126,7 +126,7 @@
         private function setVentilationDropDownList(ventilationMethod:VentilationMethod):void {
             for (var i:int = 0; i < ventilationDropDown.dataProvider.length; i++) {
                 var item:Object = ventilationDropDown.dataProvider.getItemAt(i);
-                if (item.data == ventilationMethod) {
+                if (item.data.id == ventilationMethod.id) {
                     ventilationDropDown.selectedIndex = i;
                     break;
                 }

@@ -35,10 +35,10 @@ public class VentilationTypeConfigReader extends AbstractDictionaryReader{
 
     private function readVentilationType(ventilationTypeXML:XML):VentilationMethod {
         var id:String = ventilationTypeXML.attribute("id");
-        var type:int = Number(ventilationTypeXML.attribute("type"));
+        var ventType:int = ventilationTypeXML.attribute("type") == "1" ? VentilationMethod.GRAVITATIONAL : VentilationMethod.MECHANICAL;
         var efficiency:Number = Number(ventilationTypeXML.attribute("efficiency"));
 
-        var ventilationMethod:VentilationMethod = new VentilationMethod(id,type,efficiency);
+        var ventilationMethod:VentilationMethod = new VentilationMethod(id,ventType,efficiency);
         fillBaseProperties(ventilationTypeXML,ventilationMethod);
 
         return ventilationMethod;

@@ -59,7 +59,7 @@ public class VentilationEnergyCalculator extends BaseVentilationEnergyCalculator
             }
         }
         else {
-            if((ventData.ventilationMethodObject == VentilationMethod.NATURAL_REGULATED && tOut >= 12) || (ventData.ventilationMethodObject == VentilationMethod.NATURAL)){
+            if((ventData.ventilationMethodObject.id == VentilationMethod.NATURAL_REGULATED.id && tOut >= 12) || (ventData.ventilationMethodObject.id == VentilationMethod.NATURAL.id)){
                 var tDiff:Number = Math.max(0,houseData.tIn - tInEffective);
                 airVolume = airVolume * Math.pow((tDiff)/8,0.6);
             }
