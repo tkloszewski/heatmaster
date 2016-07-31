@@ -9,6 +9,7 @@ import pl.znr.heatmaster.config.dictionary.reader.DictionaryReader;
 import pl.znr.heatmaster.config.dictionary.reader.DoorTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.FoundationsTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.HeatingSourceTypeConfigReader;
+import pl.znr.heatmaster.config.dictionary.reader.HouseStandardTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.InsulationMaterialTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.SolarCollectorTypeConfigReader;
 import pl.znr.heatmaster.config.dictionary.reader.ThermalBridgesTypeConfigReader;
@@ -23,6 +24,7 @@ public class DictionaryConfigReader {
     private var dictionaryXML:XML;
     private var resourceManager:IResourceManager;
     private var dictionaryConfigurationReaders:ArrayCollection = new ArrayCollection();
+    private var houseStandardConfigurationReader:HouseStandardTypeConfigReader;
 
     public function DictionaryConfigReader(dictionaryXML:XML, resourceManager:IResourceManager) {
         this.dictionaryXML = dictionaryXML;
@@ -40,6 +42,8 @@ public class DictionaryConfigReader {
         dictionaryConfigurationReaders.addItem(new HeatingSourceTypeConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new WaterStorageDistributionConfigReader(resourceManager));
         dictionaryConfigurationReaders.addItem(new WarmWaterConsumptionConfigReader(resourceManager));
+
+        houseStandardConfigurationReader = new HouseStandardTypeConfigReader(resourceManager);
     }
 
     public function readConfig():DictionaryConfig {
@@ -49,6 +53,8 @@ public class DictionaryConfigReader {
             var dictionaryReader:DictionaryReader = dictionaryConfigurationReaders.getItemAt(i) as DictionaryReader;
             dictionaryConfig = dictionaryReader.readXMLConfig(dictionaryConfig,dictionaryXML);
         }
+
+        dictionaryConfig = houseStandardConfigurationReader.readXMLConfig(dictionaryConfig,dictionaryXML);
 
         return dictionaryConfig;
     }

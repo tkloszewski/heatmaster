@@ -10,11 +10,13 @@ import mx.collections.ArrayList;
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.HeatMaster;
+import pl.znr.heatmaster.config.BusinessConfiguration;
 import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.config.CountryItemHelper;
-import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
+import pl.znr.heatmaster.config.CountryStationConfigurationReader;
 import pl.znr.heatmaster.config.RegionItem;
 import pl.znr.heatmaster.config.StationItem;
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
 import pl.znr.heatmaster.constants.StateConstants;
 import pl.znr.heatmaster.constants.combo.AirTightness;
 import pl.znr.heatmaster.constants.combo.BuildingAge;
@@ -55,12 +57,13 @@ public class HeatMasterChangeListener {
     private var heatingPopup:HeatingPopup;
     private var housePopup:HousePopup;
     private var energyMeter:EnergyMeter;
-    private var configurationReader:HeatMasterConfigurationReader;
 
     private var buildingAgeChangeListeners:ArrayList = new ArrayList();
     private var houseStandardChangeListeners:ArrayList = new ArrayList();
 
     private var cacheEnabled:Boolean = false;
+
+    private var businessConfiguration:BusinessConfiguration;
 
     public function HeatMasterChangeListener() {
     }
@@ -73,8 +76,8 @@ public class HeatMasterChangeListener {
         this.calculationStateController = calculationStateController;
     }
 
-    public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
-        this.configurationReader = confReader;
+    public function setBusinessConfiguration(businessConfiguration:BusinessConfiguration):void {
+        this.businessConfiguration = businessConfiguration;
     }
 
     public function setHousePanel(housePanel:HousePanel):void {
@@ -156,20 +159,19 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function houseStandardChanged(standardType:HouseStandardType):void {
+    public function houseStandardItemChanged(houseStandardTypeItem:HouseStandardTypeItem):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         var houseData:HouseData = dataContext.houseData;
-        houseData.standardType = standardType;
+        houseData.standardType = houseStandardTypeItem;
 
-        dataContext = applyHouseStandardChanged(dataContext,standardType);
+        dataContext = applyHouseStandardChanged(dataContext,houseStandardTypeItem);
 
         heatMasterController.calculate();
         writeCache(dataContext);
     }
 
-    public function applyHouseStandardChanged(dataContext:DataContext,standardType:HouseStandardType):DataContext {
-        var houseStandardTypeModel:HouseStandardTypeModel = HouseStandardModelContainer.getHouseStandardTypeModelForStandardType(standardType);
-        var houseStandardContext:HouseStandardTypeContext = new HouseStandardTypeContext(houseStandardTypeModel);
+    public function applyHouseStandardChanged(dataContext:DataContext,standardTypeItem:HouseStandardTypeItem):DataContext {
+        var houseStandardContext:HouseStandardTypeContext = new HouseStandardTypeContext(standardTypeItem.houseStandardTypeModel);
 
         for(var i:int = 0; i < houseStandardChangeListeners.length;i++){
             var standardChangeListener:HouseStandardChangeListener = houseStandardChangeListeners.getItemAt(i) as HouseStandardChangeListener;
@@ -244,7 +246,7 @@ public class HeatMasterChangeListener {
         conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
         conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
         conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,localCurrency);
-        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
         if(newDataContext != null){
             newDataContext.conversionData.pricePerKwh = conversionData.pricePerKwh;
@@ -531,7 +533,7 @@ public class HeatMasterChangeListener {
         conversionData.selectedUnit = newUnit;
         conversionData.unitName = unitName;
         conversionData.shortUnitName = shortUnitName;
-        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
         heatMasterController.conversionDataChanged(!conversionNotRequired);
         writeCache(heatMasterController.getDataContext());
@@ -558,7 +560,7 @@ public class HeatMasterChangeListener {
         dataContextToChange.conversionData.selectedUnit = newUnit;
         dataContextToChange.conversionData.unitName = unitName;
         dataContextToChange.conversionData.shortUnitName = shortUnitName;
-        dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
 
         cacheManager.writeToSelectedStateCache(dataContextToChange,previousCalcState);

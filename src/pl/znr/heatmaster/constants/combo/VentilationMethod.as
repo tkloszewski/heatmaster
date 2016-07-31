@@ -6,15 +6,19 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.constants.combo {
+import flash.utils.Dictionary;
+
 import mx.utils.NameUtil;
 
 public class VentilationMethod extends BaseComboObject{
 
+    private static const valuesMap:Dictionary = new Dictionary();
 
     public function VentilationMethod(id:String,type:int, efficiency:Number) {
         super(id);
         _type = type;
         _efficiency = efficiency;
+        valuesMap[id] = this;
     }
 
     private var _type:int;
@@ -38,6 +42,10 @@ public class VentilationMethod extends BaseComboObject{
 
     public static const GRAVITATIONAL:int = 1;
     public static const MECHANICAL:int = 2;
+
+    public static function getVentilationMethodById(id:String):VentilationMethod {
+        return valuesMap[id] as VentilationMethod;
+    }
 
     public static function getVentilationMethodForEfficiency(efficiency:Number):VentilationMethod {
         if(NATURAL.efficiency == efficiency){

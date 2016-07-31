@@ -6,14 +6,11 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.constants.combo {
-import mx.collections.ArrayList;
-
-import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
-import pl.znr.heatmaster.config.dictionary.DoorTypeConfig;
+import flash.utils.Dictionary;
 
 public class DoorType extends BaseComboObject{
 
-    private static var items:ArrayList = new ArrayList();
+    private static const valuesMap:Dictionary = new Dictionary();
 
     private var _uValue:Number;
 
@@ -23,19 +20,13 @@ public class DoorType extends BaseComboObject{
     public static var SUPER_ENERGY_SAVING:DoorType = new DoorType("hm.door.super_energy_saving",0.8);
 
     public static function getDoorTypeById(id:String):DoorType {
-        for(var i:int = 0;i < items.length;i++){
-            var doorType:DoorType = items.getItemAt(i) as DoorType;
-            if(doorType.getId() == id){
-                return doorType;
-            }
-        }
-        return null;
+        return valuesMap[id] as DoorType;
     }
 
     function DoorType(id:String,uValue:Number) {
         super(id);
         _uValue = uValue;
-        items.addItem(this);
+        valuesMap[id] = this;
     }
 
     public function get uValue():Number {

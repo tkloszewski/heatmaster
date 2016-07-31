@@ -23,6 +23,7 @@ public class DictionaryConfig {
     private var _windowTypeConfiguration:WindowTypeConfig;
     private var _tightnessConfiguration:TightnessConfig;
     private var _foundationConfiguration:FoundationsTypeConfig;
+    private var _houseStandardTypeConfiguration:HouseStandardTypeConfig;
 
     public function DictionaryConfig() {
     }
@@ -115,6 +116,14 @@ public class DictionaryConfig {
 
     public function set foundationConfiguration(value:FoundationsTypeConfig):void {
         _foundationConfiguration = value;
+    }
+
+    public function get houseStandardTypeConfiguration():HouseStandardTypeConfig {
+        return _houseStandardTypeConfiguration;
+    }
+
+    public function set houseStandardTypeConfiguration(value:HouseStandardTypeConfig):void {
+        _houseStandardTypeConfiguration = value;
     }
 }
 }

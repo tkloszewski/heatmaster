@@ -171,7 +171,7 @@ public class HouseStandardModelContainer {
             HeatingSourceType.HEAT_PUMP,
             HeatingSourceType.HEAT_PUMP,
             HeatingSourceType.HEAT_PUMP,
-            SolarCollectorData.createSolarCollectorDataWithCount(SolarCollectorType.VACUUM,4.0),
+            SolarCollectorData.createSolarCollectorDataWithCountCalculated(SolarCollectorType.VACUUM,4.0),
             WarmWaterDistribution.WELL_ISOLATED_PIPES,
             WarmWaterStorage.MODERN_STORAGE,
             0.09,

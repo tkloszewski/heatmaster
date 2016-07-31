@@ -280,5 +280,152 @@
 
 
 
+    <!--Configuration for standard types
+    attributes must point to valid xml element ids
+    -->
+    <standard_type_configuration>
+        <!--Standard  old non insulated-->
+        <standard_type id="hm.standard_type.old_non_insulated" label_key="hm.dropdown.house.standard.type.old_non_insulated"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural"
+                       foundation_type="hm.foundations.traditional"
+                       thermal_bridges_type="hm.thermal-bridge.max"
+                       door_type="hm.door.energy_intensive"
+                       window_type="hm.windows.type.two_pane_old"
+                       tightness_item="hm.tightness.loose"
+                       detached_heating_source_type="hm.heating-source.coal-old"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.not_insulated_pipes"
+                       roof_u_value="0.8" wall_u_value="1.2" floor_u_value="0.5"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--Standard  old insulated-->
+        <standard_type id="hm.standard_type.old_insulated" label_key="hm.dropdown.house.standard.type.old_insulated"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural"
+                       foundation_type="hm.foundations.traditional"
+                       thermal_bridges_type="hm.thermal-bridge.max"
+                       door_type="hm.door.standard"
+                       window_type="hm.windows.type.two_pane_old"
+                       tightness_item="hm.tightness.loose"
+                       detached_heating_source_type="hm.heating-source.coal-new"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.not_insulated_pipes"
+                       roof_u_value="0.35" wall_u_value="0.4" floor_u_value="0.5"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard norm WT2014-->
+        <standard_type id="hm.standard_type.typical" label_key="hm.dropdown.house.standard.type.typical"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural_regulated"
+                       foundation_type="hm.foundations.traditional_insulated"
+                       thermal_bridges_type="hm.thermal-bridge.avg"
+                       door_type="hm.door.standard"
+                       window_type="hm.windows.type.two_pane_new"
+                       tightness_item="hm.tightness.tight_no_recup"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.15" wall_u_value="0.2" floor_u_value="0.2"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard energy saving-->
+        <standard_type id="hm.standard_type.energy_saving" label_key="hm.dropdown.house.standard.type.energy_saving"
+                       roof_insulation_material_type="hm.insulation.material.good"
+                       wall_insulation_material_type="hm.insulation.material.good"
+                       floor_insulation_material_type="hm.insulation.material.good"
+                       ventilation_type="hm.ventilation-type.mechanical_75"
+                       foundation_type="hm.foundations.traditional_insulated"
+                       thermal_bridges_type="hm.thermal-bridge.avg"
+                       door_type="hm.door.energy_saving"
+                       window_type="hm.windows.type.three_pane"
+                       tightness_item="hm.tightness.tight_recup"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.11" wall_u_value="0.13" floor_u_value="0.13"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard passive-->
+        <standard_type id="hm.standard_type.passive" label_key="hm.dropdown.house.standard.type.passive"
+                       roof_insulation_material_type="hm.insulation.material.very_good"
+                       wall_insulation_material_type="hm.insulation.material.very_good"
+                       floor_insulation_material_type="hm.insulation.material.very_good"
+                       ventilation_type="hm.ventilation-type.mechanical_85"
+                       foundation_type="hm.foundations.slab"
+                       thermal_bridges_type="hm.thermal-bridge.min"
+                       door_type="hm.door.super_energy_saving"
+                       window_type="hm.windows.type.three_pane_special"
+                       tightness_item="hm.tightness.standard_passive"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.09" wall_u_value="0.09" floor_u_value="0.08"
+                       south_windows_surface_factor="1.5" north_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none" />
+        </standard_type>
+
+        <!--standard ADD-->
+        <standard_type id="hm.standard_type.add" label_key="hm.dropdown.house.standard.type.add"
+                       roof_insulation_material_type="hm.insulation.material.very_good"
+                       wall_insulation_material_type="hm.insulation.material.very_good"
+                       floor_insulation_material_type="hm.insulation.material.very_good"
+                       ventilation_type="hm.ventilation-type.mechanical_85"
+                       foundation_type="hm.foundations.slab"
+                       thermal_bridges_type="hm.thermal-bridge.min"
+                       door_type="hm.door.super_energy_saving"
+                       window_type="hm.windows.type.three_pane_special"
+                       tightness_item="hm.tightness.standard_passive"
+                       detached_heating_source_type="hm.heating-source.heat_pump"
+                       multi_family_heating_source_type="hm.heating-source.heat_pump"
+                       water_detached_heating_source_type="hm.heating-source.heat_pump"
+                       water_multi_family_heating_source_type="hm.heating-source.heat_pump"
+                       water_storage="hm.water-storage.modern_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.09" wall_u_value="0.09" floor_u_value="0.08"
+                       south_windows_surface_factor="1.5" north_windows_surface_factor="1.0"
+                       shutters_enabled="true" carbon_dioxide_sensor="true">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.vacuum" surface="4"/>
+        </standard_type>
+
+    </standard_type_configuration>
+
+
+
+
 </dictionaries>
 

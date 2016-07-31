@@ -22,20 +22,14 @@
             <fx:Object name="Standardowe" data="{DoorType.STANDARD}"/>
             <fx:Object name="Nowe" data="{DoorType.ENERGY_SAVING}"/>
         </s:ArrayList>
-        <s:ArrayCollection id="houseStandardTypeList">
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.old_non_insulated')}" data="{HouseStandardType.OLD_NON_INSULATED}"/>
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.old_insulated')}" data="{HouseStandardType.OLD_INSULATED}"/>
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.typical')}" data="{HouseStandardType.NEW_NORM_WT_2014}"/>
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.energy_saving')}" data="{HouseStandardType.ENERGY_SAVING_NF40}"/>
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.passive')}" data="{HouseStandardType.PASSIVE_NF15}"/>
-            <fx:Object name="{resourceManager.getString('hm','hhm.dropdown.house.standard.type.add')}" data="{HouseStandardType.ADD}"/>
-        </s:ArrayCollection>
     </fx:Declarations>
 
 
     <fx:Script><![CDATA[
+        import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.StationItem;
         import pl.znr.heatmaster.config.StationsConfig;
+        import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
         import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.util.CollectionHelper;
@@ -75,6 +69,9 @@
         private var stationsConfig:StationsConfig;
         private var selectedStation:StationItem;
         private var defaultItemCode:String;
+
+        [Bindable]
+        private var houseStandardTypeList:ArrayCollection;
 
         [Bindable]
         private var rolledUp:Boolean = true;
@@ -117,6 +114,13 @@
             }
 
             countryDropDownList.selectedIndex = getSelectedCountryIndex(configItems, countryItem.code);
+        }
+
+
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+           houseStandardTypeList = toComboObjectList(businessConfiguration.dictionaryConfig.houseStandardTypeConfiguration.houseStandardTypes);
+           houseStandardDropDownList.dataProvider = houseStandardTypeList;
+           houseStandardDropDownList.selectedIndex = 2;
         }
 
         override public function initData(dataContext:DataContext):DataContext {
@@ -225,8 +229,8 @@
 
         private function comboStandardChanged():void {
             try {
-                var selectedStandard:HouseStandardType = houseStandardDropDownList.selectedItem.data as HouseStandardType;
-                heatMasterListener.houseStandardChanged(selectedStandard);
+                var selectedStandardItem:HouseStandardTypeItem = houseStandardDropDownList.selectedItem.data as HouseStandardTypeItem;
+                heatMasterListener.houseStandardItemChanged(selectedStandardItem);
             } catch (e:Error) {
                 trace("Error while changing standard type: " + e.getStackTrace());
             }
@@ -543,7 +547,8 @@
             }
 
             oldIdx = houseStandardDropDownList.selectedIndex;
-            houseStandardTypeList.refresh();
+            houseStandardTypeList = translateComboItems(houseStandardTypeList,lang);
+            houseStandardDropDownList.dataProvider = houseStandardTypeList;
             houseStandardDropDownList.selectedIndex = oldIdx;
         }
 
@@ -626,7 +631,7 @@
         </s:DropDownList>
 
         <s:Label y="95" right="202"  styleName="popupPanelLabelOrangeStyle" text="{resourceManager.getString('hm','hm.label.house.standard')}" />
-        <s:DropDownList id="houseStandardDropDownList" x="116" y="90" width="169" dataProvider="{houseStandardTypeList}"
+        <s:DropDownList id="houseStandardDropDownList" x="116" y="90" width="169"
                         selectedIndex="2" labelField="name" change="comboStandardChanged()">
         </s:DropDownList>
 

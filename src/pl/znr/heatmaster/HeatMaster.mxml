@@ -12,9 +12,7 @@
                initialize="initHeatMaster()"
                preinitialize="preinitialize()"
                pageTitle="HeatMaster"
-               preloader="pl.znr.heatmaster.CustomPreloader"
-
-        >
+               preloader="pl.znr.heatmaster.CustomPreloader">
 
 
     <fx:Metadata>
@@ -61,6 +59,8 @@
         import mx.rpc.events.ResultEvent;
 
         import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.BusinessConfigurationReader;
 
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.CountryItemHelper;
@@ -73,7 +73,7 @@
         import pl.znr.heatmaster.config.CountryItemHelper;
         import pl.znr.heatmaster.config.CountryItemHelper;
 
-        import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
+        import pl.znr.heatmaster.config.CountryStationConfigurationReader;
         import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
         import pl.znr.heatmaster.config.RegionItem;
         import pl.znr.heatmaster.config.StationItem;
@@ -140,10 +140,9 @@
         private var heatMasterController:HeatMasterController = new HeatMasterController();
         private var environmentalDataPreparer:EnvironmentalDataPreparer = new EnvironmentalDataPreparer();
         private var cachedDataContextManager:CachedDataContextManager;
-        private var configurationReader:HeatMasterConfigurationReader;
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
         private var calculationStateController:CalculationStateController;
-        private var dictionaryReader:DictionaryConfigReader;
+        private var businessConfigReader:BusinessConfigurationReader;
 
         private var stationsPanel:StationsPanel = new StationsPanel();
         private var balanceReportPanel:BalanceReportPanel;
@@ -168,6 +167,7 @@
         private var localeToggled:Boolean = false;
         private var langChangeListeners:ArrayCollection = new ArrayCollection();
         private var configItems:ArrayCollection;
+        private var businessConfig:BusinessConfiguration;
 
         private var selectedLang:String;
 
@@ -270,12 +270,11 @@
             cachedDataContextManager = new CachedDataContextManager(calculationStateController);
             calculationStateController.setCacheManager(cachedDataContextManager);
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
-            configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
-            dictionaryReader = new DictionaryConfigReader(dictionaryXML, resourceManager);
+            businessConfigReader = new BusinessConfigurationReader(countriesXML,stationsXML,dictionaryXML,resourceManager);
 
             selectedLang = resourceManager.getLocales()[0];
-            configItems = configurationReader.readConfig();
-            dictionaryReader.readConfig();
+            businessConfig = businessConfigReader.readBusinessConfiguration();
+            configItems = businessConfig.countryItems;
         }
 
         private function httpService_fault(evt:FaultEvent):void {
@@ -358,6 +357,9 @@
             injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
+            //propagate business configuration
+            heatMasterController.propagateBusinessConfiguration(businessConfig);
+
             cachedData = cachedDataContextManager.readCache();
 
             var countryRegionCode:String = CountryItemHelper.getInitialConfigItemCode();
@@ -367,7 +369,6 @@
             housePopup.populateCountryRegionDropDownList(configItems, regionItem, countryItem, countryRegionCode);
             heatingPopup.configChanged(countryItem, true);
             housePanel.energyMeter.countryChanged(countryItem);
-            housePanel.energyMeter.setConfigurationReader(configurationReader);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
             comparingPlotPanel.setCalculationStateController(calculationStateController);
@@ -389,7 +390,7 @@
         private function setUpHeatMasterListener():void {
             heatMasterListener.setHeatMasterController(heatMasterController);
             heatMasterListener.setCalculationStateController(calculationStateController);
-            heatMasterListener.setConfigurationReader(configurationReader);
+            heatMasterListener.setBusinessConfiguration(businessConfig);
             heatMasterListener.setCacheManager(cachedDataContextManager);
             heatMasterListener.setHousePanel(housePanel);
             heatMasterListener.setHeatingPopup(heatingPopup);
@@ -448,6 +449,7 @@
                 hmComponent.setHeatMasterListener(hmListener);
                 hmComponent.setCalculationStateController(calculationStateController);
                 heatMasterController.addDataContextListener(hmComponent);
+                heatMasterController.addBusinessConfigurationListener(hmComponent);
             }
             if (component is HeatMasterResultComponent) {
                 var hmResultComponent:HeatMasterResultComponent = component as HeatMasterResultComponent;

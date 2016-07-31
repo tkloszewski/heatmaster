@@ -16,7 +16,7 @@ public class ThermalBridgesTypeConfigReader extends AbstractDictionaryReader{
     }
 
     override public function readXMLConfig(dictionaryConfig:DictionaryConfig, dictionaryXML:XML):DictionaryConfig {
-        var thermalBridgesTypeConfig:ThermalBridgesTypeConfig = readThermalBridgesTypeConfig(dictionaryXML.door_types);
+        var thermalBridgesTypeConfig:ThermalBridgesTypeConfig = readThermalBridgesTypeConfig(dictionaryXML.thermal_bridges_types);
         dictionaryConfig.thermalBridgesTypeConfig = thermalBridgesTypeConfig;
         return dictionaryConfig;
     }
@@ -25,7 +25,7 @@ public class ThermalBridgesTypeConfigReader extends AbstractDictionaryReader{
         var thermalBridgesTypeConfig:ThermalBridgesTypeConfig = new ThermalBridgesTypeConfig();
         thermalBridgesTypeConfig.selectedIndex = Number(thermalBridgesTypesXML.attribute("selected_index"));
         var thermalBridgesTypes:ArrayCollection = new ArrayCollection();
-        for each (var thermalBridgesTypeXML:XML in thermalBridgesTypesXML.door_type) {
+        for each (var thermalBridgesTypeXML:XML in thermalBridgesTypesXML.thermal_bridges_type) {
             thermalBridgesTypes.addItem(readThermalBridgesType(thermalBridgesTypeXML));
         }
         thermalBridgesTypeConfig.thermalBridgesTypes = thermalBridgesTypes;
@@ -33,9 +33,9 @@ public class ThermalBridgesTypeConfigReader extends AbstractDictionaryReader{
     }
 
     private function readThermalBridgesType(thermalBridgesTypeXML:XML):ThermalBridgesType {
-        var doorType:ThermalBridgesType = new ThermalBridgesType(thermalBridgesTypeXML.attribute("id"),Number(thermalBridgesTypeXML.attribute("u_value")));
-        fillBaseProperties(thermalBridgesTypeXML,doorType);
-        return doorType;
+        var thermalBridgesType:ThermalBridgesType = new ThermalBridgesType(thermalBridgesTypeXML.attribute("id"),Number(thermalBridgesTypeXML.attribute("u_value")));
+        fillBaseProperties(thermalBridgesTypeXML,thermalBridgesType);
+        return thermalBridgesType;
     }
 }
 }
