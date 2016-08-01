@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
-<ballonn:BaseBaloon implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
-                    xmlns:fx="http://ns.adobe.com/mxml/2009"
-                    xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
-                    xmlns:comp="pl.znr.heatmaster.ui.components.*"
-                    width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
-                    creationComplete="balloonCreated()">
+<ballonn:BaseBaloon
+        implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
+        xmlns:comp="pl.znr.heatmaster.ui.components.*"
+        width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
+        creationComplete="balloonCreated()" xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*">
 
     <fx:Declarations>
         <s:ArrayCollection id="windowsList">
@@ -185,15 +186,13 @@
         <s:CheckBox id="blindsCheckBox" x="0" y="{windowDropDownList.y + windowDropDownList.height + 5}" label="{resourceManager.getString('hm','hm.label.blinds')}" styleName="{grayFontStyleName}" fontSize="10" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterBalloonCheckBoxSkin" change="windowChanged()"/>
 
         <s:DropDownList id="thermalBridgesDropDownList" x="{blindsCheckBox.x + blindsCheckBox.width + 2 }" y="{windowDropDownList.y + windowDropDownList.height + 5}" dataProvider="{thermalBridgesList}" labelField="name" selectedIndex="0" change="windowChanged()"/>
-
-
     </s:Group>
 
-    <mx:Button id="infoIcoButton" top="{_infoIconTop}" right="{_infoIconRight}" buttonMode="true"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-               click="openWinInfoPanel(event)"
-               visible="{_infoIconVisible}"/>
+    <hmbtn:ImageSkinnableButton top="{_infoIconTop -3}" right="{_infoIconRight -3}" buttonMode="true" click="openWinInfoPanel(event)"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+                                visible="{_infoIconVisible}">
+    </hmbtn:ImageSkinnableButton>
 
     <fx:Script><![CDATA[
         import pl.znr.heatmaster.constants.combo.WindowsType;

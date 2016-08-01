@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <components:HeatMasterComponent xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:mx="library://ns.adobe.com/flex/mx"
                                 xmlns:components="pl.znr.heatmaster.ui.components.*"
-                                xmlns:s="library://ns.adobe.com/flex/spark" width="921" height="648"
+                                xmlns:s="library://ns.adobe.com/flex/spark"
+                                xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*" width="921" height="648"
         >
 
 
@@ -402,10 +403,15 @@
 
     </s:BorderContainer>
 
-    <mx:Button right="16" top="45" buttonMode="true"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
-               click="hideMap()"/>
+    <hmbtn:ImageSkinnableButton right="42" top="41" buttonMode="true"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
+
+    <hmbtn:ImageSkinnableButton right="12" top="41" buttonMode="true" click="hideMap()"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
 
 
   </s:Group>

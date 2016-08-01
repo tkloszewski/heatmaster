@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
-<balloon:BaseDropdownBaloon implements="pl.znr.heatmaster.core.HouseStandardChangeListener" xmlns:fx="http://ns.adobe.com/mxml/2009"
+<balloon:BaseDropdownBaloon implements="pl.znr.heatmaster.core.HouseStandardChangeListener"
+                            xmlns:fx="http://ns.adobe.com/mxml/2009"
                             xmlns:s="library://ns.adobe.com/flex/spark"
                             xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
-                            xmlns:mx="library://ns.adobe.com/flex/mx">
+                            xmlns:mx="library://ns.adobe.com/flex/mx"
+                            xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*">
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Declarations>
@@ -239,10 +241,10 @@
         </s:Group>
     </s:Group>
 
-    <mx:Button right="{_infoIconRight}" top="{_infoIconTop}" buttonMode="true" click="showVentilationInfo(event)"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-               visible="{_infoIconVisible}"/>
-
+    <hmbtn:ImageSkinnableButton top="{_infoIconTop -3}" right="{_infoIconRight -3}" buttonMode="true" click="showVentilationInfo(event)"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+                                visible="{_infoIconVisible}">
+    </hmbtn:ImageSkinnableButton>
 
 </balloon:BaseDropdownBaloon>

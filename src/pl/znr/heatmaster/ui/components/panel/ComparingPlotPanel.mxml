@@ -4,6 +4,7 @@
 -->
 <panel:BasePlotPanel xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
                      xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx"
+                     xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
                      initialize="{gutterBottom = 50}">
 
 
@@ -289,12 +290,16 @@
       </mx:Grid>
     </s:Group>
 
+    <hmbtn:ImageSkinnableButton x="{plotBkgImg.width - 65}" top="-2" buttonMode="true"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PDF_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
 
 
-    <mx:Button x="{plotBkgImg.width - 32}" top="2" buttonMode="true"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
-               click="hideReport()"/>
+    <hmbtn:ImageSkinnableButton x="{plotBkgImg.width - 35}" top="-2" buttonMode="true" click="hideReport()"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
 
   </s:BorderContainer>
 

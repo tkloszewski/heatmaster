@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+  Created by Dom on 2016-08-01.
+-->
+<s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark">
+
+  <fx:Metadata>
+    [HostComponent("pl.znr.heatmaster.ui.components.button.ImageSkinnableButton")]
+  </fx:Metadata>
+  <s:states>
+    <s:State name="up" />
+    <s:State name="over" />
+    <s:State name="down" />
+    <s:State name="disabled" />
+  </s:states>
+  <s:BitmapImage id="image"  smooth="true" smoothingQuality="high"
+                 source.up="{getStyle('upImage')}"
+                 source.down="{getStyle('downImage')}"
+                 source.over="{getStyle('overImage')}"
+                 source.disabled="{getStyle('disabledImage')}"/>
+
+</s:SparkButtonSkin>

@@ -42,11 +42,6 @@ public class HeatMasterLocaleManager {
         trace("Selected lang: " + lang);
     }
 
-    public function isPolishLanguage():Boolean {
-        lang = resourceManager.localeChain[0];
-        return LangHelper.isPolishLang(lang);
-    }
-
     public function getLang():String {
         return lang;
     }

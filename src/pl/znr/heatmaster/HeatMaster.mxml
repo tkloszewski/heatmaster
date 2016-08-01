@@ -3,6 +3,7 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
                xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
+               xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
                width="100%"
                height="100%"
                xmlns:s="library://ns.adobe.com/flex/spark"
@@ -123,6 +124,8 @@
         import pl.znr.heatmaster.ui.components.panel.StationsPanel;
         import pl.znr.heatmaster.util.SortingUtil;
 
+        import spark.components.RichText;
+
         import spark.primitives.BitmapImage;
 
         import spark.utils.TextFlowUtil;
@@ -159,8 +162,6 @@
         [Bindable]
         private var stationsPanelVisible:Boolean = false;
 
-        private var footerTip:IToolTip;
-        private var myFooterText:RichText;
 
         private var localeToggled:Boolean = false;
         private var langChangeListeners:ArrayCollection = new ArrayCollection();
@@ -285,13 +286,8 @@
         }
 
         private function setPolishComponentsVisibility(polishVisible:Boolean):void {
-            logoGroup.visible = polishVisible;
-            houseTopBarImg.visible = !polishVisible;
-            logoImage.visible = !polishVisible;
-            houseTopBarWhiteImg.visible = polishVisible;
-            helpBtn.visible = polishVisible;
-            techBtn.visible = polishVisible;
-            aboutBtn.visible = polishVisible;
+            plIntroLogoGroup.visible = polishVisible;
+            enIntroLogoGroup.visible = !polishVisible;
         }
 
         private function getConfigItemCode(cachedData:DataContext):String {
@@ -299,45 +295,6 @@
                 return cachedData.selectedCountryRegion;
             }
             return CountryItemHelper.getInitialConfigItemCode();
-        }
-
-        private function showLogoTip():void {
-            if (myFooterText == null) {
-                myFooterText = createFooterText();
-            }
-            addElement(myFooterText);
-        }
-
-        private function hideLogoToolTip():void {
-            removeElement(myFooterText);
-        }
-
-        private function destroyLogoTip(event:Object):void {
-            ToolTipManager.destroyToolTip(footerTip);
-        }
-
-        private function getFooterText():RichText {
-            if (myFooterText == null) {
-                myFooterText = createFooterText();
-            }
-            return myFooterText;
-        }
-
-        private function createFooterText():RichText {
-            var richText:RichText = new RichText();
-
-            var text:String = "<p>HeatMaster został opracowany w ramach kampanii Ubierz Swój Dom</p>\
-                               <p>dofinansowanej ze środków Narodowego Funduszu Ochrony Środowiska</p>\
-                               <p>i Gospodarki Wodnej oraz Wojewódzkiego Funduszu Ochrony Środowiska</p>\
-                               <p>i Gospodarki Wodnej w Katowicach</p>";
-
-            richText.textFlow = TextFlowUtil.importFromString(text);
-            richText.right = 5;
-            richText.bottom = 5;
-            richText.setStyle("color", "white");
-            richText.setStyle("fontSize", "8");
-            richText.setStyle("verticalAlign", "bottom");
-            return richText;
         }
 
         private function preinitialize():void {
@@ -350,7 +307,7 @@
             BrowserManager.getInstance().setTitle("HeatMaster");
 
             setUpHeatMasterListener();
-            injectListenerAndStateController(heatMasterContainer, heatMasterListener,calculationStateController);
+            injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
             cachedData = cachedDataContextManager.readCache();
@@ -373,9 +330,8 @@
             if (language == null) {
                 language = heatMasterLocaleManager.getLang();
             }
-            if (!LangHelper.isPolishLang(language)) {
-                setPolishComponentsVisibility(false);
-            }
+            selectedLang = language;
+            setPolishComponentsVisibility(LangHelper.isPolishLang(language));
             resourceManager.localeChain = [language];
             initialPhaseNotifyLangChangeListeners(language);
             selectedLang = language;
@@ -451,7 +407,7 @@
             if (component is IVisualElementContainer) {
                 var visualElementContainer:IVisualElementContainer = component as IVisualElementContainer;
                 for (var i:int = 0; i < visualElementContainer.numElements; i++) {
-                    injectListenerAndStateController(visualElementContainer.getElementAt(i),hmListener, calculationStateController);
+                    injectListenerAndStateController(visualElementContainer.getElementAt(i), hmListener, calculationStateController);
                 }
             }
         }
@@ -536,13 +492,18 @@
         }
 
         private function setStartViewState():void {
-            logoGroup.visible = false;
+            logoTopGroup.visible = false;
+            logoGroupBottom.visible = true;
+            bottomBarImg.visible = true;
+            bottomBarImgWhite.visible = false;
+
             menuButtonGroup.visible = true;
             housePopup.visible = true;
             heatingPopup.visible = true;
             houseTopBarImg.visible = true;
-            houseTopBarWhiteImg.visible = false;
-            logoImage.visible = true;
+
+            logoImagePl.visible = LangHelper.isPolishLang(selectedLang);
+            logoImageEn.visible = !logoImagePl.visible;
         }
 
         private function tryWriteCache():void {
@@ -575,25 +536,6 @@
             navigateToURL(new URLRequest(url), "_blank");
         }
 
-        private function goToFER():void {
-            var url:String = "http://fer.org.pl";
-            navigateToURL(new URLRequest(url), "_blank");
-        }
-
-        private function goToARKA():void {
-            var url:String = "http://www.fundacjaarka.pl/";
-            navigateToURL(new URLRequest(url), "_blank");
-        }
-
-        private function goToNFOS():void {
-            var url:String = "http://nfosigw.gov.pl";
-            navigateToURL(new URLRequest(url), "_blank");
-        }
-
-        private function goToWFOS():void {
-            var url:String = "http://www.wfosigw.katowice.pl/";
-            navigateToURL(new URLRequest(url), "_blank");
-        }
 
         private function getIconsOffset():int {
             if (this.width <= 1154) {
@@ -655,7 +597,7 @@
 
         private function setPolishLang():void {
             selectedLang = "pl_PL";
-            setPolishComponentsVisibility(false);
+            setPolishComponentsVisibility(true);
             resourceManager.localeChain = ["pl_PL"];
             initialPhaseNotifyLangChangeListeners(selectedLang);
         }
@@ -778,7 +720,7 @@
 
     <s:Scroller id="scroller" width="100%">
         <s:Group>
-            <s:BorderContainer x="0" id="heatMasterContainer" width="{Math.max(1000,this.width * 0.9)}" height="715"
+            <s:BorderContainer x="0" id="heatMasterContainer" width="{Math.max(1000,this.width * 0.9)}" height="765"
                                borderWeight="0">
 
                 <mx:Image id="bgGrassImg" width="{Math.max(1024,this.width )}" height="715" visible="true"
@@ -792,10 +734,10 @@
                           id="houseTopBarImg"
                           source="@Embed('/pl/znr/heatmaster/assets/images/top_bar.png')" visible="false"/>
 
-
-                <mx:Image id="logoImage" x="20" y="10" source="@Embed('/pl/znr/heatmaster/assets/images/logo.png')"
+                <mx:Image id="logoImagePl" x="{Math.max(0,this.width - 1000)/2}" y="0" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_bar_pl.png')"
                           visible="false"/>
-
+                <mx:Image id="logoImageEn" x="{Math.max(0,this.width - 1000)/2}" y="0" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_bar_en.png')"
+                          visible="false"/>
 
                 <panel:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715"
                                   visible="{!plotVisible &amp;&amp; !comparingPlotVisible}"/>
@@ -816,79 +758,55 @@
 
                 <s:Group id="menuButtonGroup" y="0" x="{heatingPopup.x + heatingPopup.width + getReportIconOffset()}"
                          visible="false">
-                    <mx:Button id="helpBtn" x="0" y="14"
+                    <hmbtn:ImageSkinnableButton id="helpBtn" x="0" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.manual')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openManualPdf()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openManualPdf()">
+                    </hmbtn:ImageSkinnableButton>
 
-                    <mx:Button id="techBtn" x="{helpBtn.x + helpBtn.width + getIconsOffset()}" y="14"
+                    <hmbtn:ImageSkinnableButton id="techBtn" x="{helpBtn.x + helpBtn.width + getIconsOffset()}" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.how_to')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openTechPdf()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openTechPdf()">
+                    </hmbtn:ImageSkinnableButton>
 
-
-                    <mx:Button id="aboutBtn" x="{techBtn.x + techBtn.width + getIconsOffset()}" y="14"
+                    <hmbtn:ImageSkinnableButton id="aboutBtn" x="{techBtn.x + techBtn.width + getIconsOffset()}" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.about')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openAboutPdfFile()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openAboutPdfFile()">
+                    </hmbtn:ImageSkinnableButton>
                 </s:Group>
+
 
                 <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"
                           source="@Embed('/pl/znr/heatmaster/assets/images/start/przyciemniacz_start.png')"/>
 
-                <s:Group id="logoGroup" x="0" y="0" width="100%" visible="false">
-                    <mx:Image width="{Math.max(1024,this.width )}" height="47" maintainAspectRatio="false" x="0" y="0"
+
+                <s:Group id="logoTopGroup" x="0" y="0" width="100%" visible="true">
+                    <mx:Image width="{Math.max(1024,this.width )}" height="80" maintainAspectRatio="false" x="0" y="0"
                               id="houseTopBarWhiteImg"
-                              source="@Embed('/pl/znr/heatmaster/assets/images/top_bar_white.png')"/>
-                    <s:Group id="iconLogoGroup" x="5" y="5">
-                        <mx:Button x="0" y="-5" toolTip="FER" buttonMode="true" id="ferLogoImgBtn"
-                                   skin="@Embed('/pl/znr/heatmaster/assets/images/logo/FER_LOGO1.png')"
-                                   click="goToFER()"/>
-                        <mx:Button visible="true" id="arkaImg" x="{ferLogoImgBtn.x + ferLogoImgBtn.width + 5}"
-                                   buttonMode="true" toolTip="ARKA" click="goToARKA()"
-                                   skin="@Embed('/pl/znr/heatmaster/assets/images/logo/LOGO_ARKA_JPG.jpg')"/>
-                        <mx:Button visible="true" id="nfosImg" x="{arkaImg.x + arkaImg.width + 10}" buttonMode="true"
-                                   toolTip="NFOSiGW" click="goToNFOS()"
-                                   skin="@Embed('/pl/znr/heatmaster/assets/images/logo/logo_nfosigw.jpg')"/>
-                        <mx:Button visible="true" id="wfosImg" x="{nfosImg.x + nfosImg.width + 18}" buttonMode="true"
-                                   toolTip="WFOSiGW" click="goToWFOS()"
-                                   skin="@Embed('/pl/znr/heatmaster/assets/images/logo/logo_wfosigw_katowice.jpg')"/>
+                              source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
+                    <s:Group id="iconLogoGroup" x="{Math.max(0,this.width - 1000)/2}" y="15" width="1000" >
+                        <mx:Image x="15" y="-5"  id="polreffLogo"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_start.png')"/>
+
+                        <mx:Image x="{iconLogoGroup.width - 520}" y="-5"  id="europeanBankLogo"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_start.png')"/>
+                        <mx:Image visible="true" y="-5" id="taiwanBusinessLogo" x="{europeanBankLogo.x + europeanBankLogo.width + 20}"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_start.png')"/>
+                        <mx:Image visible="true" y="5" id="shareHoldersLogo" x="{taiwanBusinessLogo.x + taiwanBusinessLogo.width + 20}"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_start.png')"/>
+
                     </s:Group>
-
-                    <s:RichText id="headerText" right="15" y="23" fontSize="9" visible="true" textAlign="right">
-                        <s:textFlow>
-                            <s:TextFlow>
-                                <s:p>HeatMaster został opracowany w ramach kampanii "Ubierz Swój Dom" dofinansowanej ze
-                                    środków Narodowego Funduszu
-                                </s:p>
-                                <s:p>Ochrony Środowiska i Gospodarki Wodnej oraz Wojewódzkiego Funduszu Ochrony
-                                    Środowiska i Gospodarki Wodnej w Katowicach
-                                </s:p>
-                            </s:TextFlow>
-                        </s:textFlow>
-                    </s:RichText>
-
                 </s:Group>
 
 
@@ -902,24 +820,20 @@
                             <s:Image x="0" y="0" id="imgBckgStart"
                                      source="@Embed('/pl/znr/heatmaster/assets/images/start/bkg_start1.png')"/>
 
-                            <mx:Button id="englishFlagBtn" y="6" x="10"
-                                       skin="@Embed('/pl/znr/heatmaster/assets/images/flags/FlagEnglish.jpg')"
-                                       buttonMode="true">
-                                <mx:click><![CDATA[
-                                        this.setEnglishLang()
-                                    ]]></mx:click>
-                            </mx:Button>
-                            <mx:Button id="polishFlagBtn" y="6" x="35"
-                                       skin="@Embed('/pl/znr/heatmaster/assets/images/flags/FlagPL.png')"
-                                       buttonMode="true">
-                                <mx:click><![CDATA[
-                                        this.setPolishLang()
-                                    ]]></mx:click>
-                            </mx:Button>
 
-                            <s:RichEditableText x="{imgBckgStart.x + 10}" y="25" id="introText" editable="false"
-                                                focusEnabled="false" selectable="false"
-                                                textAlign="left" verticalAlign="middle" fontSize="18" fontWeight="bold">
+                            <hmbtn:ImageSkinnableButton y="6" right="45" buttonMode="true" id="polishFlagBtn"
+                                                        upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PL_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PL_icon.png')"
+                                                        overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/PL_icon_over.png')" click="this.setPolishLang()">
+                            </hmbtn:ImageSkinnableButton>
+
+                            <hmbtn:ImageSkinnableButton y="6" right="15" buttonMode="true" id="englishFlagBtn"
+                                                        upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/EN_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/EN_icon.png')"
+                                                        overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/EN_icon_over.png')" click="this.setEnglishLang()">
+                            </hmbtn:ImageSkinnableButton>
+
+                            <s:RichEditableText x="{(imgBckgStart.width - introText.width)/2 + 20}" y="32" id="introText" editable="false"
+                                                focusEnabled="false" selectable="false" width="560"
+                                                textAlign="left" verticalAlign="middle" fontSize="15" fontWeight="bold">
                                 <s:textFlow>
                                     {TextFlowUtil.importFromString(resourceManager.getString('hm','hm.label.main.title'))}
                                 </s:textFlow>
@@ -963,12 +877,21 @@
                             </s:HGroup>
                         </s:Group>
 
-                        <s:Group width="100%" y="0" id="introLogoGroup">
+                        <s:Group width="100%" y="0" id="plIntroLogoGroup" visible="false">
                             <s:layout>
                                 <s:HorizontalLayout/>
                             </s:layout>
                             <s:Spacer width="100%"/>
-                            <s:Image source="@Embed('/pl/znr/heatmaster/assets/images/start/LogoHM_big.png')"/>
+                            <s:Image source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_main_pl.png')"/>
+                            <s:Spacer width="100%"/>
+                        </s:Group>
+
+                        <s:Group width="100%" y="0" id="enIntroLogoGroup" visible="false">
+                            <s:layout>
+                                <s:HorizontalLayout/>
+                            </s:layout>
+                            <s:Spacer width="100%"/>
+                            <s:Image source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_main_en.png')"/>
                             <s:Spacer width="100%"/>
                         </s:Group>
 
@@ -976,13 +899,37 @@
                 </s:Group>
 
                 <s:Label id="versionText" text="{resourceManager.getString('hm','hm.label.version')}" left="5"
-                         bottom="5" fontSize="9" color="white" click="toggleLocale()"/>
+                         bottom="55" fontSize="9" color="white" click="toggleLocale()"/>
+
+                <s:Group id="logoGroupBottom" x="0" bottom="0" width="100%" visible="false" height="50">
+                    <mx:Image width="{Math.max(1024,this.width )}" height="50" maintainAspectRatio="false" x="0" y="0"
+                              id="houseBottomBarWhiteImg"
+                              source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
+                    <s:Group id="iconLogoGroupBottom" x="{iconLogoGroup.x}" y="15" width="1000">
+                        <mx:Image x="15" y="-5" buttonMode="false" id="polreffLogoBottom"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_strona.png')"/>
+
+                        <mx:Image x="{iconLogoGroupBottom.width - 293}" y="-3" id="europeanBankLogoBottom"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_strona.png')"/>
+                        <mx:Image  y="-5" id="taiwanBusinessLogoBottom" x="{europeanBankLogoBottom.x + europeanBankLogoBottom.width + 20}"
+                                   buttonMode="false"  source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_strona.png')"/>
+                        <mx:Image  y="-3" id="shareHoldersLogoBottom" x="{taiwanBusinessLogoBottom.x + taiwanBusinessLogoBottom.width + 20}"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_strona.png')"/>
+
+                    </s:Group>
+                </s:Group>
+
             </s:BorderContainer>
         </s:Group>
     </s:Scroller>
 
-    <mx:Image maintainAspectRatio="false" id="bottomBarImg" left="0" right="0" y="715"
+    <mx:Image maintainAspectRatio="false" id="bottomBarImg" left="0" right="0" y="765" visible="false"
+              height="{Math.max(this.height - 765,0)}"
+              source="@Embed('/pl/znr/heatmaster/assets/images/bottom_bar.png')"/>
+
+    <mx:Image maintainAspectRatio="false" id="bottomBarImgWhite" left="0" right="0" y="715" visible="true"
               height="{Math.max(this.height - 715,0)}"
               source="@Embed('/pl/znr/heatmaster/assets/images/bottom_bar.png')"/>
+
 
 </s:Application>

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
          creationComplete="toolTipCreated()"
-         >
+        >
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Script><![CDATA[
@@ -50,14 +50,12 @@
                         paddingLeft="10" paddingRight="10" paddingBottom="20"
                         paddingTop="20" textFlow="{_textFlow}"
                         fontSize="11">
-
     </s:RichEditableText>
 
-    <mx:Button id="closeToolTipButton" buttonMode="true" right="7" top="7"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close-tooltip.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
-               click="close()">
-    </mx:Button>
+    <hmbtn:ImageSkinnableButton right="3" top="3" buttonMode="true" click="close()"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
 
 
 
