@@ -9,32 +9,10 @@
 
     <fx:Declarations>
 
-        <s:ArrayCollection id="detachedWarmWaterDistributionList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_not_insulated')}" data="{WarmWaterDistribution.NOT_ISOLATED_PIPES}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="multiFamilyWarmWaterDistributionList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_not_insulated')}" data="{WarmWaterDistribution.NOT_ISOLATED_PIPES}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="warmWaterStorageList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.heat_node_without_storage')}" data="{WarmWaterStorage.HEAT_NODE_WITHOUT_STORAGE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.modern_storage')}" data="{WarmWaterStorage.MODERN_STORAGE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.standard_80_90_storage')}" data="{WarmWaterStorage.STANDARD_80_90_STORAGE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.storage.old_storage')}" data="{WarmWaterStorage.OLD_STORAGE}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="solarCollectorTypesList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.none')}" data="{SolarCollectorType.NONE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.flat')}" data="{SolarCollectorType.FLAT}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.solar_collectors.vacuum')}" data="{SolarCollectorType.VACUUM}"/>
-        </s:ArrayCollection>
-
     </fx:Declarations>
 
     <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
         import mx.collections.IList;
         import mx.controls.Alert;
         import mx.formatters.NumberBaseRoundType;
@@ -79,6 +57,13 @@
         [Bindable] private var warmWaterDetachedHeatingSourceList:ArrayCollection;
         [Bindable] private var warmWaterMultiFamilyHeatingSourceList:ArrayCollection;
 
+        [Bindable] private var detachedWarmWaterDistributionList:ArrayCollection;
+        [Bindable] private var multiFamilyWarmWaterDistributionList:ArrayCollection;
+        [Bindable] private var warmWaterStorageList:ArrayCollection;
+
+        [Bindable]
+        private var solarCollectorTypesList:ArrayCollection;
+
         [Bindable]
         private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
 
@@ -87,6 +72,8 @@
 
         private var localCurrency:Boolean = false;
         private var selectedCountry:CountryItem;
+
+        private var electricityHeatingSourceType:HeatingSourceType;
 
 
         override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
@@ -98,6 +85,18 @@
 
             multiFamilyHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.multiFamilyHeatingSourceTypes);
             warmWaterMultiFamilyHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.warmWaterMultiFamilyHeatingSourceTypes);
+
+            detachedWarmWaterDistributionList = toComboObjectList(businessConfiguration.dictionaryConfig.waterStorageDistributionConfiguration.waterDistributionTypes);
+            multiFamilyWarmWaterDistributionList = toComboObjectList(businessConfiguration.dictionaryConfig.waterStorageDistributionConfiguration.waterDistributionTypes);
+            warmWaterStorageList = toComboObjectList(businessConfiguration.dictionaryConfig.waterStorageDistributionConfiguration.waterStorageTypes);
+
+            solarCollectorTypesList = toComboObjectList(businessConfiguration.dictionaryConfig.solarCollectorsTypeConfig.solarCollectorTypes);
+
+            warmWaterDistributionDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.waterStorageDistributionConfiguration.distributionSelectedIndex;
+            warmWaterStorageDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.waterStorageDistributionConfiguration.storageSelectedIndex;
+            collectorTypeDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.solarCollectorsTypeConfig.selectedIndex;
+
+            electricityHeatingSourceType = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.electricityHeatingSourceType;
 
             heatingPopupInitialized();
 
@@ -331,8 +330,8 @@
             calorificValInput.textDisplay.editable = heatingSourceType.heatingValueEditable;
             calorificValInput.textDisplay.enabled = heatingSourceType.heatingValueEditable;
 
-            var warmWaterDistributionIdx:int = getWarmWaterDistributionIndex(context.model.warmWaterDistribution, detachedWarmWaterDistributionList);
-            var warmWaterStorageIdx:int = getComboItemIndexForCollection(context.model.warmWaterStorage, warmWaterStorageList);
+            var warmWaterDistributionIdx:int = getComboItemIndexForCollectionById(context.model.warmWaterDistribution.id, detachedWarmWaterDistributionList);
+            var warmWaterStorageIdx:int = getComboItemIndexForCollectionById(context.model.warmWaterStorage.id, warmWaterStorageList);
 
             if (warmWaterDistributionIdx != -1) {
                 warmWaterDistributionDropDownList.selectedIndex = warmWaterDistributionIdx;
@@ -559,7 +558,7 @@
                 heatingSourceTypeIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.waterHeatingType, warmWaterDetachedHeatingSourceList);
 
                 warmWaterDistributionDropDownList.dataProvider = detachedWarmWaterDistributionList;
-                heatingDistributionIdx = getWarmWaterDistributionIndex(warmWaterData.warmWaterDistribution, detachedWarmWaterDistributionList);
+                heatingDistributionIdx = getComboItemIndexForCollectionById(warmWaterData.warmWaterDistribution.id, detachedWarmWaterDistributionList);
 
             }
             else {
@@ -567,7 +566,7 @@
                 heatingSourceTypeIdx = getComboItemIndexForCollectionOfHeatingItems(heatingData.waterHeatingType, warmWaterMultiFamilyHeatingSourceList);
 
                 warmWaterDistributionDropDownList.dataProvider = multiFamilyWarmWaterDistributionList;
-                heatingDistributionIdx = getWarmWaterDistributionIndex(warmWaterData.warmWaterDistribution, multiFamilyWarmWaterDistributionList);
+                heatingDistributionIdx = getComboItemIndexForCollectionById(warmWaterData.warmWaterDistribution.id, multiFamilyWarmWaterDistributionList);
             }
 
             if (heatingSourceTypeIdx == -1) {
@@ -586,22 +585,11 @@
             priceWarmWaterNS.value = conversionData.waterPricePerkWh;
         }
 
-        private function getWarmWaterDistributionIndex(warmWaterDistribution:WarmWaterDistribution, dataItemList:IList):int {
-            for (var i:int = 0; i < dataItemList.length; i++) {
-                var item:Object = dataItemList.getItemAt(i);
-                var itemWarmWaterDistribution:WarmWaterDistribution = item.data as WarmWaterDistribution;
-                if (itemWarmWaterDistribution.getId() == warmWaterDistribution.getId()) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         private function applySolarDataToControls(houseType:int, solarData:SolarCollectorData):void {
             var collectorType:SolarCollectorType = solarData.collectorType;
             var regularRoof:Boolean = HouseTypeHelper.hasRegularRoof(houseType);
 
-            collectorTypeDropDownList.selectedIndex = getComboItemIndexForCollection(solarData.collectorType, solarCollectorTypesList);
+            collectorTypeDropDownList.selectedIndex = getComboItemIndexForCollectionById(solarData.collectorType.id, solarCollectorTypesList);
             solarSurfaceNS.value = solarData.surface;
 
             solarSurfaceNS.visible = collectorType.type != SolarCollectorType.NONE_TYPE;
@@ -695,10 +683,10 @@
             else {
                 //get electric heating type
                 if (previousHouseType == HouseType.DETACHED) {
-                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(HeatingSourceType.ELECTRIC, warmWaterDetachedHeatingSourceList);
+                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(electricityHeatingSourceType, warmWaterDetachedHeatingSourceList);
                 }
                 else {
-                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(HeatingSourceType.ELECTRIC, warmWaterMultiFamilyHeatingSourceList);
+                    heatingIdx = getComboItemIndexForCollectionOfHeatingItems(electricityHeatingSourceType, warmWaterMultiFamilyHeatingSourceList);
                 }
                 warmWaterHeatingTypeDropDownList.selectedIndex = heatingIdx;
             }

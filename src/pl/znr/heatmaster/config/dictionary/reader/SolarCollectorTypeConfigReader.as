@@ -23,7 +23,7 @@ public class SolarCollectorTypeConfigReader extends AbstractDictionaryReader{
 
     private function readSolarCollectorTypeConfig(solarCollectorsXML:XMLList):SolarCollectorTypeConfig {
         var solarCollectorsTypeConfig:SolarCollectorTypeConfig = new SolarCollectorTypeConfig();
-        solarCollectorsTypeConfig.selectedIndex =  Number(solarCollectorsXML.attribute("selected_index"));
+        solarCollectorsTypeConfig.selectedIndex =  getSelectedIndex(solarCollectorsXML);
 
         var solarCollectorTypes:ArrayCollection = new ArrayCollection();
         for each (var solarCollectorTypeXML:XML in solarCollectorsXML.solar_collector_type) {

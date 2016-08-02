@@ -17,8 +17,6 @@ public class GlobalValues {
 
     public static const START_MONTH:int = 0;
     public static const INITIAL_PERSON_NUMBER:int = 4;
-    public static const INITIAL_HOUSE_HEATING_SOURCE:HeatingSourceType = HeatingSourceType.BOILER_GAS_OLD;
-    public static const INITIAL_WARM_WATER_HEATING_SOURCE:HeatingSourceType = HeatingSourceType.BOILER_GAS_OLD;
 
     public static const PRICE_PELLETS_KWH_DEFAULT:Number =  0.22;
     public static const PRICE_WOOD_KWH_DEFAULT:Number = 0.12;

@@ -16,6 +16,8 @@ import pl.znr.heatmaster.constants.combo.HeatingSourceType;
 
 public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
 
+    private var electricityHeatingSourceType:HeatingSourceType = null;
+
     public function HeatingSourceTypeConfigReader(resourceManager:IResourceManager) {
         super(resourceManager);
     }
@@ -33,6 +35,8 @@ public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
         heatingSourceTypeConfiguration.multiFamilyHeatingSourceTypes = multiFamilyHeatingSourceTypes;
         heatingSourceTypeConfiguration.warmWaterDetachedHeatingSourceTypes = warmWaterDetachedHeatingSourceTypes;
         heatingSourceTypeConfiguration.warmWaterMultiFamilyHeatingSourceTypes = warmWaterMultiFamilyHeatingSourceTypes;
+
+        heatingSourceTypeConfiguration.electricityHeatingSourceType = electricityHeatingSourceType;
 
         heatingSourceTypeConfiguration.detachedHeatingSelectedIndex = getSelectedIndex(dictionaryXML.detached_heating_source_types);
         heatingSourceTypeConfiguration.warmWaterDetachedSelectedIndex = getSelectedIndex(dictionaryXML.warm_water_detached_heating_source_types);
@@ -62,12 +66,21 @@ public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
         for each (var heatingSourceTypeXML:XML in heatingSourceTypesXML.heating_source_type) {
             var heatingSourceType:HeatingSourceType = readHeatingSourceType(heatingSourceTypeXML);
             heatingSourceTypesMap[heatingSourceType.id] = heatingSourceType;
+            if(readBoolean(heatingSourceTypeXML,"electricity")){
+               if(electricityHeatingSourceType == null){
+                  electricityHeatingSourceType = heatingSourceType;
+               }
+               else {
+                   throw new Error("There must be exactly one electricity heating source type");
+               }
+            }
         }
-        return heatingSourceTypesMap;
-    }
 
-    private function getSelectedIndex(xmlItem:XMLList):int {
-        return Number(xmlItem.attribute("selected_index"));
+        if(electricityHeatingSourceType == null){
+           throw new Error("Found no electricity heating source type");
+        }
+
+        return heatingSourceTypesMap;
     }
 
     private function readHeatingSourceType(heatingSourceTypeXML:XML):HeatingSourceType {

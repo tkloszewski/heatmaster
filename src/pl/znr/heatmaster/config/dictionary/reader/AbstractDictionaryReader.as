@@ -56,5 +56,9 @@ public class AbstractDictionaryReader implements DictionaryReader{
         }
         return dictionary;
     }
+
+    protected function getSelectedIndex(xmlItem:XMLList):int {
+        return Number(xmlItem.attribute("selected_index"));
+    }
 }
 }

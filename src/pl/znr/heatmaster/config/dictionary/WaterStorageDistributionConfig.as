@@ -9,6 +9,9 @@ public class WaterStorageDistributionConfig {
     private var _waterDistributionTypes:ArrayCollection;
     private var _waterStorageTypes:ArrayCollection;
 
+    private var _distributionSelectedIndex:int;
+    private var _storageSelectedIndex:int;
+
     public function WaterStorageDistributionConfig() {
     }
 
@@ -26,6 +29,22 @@ public class WaterStorageDistributionConfig {
 
     public function set waterStorageTypes(value:ArrayCollection):void {
         _waterStorageTypes = value;
+    }
+
+    public function get distributionSelectedIndex():int {
+        return _distributionSelectedIndex;
+    }
+
+    public function set distributionSelectedIndex(value:int):void {
+        _distributionSelectedIndex = value;
+    }
+
+    public function get storageSelectedIndex():int {
+        return _storageSelectedIndex;
+    }
+
+    public function set storageSelectedIndex(value:int):void {
+        _storageSelectedIndex = value;
     }
 }
 }

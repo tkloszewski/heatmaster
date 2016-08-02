@@ -72,6 +72,9 @@
 
     <!--Heating source types configuration
       type = pellets|wood|coal|gas|oil|combined_heat|electric
+      There must be one heating source type with attribute electricity because algorithms use this specific
+      heat source parameters for primary and final energy consumption calculation. Given no such heat source type
+      results in error during configuration reading.
      -->
     <heating_source_types>
         <heating_source_type id="hm.heating-source.biomass-pellets" label_key="hm.dropdown.heating.source.biomass_pellets"
@@ -171,7 +174,7 @@
                              show_natural_unit="true" calorific_value_editable="false"/>
 
         <heating_source_type id="hm.heating-source.electric" label_key="hm.dropdown.heating.source.electric"
-                             type="electric"
+                             type="electric" electricity="true"
                              natural_unit="hm.natural_unit.kwh" natural_unit_price="0.6" calorific_value="3.6"
                              efficiency="100" emission_per_kwh="0.890" final_to_primary_coefficient="3.0"
                              show_natural_unit="false" calorific_value_editable="false"/>
@@ -256,13 +259,13 @@
     </warm_water_multi_family_heating_source_types>
 
     <!--Warm water distribution configuration-->
-    <warm_water_distribution_types>
+    <warm_water_distribution_types selected_index="0">
         <warm_water_distribution_type id="hm.water-distribution.well_insulated_pipes" label_key="hm.dropdown.warmwater.distribution.pipes_well_insulated" efficiency="0.95"/>
-        <warm_water_distribution_type id="hm.water-distribution.not_insulated_pipes" label_key="hm.dropdown.warmwater.distribution.pipes_well_insulated" efficiency="0.5"/>
+        <warm_water_distribution_type id="hm.water-distribution.not_insulated_pipes" label_key="hm.dropdown.warmwater.distribution.pipes_not_insulated" efficiency="0.5"/>
     </warm_water_distribution_types>
 
     <!--Warm water storage configuration-->
-    <warm_water_storage_types>
+    <warm_water_storage_types selected_index="0">
         <warm_water_storage_type id="hm.water-storage.heat_node_without_storage" label_key="hm.dropdown.warmwater.storage.heat_node_without_storage" efficiency="1"/>
         <warm_water_storage_type id="hm.water-storage.modern_storage" label_key="hm.dropdown.warmwater.storage.modern_storage" efficiency="0.85"/>
         <warm_water_storage_type id="hm.water-storage.storage.standard_80_90_storage" label_key="hm.dropdown.warmwater.storage.standard_80_90_storage" efficiency="0.65"/>

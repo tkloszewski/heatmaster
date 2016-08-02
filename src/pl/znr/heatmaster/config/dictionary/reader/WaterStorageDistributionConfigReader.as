@@ -23,6 +23,9 @@ public class WaterStorageDistributionConfigReader extends AbstractDictionaryRead
         var waterStorageDistributionConfiguration:WaterStorageDistributionConfig = new WaterStorageDistributionConfig();
         waterStorageDistributionConfiguration.waterDistributionTypes = warmWaterDistributionTypes;
         waterStorageDistributionConfiguration.waterStorageTypes = warmWaterStorageTypes;
+        waterStorageDistributionConfiguration.storageSelectedIndex = getSelectedIndex(dictionaryXML.warm_water_storage_types);
+        waterStorageDistributionConfiguration.distributionSelectedIndex = getSelectedIndex(dictionaryXML.warm_water_distribution_types);
+
 
         dictionaryConfig.waterStorageDistributionConfiguration = waterStorageDistributionConfiguration;
         return dictionaryConfig;

@@ -6,6 +6,8 @@ import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 
+import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+
 public class HeatingSourceTypeConfig {
 
     private var _heatingSourceTypes:Dictionary;
@@ -15,6 +17,8 @@ public class HeatingSourceTypeConfig {
 
     private var _warmWaterDetachedHeatingSourceTypes:ArrayCollection;
     private var _warmWaterMultiFamilyHeatingSourceTypes:ArrayCollection;
+
+    private var _electricityHeatingSourceType:HeatingSourceType;
 
     private var _detachedHeatingSelectedIndex:int;
     private var _warmWaterDetachedSelectedIndex:int;
@@ -94,6 +98,14 @@ public class HeatingSourceTypeConfig {
 
     public function set warmWaterMultiFamilyHeatingSourceTypes(value:ArrayCollection):void {
         _warmWaterMultiFamilyHeatingSourceTypes = value;
+    }
+
+    public function get electricityHeatingSourceType():HeatingSourceType {
+        return _electricityHeatingSourceType;
+    }
+
+    public function set electricityHeatingSourceType(value:HeatingSourceType):void {
+        _electricityHeatingSourceType = value;
     }
 }
 }

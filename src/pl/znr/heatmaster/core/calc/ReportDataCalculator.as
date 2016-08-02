@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.calc {
+import pl.znr.heatmaster.config.BusinessConfiguration;
+import pl.znr.heatmaster.config.BusinessConfigurationReaderListener;
 import pl.znr.heatmaster.core.*;
 
 import mx.controls.Alert;
@@ -22,11 +24,18 @@ import pl.znr.heatmaster.core.converter.RatioClusterFactory;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 
-public class ReportDataCalculator {
+public class ReportDataCalculator implements BusinessConfigurationReaderListener{
 
     private var converterService:ConverterService = new ConverterService();
 
+    private var electricityHeatingSourceType:HeatingSourceType;
+
     public function ReportDataCalculator() {
+    }
+
+    public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+        electricityHeatingSourceType = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.electricityHeatingSourceType;
+        converterService.configurationRead(businessConfiguration);
     }
 
     public function calcReportValues(dataContext:DataContext,processingResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {
@@ -90,21 +99,21 @@ public class ReportDataCalculator {
     private function calcFinalEnergyConsumption(heatingEnergyConsumption:Number,enRecuperator:Number,warmWaterEnergyConsumption:Number,conversionData:ConversionData):Number {
         var result:Number = heatingEnergyConsumption/conversionData.houseHeatingEfficiency;
         result = result + warmWaterEnergyConsumption/(conversionData.warmWaterHeatingEfficiency);
-        result = result + enRecuperator * (HeatingSourceType.ELECTRIC.efficiency/100);
+        result = result + enRecuperator * (electricityHeatingSourceType.efficiency/100);
         return result;
     }
 
     private function calcPrimaryEnergyConsumption(heatingEnergyConsumption:Number,enRecuperator:Number,warmWaterEnergyConsumption:Number,conversionData:ConversionData):Number {
         var result:Number = heatingEnergyConsumption/conversionData.houseHeatingEfficiency * conversionData.finalToPrimaryCoefficient;
         result = result + warmWaterEnergyConsumption/(conversionData.warmWaterHeatingEfficiency) * conversionData.warmWaterFinalToPrimaryCoefficient;
-        result = result + enRecuperator * (HeatingSourceType.ELECTRIC.efficiency/100) * HeatingSourceType.ELECTRIC.finalToPrimaryCoefficient;
+        result = result + enRecuperator * (electricityHeatingSourceType.efficiency/100) * electricityHeatingSourceType.finalToPrimaryCoefficient;
         return result;
     }
 
     private function calcPrimaryEnergyConsumptionFromFinalValues(heatingFinalValue:Number,warmWaterFinalValue:Number,enRecuperator:Number,conversionData:ConversionData):Number {
             var result:Number = heatingFinalValue * conversionData.finalToPrimaryCoefficient;
             result = result + warmWaterFinalValue * conversionData.warmWaterFinalToPrimaryCoefficient;
-            result = result + enRecuperator * (HeatingSourceType.ELECTRIC.efficiency/100) * HeatingSourceType.ELECTRIC.finalToPrimaryCoefficient;
+            result = result + enRecuperator * (electricityHeatingSourceType.efficiency/100) * electricityHeatingSourceType.finalToPrimaryCoefficient;
             return result;
     }
 

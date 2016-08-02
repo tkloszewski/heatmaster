@@ -64,6 +64,8 @@ public class HeatMasterController {
             var businessConfigListener:BusinessConfigurationReaderListener = businessConfigurationListeners.getItemAt(i) as BusinessConfigurationReaderListener;
             businessConfigListener.configurationRead(businessConfig);
         }
+        reportDataCalculator.configurationRead(businessConfig);
+        converterService.configurationRead(businessConfig);
     }
 
     public function getDataContext():DataContext {

@@ -8,6 +8,10 @@
 package pl.znr.heatmaster.core.converter {
 import mx.controls.Alert;
 
+import pl.znr.heatmaster.config.BusinessConfiguration;
+
+import pl.znr.heatmaster.config.BusinessConfigurationReaderListener;
+
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
@@ -17,8 +21,14 @@ import pl.znr.heatmaster.core.converter.ConvertedResult;
 import pl.znr.heatmaster.core.ProcessingResult;
 import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 
-public class ConverterService {
+public class ConverterService implements BusinessConfigurationReaderListener{
     public function ConverterService() {
+    }
+
+    private var electricityHeatingSourceType:HeatingSourceType;
+
+    public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+        electricityHeatingSourceType = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.electricityHeatingSourceType;
     }
 
     public function convert(processResult:ProcessingResult,conversionData:ConversionData,ratioCluster:RatioCluster):ProcessingResult{
@@ -124,10 +134,10 @@ public class ConverterService {
     private function convertEnRecuperator(energyData:MonthEnergyData,conversionData:ConversionData,ratioCluster:RatioCluster):Number {
         var result:Number = energyData.enRecuperator;
         if(ConversionUnits.isCostUnit(conversionData.selectedUnit)){
-            result = result * ratioCluster.tokWhRatio / (HeatingSourceType.ELECTRIC.efficiency/100) * conversionData.electricityPricePerKwh;
+            result = result * ratioCluster.tokWhRatio / (electricityHeatingSourceType.efficiency/100) * conversionData.electricityPricePerKwh;
         }
         else if(ConversionUnits.isEmisionUnit(conversionData.selectedUnit)){
-            result = result * ratioCluster.tokWhRatio / (HeatingSourceType.ELECTRIC.efficiency/100) * HeatingSourceType.ELECTRIC.emissionPerKWh;
+            result = result * ratioCluster.tokWhRatio / (electricityHeatingSourceType.efficiency/100) * electricityHeatingSourceType.emissionPerKWh;
         }
         else {
             var ratio:Number = ConversionUnits.getRatio(conversionData.selectedUnit,ratioCluster);

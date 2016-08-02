@@ -25,10 +25,6 @@ public class SolarCollectorType extends BaseComboObject{
     private var _unitSurface:Number;
     private var _personPerCollector:int;
 
-    public static var NONE:SolarCollectorType = new SolarCollectorType("hm.solar-collector.none",NONE_TYPE,0,1,0);
-    public static var FLAT:SolarCollectorType = new SolarCollectorType("hm.solar-collector.flat",FLAT_TYPE,0.3,1.0,1);
-    public static var VACUUM:SolarCollectorType = new SolarCollectorType("hm.solar-collector.vacuum",VACUUM_TYPE,0.5,2.0,2);
-
     public static function getSolarCollectorTypeById(_id:String):SolarCollectorType {
         return valueMap[_id] as SolarCollectorType;
     }
