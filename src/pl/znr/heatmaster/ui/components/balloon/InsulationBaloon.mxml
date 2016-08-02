@@ -62,7 +62,7 @@
         import pl.znr.heatmaster.ui.components.tooltip.FloorToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.RoofToolTip;
         import pl.znr.heatmaster.ui.components.tooltip.WallsToolTip;
-        import pl.znr.heatmaster.util.HouseStandardModelContainer;
+        import pl.znr.heatmaster.util.HouseStandardModelHelper;
 
 
         [Bindable]
@@ -184,7 +184,7 @@
 
                     var foundationType:FoundationsType = FoundationsType.TRADITIONAL_INSULATED;
                     if (_insulationElementType == InsulationElementType.FLOOR) {
-                        var foundationIdx:int = getComboItemIndexForCollectionById(dataContext.houseData.foundationType.id,foundationsList);
+                        var foundationIdx:int = getComboItemIndexForCollectionById(dataContext.houseData.foundationType.id, foundationsList);
                         foundationsTypeDropDownList.selectedIndex = foundationIdx;
                         foundationType = dataContext.houseData.foundationType;
                     }
@@ -198,9 +198,9 @@
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
             insulationElement = createInsulationElement();
-            var insulationMaterialType:InsulationMaterialType = HouseStandardModelContainer.getMaterialInsulationForElementType(insulationElement.getElementType(), context.model);
+            var insulationMaterialType:InsulationMaterialType = HouseStandardModelHelper.getMaterialInsulationForElementType(insulationElement.getElementType(), context.model);
             insulationElement.materialHeatTransfer = insulationMaterialType.heatTransferCoefficient;
-            insulationElement.uValue = HouseStandardModelContainer.getUValueForElementType(insulationElement.getElementType(), context.model);
+            insulationElement.uValue = HouseStandardModelHelper.getUValueForElementType(insulationElement.getElementType(), context.model);
             insulationElement = uValueElementPreparer.prepare(insulationElement);
 
             widthNumericStepper.value = insulationElement.width;
@@ -317,7 +317,7 @@
                 widthNumericStepper.value = insulationElement.width;
                 uValueNumericStepper.value = insulationElement.uValue;
                 dropDownList.selectedIndex = getSelectedIndexForInsulationQuality(insulationElement.insulationQuality);
-                heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType,null, calculationRequired);
+                heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType, null, calculationRequired);
             } catch (e:Error) {
                 Alert.show("error in building age changed " + e.message);
             }
@@ -340,7 +340,7 @@
             //dropDownList.selectedIndex = getSelectedIndexForInsulationQuality(insulationElement.insulationQuality);
             widthNumericStepper.value = insulationElement.width;
 
-            heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType,foundationsTypeDropDownList.selectedItem.data, true, true );
+            heatMasterListener.insulationElementChanged(insulationElement, _insulationElementType, foundationsTypeDropDownList.selectedItem.data, true, true);
         }
 
         private function widthOrMaterialTypeChanged():void {

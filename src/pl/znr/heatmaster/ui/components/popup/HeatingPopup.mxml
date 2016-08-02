@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <hm:HeatMasterResultComponent implements="pl.znr.heatmaster.core.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
-                        xmlns:fx="http://ns.adobe.com/mxml/2009"
-                        xmlns:mx="library://ns.adobe.com/flex/mx"
-                        xmlns:s="library://ns.adobe.com/flex/spark"
-                        xmlns:hm="pl.znr.heatmaster.ui.components.*"
-                        creationComplete="heatingPopupInitialized()"
+                              xmlns:fx="http://ns.adobe.com/mxml/2009"
+                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:s="library://ns.adobe.com/flex/spark"
+                              xmlns:hm="pl.znr.heatmaster.ui.components.*"
         >
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Declarations >
 
-        <s:ArrayCollection id="detachedHeatingSourceList">
+        <!--<s:ArrayCollection id="detachedHeatingSourceList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_pellets')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_PELLETS)}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_wood')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_WOOD)}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
@@ -27,7 +26,7 @@
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil_heavy')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_HEAVY)}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
-        </s:ArrayCollection>
+        </s:ArrayCollection>-->
 
         <s:ArrayCollection id="multiFamilyHeatingSourceList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
@@ -109,12 +108,12 @@
         import mx.formatters.NumberFormatter;
 
         import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.NaturalUnit;
         import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-        import pl.znr.heatmaster.constants.combo.HouseStandardType;
         import pl.znr.heatmaster.constants.combo.HouseType;
         import pl.znr.heatmaster.constants.combo.SolarCollectorType;
         import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
@@ -128,7 +127,6 @@
         import pl.znr.heatmaster.core.model.SolarCollectorData;
         import pl.znr.heatmaster.core.model.WarmWaterData;
         import pl.znr.heatmaster.util.HeatMasterFormatter;
-        import pl.znr.heatmaster.util.HouseStandardModelContainer;
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         import spark.components.BorderContainer;
@@ -144,6 +142,9 @@
         private var warmWaterIncluded:Boolean = false;
 
         [Bindable]
+        private var detachedHeatingSourceList:ArrayCollection;
+
+        [Bindable]
         private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
 
         [Bindable]
@@ -151,6 +152,17 @@
 
         private var localCurrency:Boolean = false;
         private var selectedCountry:CountryItem;
+
+
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            detachedHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.detachedHeatingSourceTypes);
+            heatingTypeDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.detachedHeatingSelectedIndex;
+
+
+            heatingPopupInitialized();
+
+            configChanged(businessConfiguration.countryItem, true);
+        }
 
         override public function langChanged(lang:String):void {
             var oldIdx:int = heatingTypeDropDownList.selectedIndex;
@@ -277,6 +289,18 @@
             this.localCurrency = localCurrency;
 
             applyCurrencyToLabels(configItem, localCurrency);
+        }
+
+        private function toHeatingSourceObjectList(heatingSources:ArrayCollection):ArrayCollection {
+            var result:ArrayCollection = new ArrayCollection();
+            for(var i:int =0; i< heatingSources.length;i++){
+                var heatingSourceType:HeatingSourceType = heatingSources.getItemAt(i) as HeatingSourceType;
+                result.addItem({
+                          name:heatingSourceType.name,
+                          data: new HeatingSourceTypeItem(heatingSourceType)}
+                );
+            }
+            return result;
         }
 
         private function applyCurrencyToLabels(country:CountryItem, localCurrency:Boolean):void {
@@ -1052,7 +1076,7 @@
             <s:Label right="190" y="35"  color="#FF6600" fontSize="12" visible="{showNaturalUnit}"
                      fontWeight="bold" paddingLeft="5" text="{resourceManager.getString('hm','hm.label.heating_value')}" verticalAlign="middle"/>
             <s:NumericStepper id="calorificValInput" x="91" y="30" width="50" height="20"  visible="{showNaturalUnit}"
-                    minimum="1" maximum="50000" stepSize="1" change="calorificValueChanged()" valueParseFunction="parse" valueFormatFunction="format" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
+                              minimum="1" maximum="50000" stepSize="1" change="calorificValueChanged()" valueParseFunction="parse" valueFormatFunction="format" skinClass="pl.znr.heatmaster.ui.components.skins.HeatMasterNumericStepperSkin"/>
             <s:RichText id="naturalUnitCalorificValueRichText" x="145" y="35"  styleName="pupupPanelGrayFontStyle" text="MJ" verticalAlign="middle" visible="{showNaturalUnit}">
             </s:RichText>
 

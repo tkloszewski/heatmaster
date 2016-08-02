@@ -16,9 +16,45 @@ public class HeatingSourceTypeConfig {
     private var _warmWaterDetachedHeatingSourceTypes:ArrayCollection;
     private var _warmWaterMultiFamilyHeatingSourceTypes:ArrayCollection;
 
+    private var _detachedHeatingSelectedIndex:int;
+    private var _warmWaterDetachedSelectedIndex:int;
+    private var _multiFamilySelectedIndex:int;
+    private var _warmWaterMultiFamilySelectedIndex:int;
+
     public function HeatingSourceTypeConfig() {
     }
 
+    public function get detachedHeatingSelectedIndex():int {
+        return _detachedHeatingSelectedIndex;
+    }
+
+    public function set detachedHeatingSelectedIndex(value:int):void {
+        _detachedHeatingSelectedIndex = value;
+    }
+
+    public function get warmWaterDetachedSelectedIndex():int {
+        return _warmWaterDetachedSelectedIndex;
+    }
+
+    public function set warmWaterDetachedSelectedIndex(value:int):void {
+        _warmWaterDetachedSelectedIndex = value;
+    }
+
+    public function get multiFamilySelectedIndex():int {
+        return _multiFamilySelectedIndex;
+    }
+
+    public function set multiFamilySelectedIndex(value:int):void {
+        _multiFamilySelectedIndex = value;
+    }
+
+    public function get warmWaterMultiFamilySelectedIndex():int {
+        return _warmWaterMultiFamilySelectedIndex;
+    }
+
+    public function set warmWaterMultiFamilySelectedIndex(value:int):void {
+        _warmWaterMultiFamilySelectedIndex = value;
+    }
 
     public function get heatingSourceTypes():Dictionary {
         return _heatingSourceTypes;

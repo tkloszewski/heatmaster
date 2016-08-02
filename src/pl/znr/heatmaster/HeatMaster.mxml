@@ -366,8 +366,7 @@
             var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(configItems, countryRegionCode);
             var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(configItems, countryRegionCode);
 
-            housePopup.populateCountryRegionDropDownList(configItems, regionItem, countryItem, countryRegionCode);
-            heatingPopup.configChanged(countryItem, true);
+            //heatingPopup.configChanged(countryItem, true);
             housePanel.energyMeter.countryChanged(countryItem);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);

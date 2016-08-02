@@ -205,7 +205,7 @@
     </detached_heating_source_types>
 
     <!--Heating source types configuration for non-detached houses-->
-    <multi_family_heating_source_types>
+    <multi_family_heating_source_types selected_index="2">
         <heating_source_type ref="hm.heating-source.combined_heat"/>
         <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
@@ -220,7 +220,7 @@
     </multi_family_heating_source_types>
 
     <!--Warm water heating source types for detached house-->
-    <warm_water_detached_heating_source_types>
+    <warm_water_detached_heating_source_types selected_index="4">
         <heating_source_type ref="hm.heating-source.biomass-pellets"/>
         <heating_source_type ref="hm.heating-source.biomass-wood"/>
         <heating_source_type ref="hm.heating-source.combined_heat"/>
@@ -239,7 +239,7 @@
     </warm_water_detached_heating_source_types>
 
     <!--Warm water heating source types for non-detached houses-->
-    <warm_water_multi_family_heating_source_types>
+    <warm_water_multi_family_heating_source_types selected_index="2">
         <heating_source_type ref="hm.heating-source.combined_heat"/>
         <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_old"/>

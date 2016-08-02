@@ -85,42 +85,13 @@
         [Bindable]
         private var stationName:String;
 
-
-        public function populateCountryRegionDropDownList(configItems:ArrayCollection, regionItem:RegionItem, countryItem:CountryItem, defaultItemCode:String):void {
-            countryList = configItems;
-            countryDropDownList.dataProvider = configItems;
-            this.defaultItemCode = defaultItemCode;
-
-            selectedCountry = countryItem;
-
-            if (regionItem != null) {
-                regionsVisible = true;
-                regionList = countryItem.regions;
-                regionDropDownList.dataProvider = regionList;
-                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
-            }
-            else {
-                regionsVisible = false;
-            }
-
-            if (countryItem.stationsConfig != null) {
-                stationsVisible = true;
-                stationsConfig = countryItem.stationsConfig;
-                selectedStation = stationsConfig.defaultStation;
-                stationName = selectedStation.name;
-            }
-            else {
-                stationsVisible = false;
-            }
-
-            countryDropDownList.selectedIndex = getSelectedCountryIndex(configItems, countryItem.code);
-        }
-
-
         override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
            houseStandardTypeList = toComboObjectList(businessConfiguration.dictionaryConfig.houseStandardTypeConfiguration.houseStandardTypes);
            houseStandardDropDownList.dataProvider = houseStandardTypeList;
            houseStandardDropDownList.selectedIndex = 2;
+
+           populateCountryRegionDropDownList(businessConfiguration.countryItems,businessConfiguration.regionItem,
+                   businessConfiguration.countryItem,businessConfiguration.countryRegionCode)
         }
 
         override public function initData(dataContext:DataContext):DataContext {
@@ -226,6 +197,36 @@
             selectedStation = stationItem;
             stationName = selectedStation.name;
         }
+
+        private function populateCountryRegionDropDownList(configItems:ArrayCollection, regionItem:RegionItem, countryItem:CountryItem, defaultItemCode:String):void {
+            countryList = configItems;
+            countryDropDownList.dataProvider = configItems;
+            this.defaultItemCode = defaultItemCode;
+
+            selectedCountry = countryItem;
+
+            if (regionItem != null) {
+                regionsVisible = true;
+                regionList = countryItem.regions;
+                regionDropDownList.dataProvider = regionList;
+                regionDropDownList.selectedIndex = getSelectedRegionIndex(regionList, regionItem.code);
+            }
+            else {
+                regionsVisible = false;
+            }
+
+            if (countryItem.stationsConfig != null) {
+                stationsVisible = true;
+                stationsConfig = countryItem.stationsConfig;
+                selectedStation = stationsConfig.defaultStation;
+                stationName = selectedStation.name;
+            }
+            else {
+                stationsVisible = false;
+            }
+            countryDropDownList.selectedIndex = getSelectedCountryIndex(configItems, countryItem.code);
+        }
+
 
         private function comboStandardChanged():void {
             try {

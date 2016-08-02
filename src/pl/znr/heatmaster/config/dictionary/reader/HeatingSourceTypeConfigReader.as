@@ -34,6 +34,12 @@ public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
         heatingSourceTypeConfiguration.warmWaterDetachedHeatingSourceTypes = warmWaterDetachedHeatingSourceTypes;
         heatingSourceTypeConfiguration.warmWaterMultiFamilyHeatingSourceTypes = warmWaterMultiFamilyHeatingSourceTypes;
 
+        heatingSourceTypeConfiguration.detachedHeatingSelectedIndex = getSelectedIndex(dictionaryXML.detached_heating_source_types);
+        heatingSourceTypeConfiguration.warmWaterDetachedSelectedIndex = getSelectedIndex(dictionaryXML.warm_water_detached_heating_source_types);
+        heatingSourceTypeConfiguration.multiFamilySelectedIndex = getSelectedIndex(dictionaryXML.multi_family_heating_source_types);
+        heatingSourceTypeConfiguration.warmWaterMultiFamilySelectedIndex = getSelectedIndex(dictionaryXML.warm_water_multi_family_heating_source_types);
+
+
         dictionaryConfig.heatingSourceTypeConfiguration = heatingSourceTypeConfiguration;
 
         return dictionaryConfig;
@@ -58,6 +64,10 @@ public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
             heatingSourceTypesMap[heatingSourceType.id] = heatingSourceType;
         }
         return heatingSourceTypesMap;
+    }
+
+    private function getSelectedIndex(xmlItem:XMLList):int {
+        return Number(xmlItem.attribute("selected_index"));
     }
 
     private function readHeatingSourceType(heatingSourceTypeXML:XML):HeatingSourceType {

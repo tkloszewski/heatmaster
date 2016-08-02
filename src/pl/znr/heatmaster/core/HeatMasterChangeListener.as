@@ -46,7 +46,7 @@ import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
-import pl.znr.heatmaster.util.HouseStandardModelContainer;
+import pl.znr.heatmaster.util.HouseStandardModelHelper;
 
 public class HeatMasterChangeListener {
 
