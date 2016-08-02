@@ -573,29 +573,25 @@
              mouseOver="clickGroupMouseOver()" mouseOut="clickGroupMouseOut()">
 
 
-        <hmbtn:ImageSkinnableButton x="235" y="-2" id="housePopupRollUpImg" visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"
+        <s:Image x="235" y="-2" id="housePopupRollUpImg" visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"
                                     click="hideOrShowComponents1()">
-        </hmbtn:ImageSkinnableButton>
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="235" y="-2" id="housePopupRollUpOverImg"    visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')"
+        <s:Image x="235" y="-2" id="housePopupRollUpOverImg"    visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')"
                                     click="hideOrShowComponents1()">
-        </hmbtn:ImageSkinnableButton>
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="235" y="-2" id="housePopupRollDownImg"  visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"
+        <s:Image x="235" y="-2" id="housePopupRollDownImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"
                                     click="hideOrShowComponents1()">
-        </hmbtn:ImageSkinnableButton>
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="235" y="-2" id="housePopupRollDownOverImg"  visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"
+        <s:Image x="235" y="-2" id="housePopupRollDownOverImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"
                                     click="hideOrShowComponents1()">
-        </hmbtn:ImageSkinnableButton>
+        </s:Image>
 
 
     </s:Group>

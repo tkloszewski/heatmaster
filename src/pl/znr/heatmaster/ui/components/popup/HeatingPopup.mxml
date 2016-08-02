@@ -1033,25 +1033,21 @@
         <mx:Button x="277" y="11" click="hideOrShowControls1()" visible="false" id="heatPopupRollDownOverImg"
                    skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"/>-->
 
-        <hmbtn:ImageSkinnableButton x="245" y="-2" id="heatPopupRollUpImg" visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')">
-        </hmbtn:ImageSkinnableButton>
+        <s:Image x="245" y="-2" id="heatPopupRollUpImg" visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')">
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="245" y="-2" id="heatPopupRollDownImg"  visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')">
-        </hmbtn:ImageSkinnableButton>
+        <s:Image x="245" y="-2" id="heatPopupRollDownImg"  visible="false"  smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')">
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="245" y="-2" id="heatPopupRollUpOverImg"    visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')">
-        </hmbtn:ImageSkinnableButton>
+        <s:Image x="245" y="-2" id="heatPopupRollUpOverImg"    visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')">
+        </s:Image>
 
-        <hmbtn:ImageSkinnableButton x="245" y="-2" id="heatPopupRollDownOverImg"  visible="false"
-                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"
-                                    downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')">
-        </hmbtn:ImageSkinnableButton>
+        <s:Image x="245" y="-2" id="heatPopupRollDownOverImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')">
+        </s:Image>
 
 
     </s:Group>
