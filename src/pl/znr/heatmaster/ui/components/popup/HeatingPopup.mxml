@@ -105,28 +105,33 @@
 
         override public function langChanged(lang:String):void {
             var oldIdx:int = heatingTypeDropDownList.selectedIndex;
-            detachedHeatingSourceList.refresh();
-            multiFamilyHeatingSourceList.refresh();
+            detachedHeatingSourceList = translateComboItemsAndRefresh(detachedHeatingSourceList,lang);
+            multiFamilyHeatingSourceList = translateComboItemsAndRefresh(multiFamilyHeatingSourceList,lang);
+            heatingTypeDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? detachedHeatingSourceList : multiFamilyHeatingSourceList;
             heatingTypeDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterHeatingTypeDropDownList.selectedIndex;
-            warmWaterDetachedHeatingSourceList.refresh();
-            warmWaterMultiFamilyHeatingSourceList.refresh();
+            warmWaterDetachedHeatingSourceList = translateComboItemsAndRefresh(warmWaterDetachedHeatingSourceList,lang);
+            warmWaterMultiFamilyHeatingSourceList = translateComboItemsAndRefresh(warmWaterMultiFamilyHeatingSourceList,lang);
+            warmWaterHeatingTypeDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? warmWaterDetachedHeatingSourceList : warmWaterMultiFamilyHeatingSourceList;
             warmWaterHeatingTypeDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterStorageDropDownList.selectedIndex;
-            warmWaterStorageList.refresh();
+            warmWaterStorageList = translateComboItemsAndRefresh(warmWaterStorageList,lang);
+            warmWaterStorageDropDownList.dataProvider = warmWaterStorageList;
             warmWaterStorageDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterDistributionDropDownList.selectedIndex;
-            detachedWarmWaterDistributionList.refresh();
-            multiFamilyWarmWaterDistributionList.refresh();
+            detachedWarmWaterDistributionList = translateComboItemsAndRefresh(detachedWarmWaterDistributionList,lang);
+            multiFamilyWarmWaterDistributionList = translateComboItemsAndRefresh(multiFamilyWarmWaterDistributionList,lang);
+            warmWaterDistributionDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? detachedWarmWaterDistributionList : multiFamilyWarmWaterDistributionList;
             warmWaterDistributionDropDownList.selectedIndex = oldIdx;
 
             oldIdx = collectorTypeDropDownList.selectedIndex;
-            solarCollectorTypesList.refresh();
+            solarCollectorTypesList = translateComboItemsAndRefresh(solarCollectorTypesList,lang);
+            collectorTypeDropDownList.dataProvider = solarCollectorTypesList;
             collectorTypeDropDownList.selectedIndex = oldIdx;
-
+            trace("Lang changed heating popup...");
             applyCurrencyToLabels(selectedCountry, localCurrency);
         }
 

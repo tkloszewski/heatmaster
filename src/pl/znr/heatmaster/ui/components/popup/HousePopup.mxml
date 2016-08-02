@@ -546,9 +546,10 @@
                 var stationItem:StationItem = stationsConfig.stations.getItemAt(i) as StationItem;
                 stationItem.name = resourceManager.getString('hm', stationItem.localeCode);
             }
+            stationName = selectedStation.name;
 
             oldIdx = houseStandardDropDownList.selectedIndex;
-            houseStandardTypeList = translateComboItems(houseStandardTypeList,lang);
+            houseStandardTypeList = translateComboItemsAndRefresh(houseStandardTypeList,lang);
             houseStandardDropDownList.dataProvider = houseStandardTypeList;
             houseStandardDropDownList.selectedIndex = oldIdx;
         }

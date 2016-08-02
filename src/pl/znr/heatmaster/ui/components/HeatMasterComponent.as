@@ -34,6 +34,7 @@ import pl.znr.heatmaster.core.HeatMasterChangeListener;
 import pl.znr.heatmaster.core.IDataContextAware;
 import pl.znr.heatmaster.core.state.CalculationStateController;
 import pl.znr.heatmaster.locale.LangHelper;
+import pl.znr.heatmaster.ui.components.popup.HeatingSourceTypeItem;
 import pl.znr.heatmaster.util.HeatMasterFormatter;
 
 import spark.components.Group;
@@ -95,14 +96,31 @@ public class HeatMasterComponent extends Group implements IHeatMasterListenerAwa
     protected function translateComboItems(comboItems:ArrayCollection,lang:String):ArrayCollection {
         for(var i:int = 0;i < comboItems.length;i++){
             var item:Object = comboItems.getItemAt(i);
-            var comboObject:BaseComboObject = item.data as BaseComboObject;
-            if(comboObject.labelKey != null){
-               item.name = resourceManager.getString('hm',comboObject.labelKey);
+            if(item.data is BaseComboObject) {
+                var comboObject:BaseComboObject = item.data as BaseComboObject;
+                item = translateComboItem(item,comboObject,lang);
             }
-            else {
-               item.name = LangHelper.isPolishLang(lang) ? comboObject.plName : comboObject.enName;
+            else if(item.data is HeatingSourceTypeItem){
+                var heatingSourceItem:HeatingSourceTypeItem = item.data as HeatingSourceTypeItem;
+                item = translateComboItem(item,heatingSourceItem.type,lang);
             }
         }
+        return comboItems;
+    }
+
+    protected function translateComboItem(item:Object,comboObject:BaseComboObject,lang:String):Object {
+        if (comboObject.labelKey != null) {
+            item.name = resourceManager.getString('hm', comboObject.labelKey);
+        }
+        else {
+            item.name = LangHelper.isPolishLang(lang) ? comboObject.plName : comboObject.enName;
+        }
+        return item;
+    }
+
+    protected function translateComboItemsAndRefresh(comboItems:ArrayCollection,lang:String):ArrayCollection {
+        comboItems = translateComboItems(comboItems,lang);
+        comboItems.refresh();
         return comboItems;
     }
 
