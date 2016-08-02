@@ -7,74 +7,7 @@
         >
     <!-- To change this template use File | Settings | File Templates. -->
 
-    <fx:Declarations >
-
-        <!--<s:ArrayCollection id="detachedHeatingSourceList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_pellets')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_PELLETS)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_wood')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_WOOD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.furnace')}" data="{new HeatingSourceTypeItem(HeatingSourceType.FURNACE)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COAL_OLD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.coal.new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COAL_MODERN)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_LIGHT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil_heavy')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_HEAVY)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
-        </s:ArrayCollection>-->
-
-        <s:ArrayCollection id="multiFamilyHeatingSourceList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_LIGHT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil_heavy')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_HEAVY)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="warmWaterDetachedHeatingSourceList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_pellets')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_PELLETS)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.biomass_wood')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BIOMASS_WOOD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_electric_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_ELECTRIC_HEATER)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_HEATER)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_LIGHT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil_heavy')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_HEAVY)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="warmWaterMultiFamilyHeatingSourceList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.combined_electric_heat')}" data="{new HeatingSourceTypeItem(HeatingSourceType.COMBINED_ELECTRIC_HEAT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_old')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_OLD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_new')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_MODERN)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_gas_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_GAS_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_standard')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_STANDARD)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_propan_condensing')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_PROPAN_CONDENSING)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_electric_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_ELECTRIC_HEATER)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.gas_heater')}" data="{new HeatingSourceTypeItem(HeatingSourceType.GAS_HEATER)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_LIGHT)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.boiler_oil_heavy')}" data="{new HeatingSourceTypeItem(HeatingSourceType.BOILER_OIL_HEAVY)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.electric')}" data="{new HeatingSourceTypeItem(HeatingSourceType.ELECTRIC)}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.heating.source.heat_pump')}" data="{new HeatingSourceTypeItem(HeatingSourceType.HEAT_PUMP)}"/>
-        </s:ArrayCollection>
+    <fx:Declarations>
 
         <s:ArrayCollection id="detachedWarmWaterDistributionList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.distribution.pipes_well_insulated')}" data="{WarmWaterDistribution.WELL_ISOLATED_PIPES}"/>
@@ -141,8 +74,10 @@
         private var currentImg:mx.controls.Image;
         private var warmWaterIncluded:Boolean = false;
 
-        [Bindable]
-        private var detachedHeatingSourceList:ArrayCollection;
+        [Bindable] private var detachedHeatingSourceList:ArrayCollection;
+        [Bindable] private var multiFamilyHeatingSourceList:ArrayCollection;
+        [Bindable] private var warmWaterDetachedHeatingSourceList:ArrayCollection;
+        [Bindable] private var warmWaterMultiFamilyHeatingSourceList:ArrayCollection;
 
         [Bindable]
         private var warmWaterDistributionDataProvider:IList = detachedWarmWaterDistributionList;
@@ -158,6 +93,11 @@
             detachedHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.detachedHeatingSourceTypes);
             heatingTypeDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.detachedHeatingSelectedIndex;
 
+            warmWaterDetachedHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.warmWaterDetachedHeatingSourceTypes);
+            warmWaterHeatingTypeDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.warmWaterDetachedSelectedIndex;
+
+            multiFamilyHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.multiFamilyHeatingSourceTypes);
+            warmWaterMultiFamilyHeatingSourceList = toHeatingSourceObjectList(businessConfiguration.dictionaryConfig.heatingSourceTypeConfiguration.warmWaterMultiFamilyHeatingSourceTypes);
 
             heatingPopupInitialized();
 

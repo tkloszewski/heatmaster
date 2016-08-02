@@ -86,6 +86,9 @@ public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
         fillBaseProperties(heatingSourceTypeXML,heatingSourceType);
 
         var heatingType:HeatingType = HeatingType.of(heatingSourceTypeXML.attribute("type"));
+        if(heatingType == null){
+           throw new Error("Unrecognized heating source type: " + heatingSourceTypeXML.attribute("type") + ". Allowable values are: pellets|wood|coal|gas|oil|combined_heat|electric")
+        }
         heatingSourceType.heatingType = heatingType;
 
         return heatingSourceType

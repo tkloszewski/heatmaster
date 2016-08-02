@@ -10,6 +10,8 @@ import mx.collections.ArrayList;
 
 import pl.znr.heatmaster.constants.HeatingType;
 
+import pl.znr.heatmaster.constants.HeatingType;
+
 import pl.znr.heatmaster.constants.NaturalUnit;
 
 public class HeatingSourceType extends BaseComboObject{
@@ -57,34 +59,32 @@ public class HeatingSourceType extends BaseComboObject{
         return null;
     }
 
-    public static function isOfGasType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == BOILER_GAS_OLD || heatingType == BOILER_GAS_MODERN || heatingType == BOILER_GAS_CONDENSING ||
-               heatingType == BOILER_PROPAN_STANDARD || heatingType == BOILER_PROPAN_CONDENSING ||
-               heatingType == GAS_ELECTRIC_HEATER || heatingType == GAS_HEATER;
+    public static function isOfGasType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.GAS;
     }
 
-    public static function isOfOilType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == BOILER_OIL_LIGHT || heatingType == BOILER_OIL_HEAVY;
+    public static function isOfOilType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.OIL;
     }
 
-    public static function isOfElectricType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == ELECTRIC || heatingType == HEAT_PUMP;
+    public static function isOfElectricType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.ELECTRIC;
     }
 
-    public static function isOfCoalType(heatingType:HeatingSourceType):Boolean {
-       return heatingType == FURNACE || heatingType == COAL_OLD || heatingType == COAL_MODERN;
+    public static function isOfCoalType(heatingSourceType:HeatingSourceType):Boolean {
+       return heatingSourceType.heatingType = HeatingType.COAL;
     }
 
-    public static function isOfCombinedType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == COMBINED_HEAT || heatingType == COMBINED_ELECTRIC_HEAT;
+    public static function isOfCombinedType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.COMBINED;
     }
 
-    public static function isOfPelletsType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == BIOMASS_PELLETS;
+    public static function isOfPelletsType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.PELLETS;
     }
 
-    public static function isOfWoodType(heatingType:HeatingSourceType):Boolean {
-        return heatingType == BIOMASS_WOOD;
+    public static function isOfWoodType(heatingSourceType:HeatingSourceType):Boolean {
+        return heatingSourceType.heatingType == HeatingType.WOOD;
     }
 
     public static function toPricePerKWh(naturalUnitPrice:Number,heatingValueMJ:Number):Number{
