@@ -221,13 +221,13 @@
 
         <mx:LineSeries id="refLineSeries" yField="netLoss" xField="xField" width="100%" form="segment" dataProvider="{lineSeriesDataProvider1}"  >
           <mx:lineStroke>
-            <mx:SolidColorStroke color="blue" weight="1"/>
+            <mx:SolidColorStroke color="blue" weight="2"/>
           </mx:lineStroke>
         </mx:LineSeries>
 
         <mx:LineSeries id="newLineSeries" yField="netLoss" xField="xField" width="100%" form="segment" dataProvider="{lineSeriesDataProvider2}">
           <mx:lineStroke>
-            <mx:SolidColorStroke color="blue" weight="1" />
+            <mx:SolidColorStroke color="blue" weight="2" />
           </mx:lineStroke>
         </mx:LineSeries>
       </mx:series>
@@ -247,9 +247,9 @@
       </mx:backgroundElements>
     </mx:ColumnChart>
 
-    <s:Label x="{chart.x + gutterLeft + (chart.width -gutterLeft)/12}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - refStateValue)/(yMaxValue - yMinValue) - 10}"
+    <s:Label x="{chart.x + gutterLeft + (chart.width -gutterLeft)/12}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - refStateValue)/(yMaxValue - yMinValue) - 13}"
              text="{refStateFormattedValue + ' ' + rawUnitName}" color="blue"/>
-    <s:Label  x="{chart.x + gutterLeft + 5 * (chart.width -gutterLeft)/6}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - newStateValue)/(yMaxValue - yMinValue) - 10}"
+    <s:Label  x="{chart.x + gutterLeft + 5 * (chart.width -gutterLeft)/6}" y="{chart.y + (chart.height-gutterBottom) * (yMaxValue - newStateValue)/(yMaxValue - yMinValue) - 13}"
               text="{newStateFormattedValue + ' ' + rawUnitName}" color="blue"/>
 
 

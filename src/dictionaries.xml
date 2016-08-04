@@ -211,9 +211,14 @@
     </detached_heating_source_types>
 
     <!--Heating source types configuration for non-detached houses-->
-    <multi_family_heating_source_types selected_index="2">
+    <multi_family_heating_source_types selected_index="7">
+        <heating_source_type ref="hm.heating-source.biomass-pellets"/>
+        <heating_source_type ref="hm.heating-source.biomass-wood"/>
         <heating_source_type ref="hm.heating-source.combined_heat"/>
         <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.coal-furnace"/>
+        <heating_source_type ref="hm.heating-source.coal-old"/>
+        <heating_source_type ref="hm.heating-source.coal-new"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>

@@ -182,27 +182,38 @@
             addElement(toolTipComp);
         }
 
+        public function showMonthlyReport():void {
+            if (!plotVisible) {
+                plotVisible = true;
+                comparingPlotVisible = false;
+            }
+            partnersLogo.visible = false;
+        }
+
         public function hideMonthlyReport():void {
             plotVisible = false;
+            partnersLogo.visible = true;
         }
 
         public function hideMap():void {
             stationsPanel.visible = false;
             stationsPanelVisible = false;
             this.removeElement(stationsPanel);
+            partnersLogo.visible = true;
         }
 
         public function showBalanceReport(calculationState:ComparingProcessingResult):void {
             plotVisible = false;
             comparingPlotPanel.drawComparingPlot(calculationState);
             comparingPlotVisible = true;
-
+            partnersLogo.visible = false;
         }
 
         public function hideBalanceReport():void {
             /*balanceReportPanel.visible = false;
              heatMasterContainer.removeElement(balanceReportPanel);*/
             comparingPlotVisible = false;
+            partnersLogo.visible = true;
         }
 
         public function showProperPopupsVisibility():void {
@@ -279,7 +290,6 @@
             var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(configItems, countryRegionCode);
             var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(configItems, countryRegionCode);
 
-            //heatingPopup.configChanged(countryItem, true);
             housePanel.energyMeter.countryChanged(countryItem);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
@@ -454,10 +464,7 @@
         }
 
         private function setStartViewState():void {
-            logoTopGroup.visible = false;
-            logoGroupBottom.visible = true;
             bottomBarImg.visible = true;
-            bottomBarImgWhite.visible = false;
 
             menuButtonGroup.visible = true;
             housePopup.visible = true;
@@ -473,13 +480,6 @@
             if (dataContext != null) {
                 cachedDataContextManager.writeCache(dataContext);
                 heatMasterListener.setCacheEnabled(true);
-            }
-        }
-
-        public function showMonthlyReport():void {
-            if (!plotVisible) {
-                plotVisible = true;
-                comparingPlotVisible = false;
             }
         }
 
@@ -673,13 +673,6 @@
 
     </fx:Style>
 
-    <!--<mx:Canvas width="100%" height="100%" backgroundAlpha="10" >-->
-    <!--<popup:HousePopup y="10" x="10" />-->
-    <!--<popup:HeatingPopup y="300" x="10" width="320" height="150"/>-->
-    <!--<popup:VentilationPupup x="500" y="50"/>-->
-    <!--</mx:Canvas>-->
-
-
     <s:Scroller id="scroller" width="100%">
         <s:Group>
             <s:BorderContainer x="0" id="heatMasterContainer" width="{Math.max(1000,this.width * 0.9)}" height="765"
@@ -704,6 +697,8 @@
                 <panel:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715"
                                   visible="{!plotVisible &amp;&amp; !comparingPlotVisible}"/>
 
+                <mx:Image id="partnersLogo" x="{housePanel.x + housePanel.width - 220}" y="75" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/loga_partnerzy.png')"/>
+
                 <panel:PlotPanel x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90"
                                  height="560"
                                  width="{Math.min(Math.max(1000 * 1200/1280,1200/1280 * this.width),1200)}"
@@ -713,6 +708,7 @@
                                  height="560"
                                  width="{Math.min(Math.max(0.8 * 1000 * 1200/1280,1200/1280 * 0.8 * this.width),0.8 * 1200)}"
                                  id="comparingPlotPanel" visible="{comparingPlotVisible}" />
+
 
                 <popup:HousePopup id="housePopup" y="18" x="{housePanel.x + 200}" height="400" visible="false"/>
                 <popup:HeatingPopup id="heatingPopup" y="18" x="{housePopup.x + housePopup.width}" visible="false"/>
@@ -751,27 +747,6 @@
 
                 <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"
                           source="@Embed('/pl/znr/heatmaster/assets/images/start/przyciemniacz_start.png')"/>
-
-
-                <s:Group id="logoTopGroup" x="0" y="0" width="100%" visible="true">
-                    <mx:Image width="{Math.max(1024,this.width )}" height="80" maintainAspectRatio="false" x="0" y="0"
-                              id="houseTopBarWhiteImg"
-                              source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
-                    <s:Group id="iconLogoGroup" x="{Math.max(0,this.width - 1000)/2}" y="15" width="1000" >
-                        <mx:Image x="15" y="-5"  id="polreffLogo"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_start.png')"/>
-
-                        <mx:Image x="{iconLogoGroup.width - 520}" y="-5"  id="europeanBankLogo"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_start.png')"/>
-                        <mx:Image visible="true" y="-5" id="taiwanBusinessLogo" x="{europeanBankLogo.x + europeanBankLogo.width + 20}"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_start.png')"/>
-                        <mx:Image visible="true" y="5" id="shareHoldersLogo" x="{taiwanBusinessLogo.x + taiwanBusinessLogo.width + 20}"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_start.png')"/>
-
-                    </s:Group>
-                </s:Group>
-
-
                 <s:Group x="0" y="0" id="introGroup" width="100%" height="100%">
 
                     <s:Group y="150" x="{introGroup.width/2 - introContentGroup.width/2}" width="613" height="600"
@@ -863,35 +838,11 @@
                 <s:Label id="versionText" text="{resourceManager.getString('hm','hm.label.version')}" left="5"
                          bottom="55" fontSize="9" color="white" click="toggleLocale()"/>
 
-                <s:Group id="logoGroupBottom" x="0" bottom="0" width="100%" visible="false" height="50">
-                    <mx:Image width="{Math.max(1024,this.width )}" height="50" maintainAspectRatio="false" x="0" y="0"
-                              id="houseBottomBarWhiteImg"
-                              source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
-                    <s:Group id="iconLogoGroupBottom" x="{iconLogoGroup.x}" y="15" width="1000">
-                        <mx:Image x="15" y="-5" buttonMode="false" id="polreffLogoBottom"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_strona.png')"/>
-
-                        <mx:Image x="{iconLogoGroupBottom.width - 293}" y="-3" id="europeanBankLogoBottom"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_strona.png')"/>
-                        <mx:Image  y="-5" id="taiwanBusinessLogoBottom" x="{europeanBankLogoBottom.x + europeanBankLogoBottom.width + 20}"
-                                   buttonMode="false"  source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_strona.png')"/>
-                        <mx:Image  y="-3" id="shareHoldersLogoBottom" x="{taiwanBusinessLogoBottom.x + taiwanBusinessLogoBottom.width + 20}"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_strona.png')"/>
-
-                    </s:Group>
-                </s:Group>
-
             </s:BorderContainer>
         </s:Group>
     </s:Scroller>
 
-    <mx:Image maintainAspectRatio="false" id="bottomBarImg" left="0" right="0" y="765" visible="false"
-              height="{Math.max(this.height - 765,0)}"
-              source="@Embed('/pl/znr/heatmaster/assets/images/bottom_bar.png')"/>
-
-    <mx:Image maintainAspectRatio="false" id="bottomBarImgWhite" left="0" right="0" y="715" visible="true"
+    <mx:Image maintainAspectRatio="false" id="bottomBarImg" left="0" right="0" y="715" visible="true"
               height="{Math.max(this.height - 715,0)}"
               source="@Embed('/pl/znr/heatmaster/assets/images/bottom_bar.png')"/>
-
-
 </s:Application>

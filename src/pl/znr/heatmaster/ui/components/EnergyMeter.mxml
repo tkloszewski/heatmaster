@@ -463,7 +463,7 @@
 
     <s:Button id="freezeStateButton" y="80" x="24" width="153" color="gray" fontSize="10" fontWeight="bold"  click="freezeReferenceState()" label="{resourceManager.getString('hm','hm.button.compare.houses')}" />
 
-    <hmbtn:ImageSkinnableButton top="-9" right="-9" buttonMode="true" click="openInfoPanel(event)"
+    <hmbtn:ImageSkinnableButton top="-17" right="-13" buttonMode="true" click="openInfoPanel(event)"
             upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
             overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')">
     </hmbtn:ImageSkinnableButton>

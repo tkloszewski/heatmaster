@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<ballonn:BaseBaloon implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
-                    xmlns:fx="http://ns.adobe.com/mxml/2009"
-                    xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
-                    xmlns:comp="pl.znr.heatmaster.ui.components.*"
-                    width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
-                    xmlns:comp="pl.znr.heatmaster.ui.components.*"
-                    creationComplete="balloonCreated()">
+<ballonn:BaseBaloon
+        implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        width="220" height="106"
+        xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
+        xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
+        creationComplete="balloonCreated()" >
 
     <fx:Declarations>
 

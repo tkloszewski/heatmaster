@@ -5,7 +5,6 @@
         xmlns:mx="library://ns.adobe.com/flex/mx"
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:hm="pl.znr.heatmaster.ui.components.*"
-        creationComplete="heatingPopupInitialized()"
         xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*">
     <!-- To change this template use File | Settings | File Templates. -->
 
