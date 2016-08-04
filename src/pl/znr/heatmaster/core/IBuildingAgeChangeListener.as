@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core {
-import pl.znr.heatmaster.constants.combo.BuildingAge;
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
 
 public interface IBuildingAgeChangeListener {
 

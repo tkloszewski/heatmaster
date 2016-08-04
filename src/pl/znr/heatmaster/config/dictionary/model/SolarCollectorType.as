@@ -5,14 +5,17 @@
  * Time: 10:59
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
+import flash.utils.Dictionary;
+
 import mx.collections.ArrayList;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class SolarCollectorType extends BaseComboObject{
 
-    private static var items:ArrayList = new ArrayList();
+    private static const valueMap:Dictionary = new Dictionary();
 
     public static const NONE_TYPE:int = 0;
     public static const FLAT_TYPE:int = 1;
@@ -23,18 +26,8 @@ public class SolarCollectorType extends BaseComboObject{
     private var _unitSurface:Number;
     private var _personPerCollector:int;
 
-    public static var NONE:SolarCollectorType = new SolarCollectorType("hm.solar-collector.none",NONE_TYPE,0,1,0);
-    public static var FLAT:SolarCollectorType = new SolarCollectorType("hm.solar-collector.flat",FLAT_TYPE,0.3,1.0,1);
-    public static var VACUUM:SolarCollectorType = new SolarCollectorType("hm.solar-collector.vacuum",VACUUM_TYPE,0.5,2.0,2);
-
     public static function getSolarCollectorTypeById(_id:String):SolarCollectorType {
-        for(var i:int = 0;i < items.length;i++){
-            var solarCollectorType:SolarCollectorType = items.getItemAt(i) as SolarCollectorType;
-            if(solarCollectorType.getId() == _id){
-                return solarCollectorType;
-            }
-        }
-        return null;
+        return valueMap[_id] as SolarCollectorType;
     }
 
     function SolarCollectorType(id:String,type:int, efficiency:Number, unitSurface:Number, perPersonCount:int) {
@@ -43,13 +36,7 @@ public class SolarCollectorType extends BaseComboObject{
         _efficiency = efficiency;
         _unitSurface = unitSurface;
         _personPerCollector = perPersonCount;
-
-        items.addItem(this);
-    }
-
-
-    override public function dictionaryInitialized(config:DictionaryConfig):void {
-
+        valueMap[id] = this;
     }
 
     public function isFlatCollector():Boolean {

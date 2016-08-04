@@ -6,14 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
 
 public class VentilationData {
 
     private var _gwcSet:Boolean;
     private var _ventilationFreq:int;
     private var _co2Sensor:Boolean;
-    private var _tightness:Number;
+    private var _airTightness:AirTightness;
     private var _ventilationMethodObject:VentilationMethod;
 
     public function VentilationData() {
@@ -23,12 +24,12 @@ public class VentilationData {
         return "VentilationData";
     }
 
-    public function get tightness():Number {
-        return _tightness;
+    public function get airTightness():AirTightness {
+        return _airTightness;
     }
 
-    public function set tightness(value:Number):void {
-        _tightness = value;
+    public function set airTightness(value:AirTightness):void {
+        _airTightness = value;
     }
 
     public function get ventilationFreq():int {

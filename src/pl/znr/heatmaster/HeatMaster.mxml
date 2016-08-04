@@ -8,14 +8,11 @@
                height="100%"
                xmlns:s="library://ns.adobe.com/flex/spark"
                skinClass="pl.znr.heatmaster.ui.components.skins.CustomSparkApplicationSkin"
-               xmlns:tooltip="pl.znr.heatmaster.ui.components.tooltip.*"
                creationComplete="appInitialized()"
                initialize="initHeatMaster()"
                preinitialize="preinitialize()"
                pageTitle="HeatMaster"
-               preloader="pl.znr.heatmaster.CustomPreloader"
-
-        >
+               preloader="pl.znr.heatmaster.CustomPreloader">
 
 
     <fx:Metadata>
@@ -30,6 +27,7 @@
 
         <fx:XML id="countriesXML" format="e4x" source="/config.xml"/>
         <fx:XML id="stationsXML" format="e4x" source="/stations.xml"/>
+        <fx:XML id="dictionaryXML" format="e4x" source="/dictionaries.xml"/>
 
         <s:BitmapFill id="bgGrass"
                       source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_grass.png')"/>
@@ -47,87 +45,47 @@
     <fx:Script><![CDATA[
         import mx.collections.ArrayCollection;
         import mx.controls.Alert;
-        import mx.controls.ToolTip;
         import mx.core.FlexGlobals;
-        import mx.core.FlexLoader;
         import mx.core.IToolTip;
         import mx.core.IVisualElementContainer;
         import mx.core.UIComponent;
-        import mx.events.ToolTipEvent;
-        import mx.formatters.DateFormatter;
         import mx.managers.BrowserManager;
         import mx.managers.ToolTipManager;
         import mx.rpc.events.FaultEvent;
         import mx.rpc.events.ResultEvent;
 
-        import pl.znr.heatmaster.HeatMaster;
-
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.BusinessConfigurationReader;
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.CountryItemHelper;
-
-        import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
         import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
         import pl.znr.heatmaster.config.RegionItem;
         import pl.znr.heatmaster.config.StationItem;
         import pl.znr.heatmaster.config.StationsConfig;
-        import pl.znr.heatmaster.constants.combo.BaseComboObject;
-        import pl.znr.heatmaster.constants.combo.BuildingAge;
-        import pl.znr.heatmaster.constants.combo.ConversionUnits;
-        import pl.znr.heatmaster.constants.combo.DoorType;
-        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-        import pl.znr.heatmaster.constants.combo.HouseStandardType;
-        import pl.znr.heatmaster.constants.combo.InsulationQuality;
-        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-        import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-        import pl.znr.heatmaster.constants.combo.VentilationMethod;
-        import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-        import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-        import pl.znr.heatmaster.core.StateDataContext;
-
-        import pl.znr.heatmaster.core.cache.CachedDataContextManager;
         import pl.znr.heatmaster.core.DataContext;
-
+        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.core.HeatMasterController;
+        import pl.znr.heatmaster.core.HouseStandardChangeListener;
         import pl.znr.heatmaster.core.IBuildingAgeChangeListener;
-        import pl.znr.heatmaster.core.comparator.ComparatorResult;
-        import pl.znr.heatmaster.core.converter.ConversionData;
+        import pl.znr.heatmaster.core.LangChangeListener;
+        import pl.znr.heatmaster.core.StateDataContext;
+        import pl.znr.heatmaster.core.cache.CachedDataContextManager;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
-        import pl.znr.heatmaster.core.model.HeatingSourceData;
-        import pl.znr.heatmaster.core.model.HouseData;
         import pl.znr.heatmaster.core.model.InsolationData;
-        import pl.znr.heatmaster.core.model.InsulationElement;
-        import pl.znr.heatmaster.core.model.SolarCollectorData;
-        import pl.znr.heatmaster.core.model.SurfaceData;
-        import pl.znr.heatmaster.core.model.VentilationData;
-        import pl.znr.heatmaster.core.model.WarmWaterData;
-        import pl.znr.heatmaster.core.model.WindowElement;
-        import pl.znr.heatmaster.core.state.ComparingProcessingResult;
         import pl.znr.heatmaster.core.state.CalculationStateController;
+        import pl.znr.heatmaster.core.state.ComparingProcessingResult;
         import pl.znr.heatmaster.core.state.ICalculationStateListener;
         import pl.znr.heatmaster.locale.HeatMasterLocaleManager;
         import pl.znr.heatmaster.locale.LangHelper;
-        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.HeatMasterComponent;
         import pl.znr.heatmaster.ui.components.HeatMasterResultComponent;
-        import pl.znr.heatmaster.core.HouseStandardChangeListener;
-        import pl.znr.heatmaster.core.LangChangeListener;
         import pl.znr.heatmaster.ui.components.panel.BalanceReportPanel;
         import pl.znr.heatmaster.ui.components.panel.StationsPanel;
-        import pl.znr.heatmaster.util.SortingUtil;
 
         import spark.components.RichText;
 
         import spark.primitives.BitmapImage;
-
         import spark.utils.TextFlowUtil;
 
         public static const CURRENCY_EURO_LOCALE_CODE:String = 'hm.currency.euro';
@@ -141,9 +99,9 @@
         private var heatMasterController:HeatMasterController = new HeatMasterController();
         private var environmentalDataPreparer:EnvironmentalDataPreparer = new EnvironmentalDataPreparer();
         private var cachedDataContextManager:CachedDataContextManager;
-        private var configurationReader:HeatMasterConfigurationReader;
         private var heatMasterLocaleManager:HeatMasterLocaleManager;
         private var calculationStateController:CalculationStateController;
+        private var businessConfigReader:BusinessConfigurationReader;
 
         private var stationsPanel:StationsPanel = new StationsPanel();
         private var balanceReportPanel:BalanceReportPanel;
@@ -166,6 +124,7 @@
         private var localeToggled:Boolean = false;
         private var langChangeListeners:ArrayCollection = new ArrayCollection();
         private var configItems:ArrayCollection;
+        private var businessConfig:BusinessConfiguration;
 
         private var selectedLang:String;
 
@@ -268,10 +227,11 @@
             cachedDataContextManager = new CachedDataContextManager(calculationStateController);
             calculationStateController.setCacheManager(cachedDataContextManager);
             heatMasterLocaleManager = new HeatMasterLocaleManager(resourceManager);
-            configurationReader = new HeatMasterConfigurationReader(countriesXML, stationsXML, resourceManager);
+            businessConfigReader = new BusinessConfigurationReader(countriesXML, stationsXML, dictionaryXML, resourceManager);
 
             selectedLang = resourceManager.getLocales()[0];
-            configItems = configurationReader.readConfig();
+            businessConfig = businessConfigReader.readBusinessConfiguration();
+            configItems = businessConfig.countryItems;
         }
 
         private function httpService_fault(evt:FaultEvent):void {
@@ -310,16 +270,17 @@
             injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
+            //propagate business configuration
+            heatMasterController.propagateBusinessConfiguration(businessConfig);
+
             cachedData = cachedDataContextManager.readCache();
 
             var countryRegionCode:String = CountryItemHelper.getInitialConfigItemCode();
             var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(configItems, countryRegionCode);
             var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(configItems, countryRegionCode);
 
-            housePopup.populateCountryRegionDropDownList(configItems, regionItem, countryItem, countryRegionCode);
-            heatingPopup.configChanged(countryItem, true);
+            //heatingPopup.configChanged(countryItem, true);
             housePanel.energyMeter.countryChanged(countryItem);
-            housePanel.energyMeter.setConfigurationReader(configurationReader);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
             comparingPlotPanel.setCalculationStateController(calculationStateController);
@@ -340,7 +301,7 @@
         private function setUpHeatMasterListener():void {
             heatMasterListener.setHeatMasterController(heatMasterController);
             heatMasterListener.setCalculationStateController(calculationStateController);
-            heatMasterListener.setConfigurationReader(configurationReader);
+            heatMasterListener.setBusinessConfiguration(businessConfig);
             heatMasterListener.setCacheManager(cachedDataContextManager);
             heatMasterListener.setHousePanel(housePanel);
             heatMasterListener.setHeatingPopup(heatingPopup);
@@ -399,6 +360,7 @@
                 hmComponent.setHeatMasterListener(hmListener);
                 hmComponent.setCalculationStateController(calculationStateController);
                 heatMasterController.addDataContextListener(hmComponent);
+                heatMasterController.addBusinessConfigurationListener(hmComponent);
             }
             if (component is HeatMasterResultComponent) {
                 var hmResultComponent:HeatMasterResultComponent = component as HeatMasterResultComponent;

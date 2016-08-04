@@ -1,29 +1,437 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dictionaries>
-    <door-types selected_index="0">
-       <door-type id="hm.door.energy_intensive" u-value="3.4" label-key="hm.dropdown.door.energy_intensive"/>
-       <door-type id="hm.door.standard" u-value="2.6" label-key="hm.dropdown.door.standard"/>
-       <door-type id="hm.door.energy_saving" u-value="1.4" label-key="hm.dropdown.door.energy_saving"/>
-       <door-type id="hm.door.energy_intensive" u-value="0.8" label-key="hm.dropdown.door.super_energy_saving"/>
-    </door-types>
 
-    <insulation-material-types>
-        <insulation-material-type id="hm.insulation.material.average" heat-transfer="0.040"/>
-        <insulation-material-type id="hm.insulation.material.good" heat-transfer="0.036"/>
-        <insulation-material-type id="hm.insulation.material.very_good" heat-transfer="0.032"/>
-    </insulation-material-types>
+    <!--Door types configuration-->
+    <door_types selected_index="0">
+        <door_type id="hm.door.energy_intensive" label_key="hm.dropdown.door.energy_intensive" en_name="Draughty" pl_name="Nieenergooszcz\u0119dne" u_value="3.4"/>
+        <door_type id="hm.door.standard" label_key="hm.dropdown.door.standard" u_value="2.6" />
+        <door_type id="hm.door.energy_saving" label_key="hm.dropdown.door.energy_saving" u_value="1.4" />
+        <door_type id="hm.door.super_energy_saving" label_key="hm.dropdown.door.super_energy_saving" u_value="0.8" />
+    </door_types>
 
-    <solar-collector-types>
-        <solar-collector-type id="hm.solar-collector.none"   efficiency="0.0" unit-surface="1.0" persons="0"/>
-        <solar-collector-type id="hm.solar-collector.flat"   efficiency="0.3" unit-surface="1.0" persons="1"/>
-        <solar-collector-type id="hm.solar-collector.vacuum" efficiency="0.5" unit-surface="2.0" persons="2"/>
-    </solar-collector-types>
+    <!--Insulation material type configuration-->
+    <insulation_material_types selected_index="0">
+        <insulation_material_type id="hm.insulation.material.average" label_key="hm.dropdown.insulation.average" heat_transfer="0.040"/>
+        <insulation_material_type id="hm.insulation.material.good" label_key="hm.dropdown.insulation.good" heat_transfer="0.036" />
+        <insulation_material_type id="hm.insulation.material.very_good" label_key="hm.dropdown.insulation.very_good" heat_transfer="0.032" />
+    </insulation_material_types>
 
-    <thermal-bridges-types>
-        <thermal-bridges-type id="hm.thermal-bridge.max" u-value="0.45"/>
-        <thermal-bridges-type id="hm.thermal-bridge.avg" u-value="0.2"/>
-        <thermal-bridges-type id="hm.thermal-bridge.min  " u-value="0.08"/>
-    </thermal-bridges-types>
+    <!--Solar collector types configuration-->
+    <solar_collector_types selected_index="0">
+        <solar_collector_type id="hm.solar-collector.none" label_key="hm.dropdown.solar_collectors.none" type="0" efficiency="0.0" unit_surface="1.0" persons="0" />
+        <solar_collector_type id="hm.solar-collector.flat" label_key="hm.dropdown.solar_collectors.flat" type="1" efficiency="0.3" unit_surface="1.0" persons="1"/>
+        <solar_collector_type id="hm.solar-collector.vacuum" label_key="hm.dropdown.solar_collectors.vacuum" type="2" efficiency="0.5" unit_surface="2.0" persons="2"/>
+    </solar_collector_types>
+
+    <!--Ventilation types configuration
+    type: 1=>GRAVITATIONAL,2=>MECHANICAL
+    On natural regulated type there must set attribute: natural_regulated="true"
+    -->
+    <ventilation_types selected_index="1">
+        <ventilation_type id="hm.ventilation-type.natural" label_key="hm.dropdown.ventilation.natural" type="1" efficiency="0"/>
+        <ventilation_type id="hm.ventilation-type.natural_regulated" label_key="hm.dropdown.ventilation.natural.regulated" type="1" natural_regulated="true" efficiency="0.1"/>
+        <ventilation_type id="hm.ventilation-type.mechanical_60" label_key="hm.dropdown.ventilation.mechanical_60" type="2" efficiency="0.6"/>
+        <ventilation_type id="hm.ventilation-type.mechanical_75" label_key="hm.dropdown.ventilation.mechanical_75" type="2" efficiency="0.75"/>
+        <ventilation_type id="hm.ventilation-type.mechanical_85" label_key="hm.dropdown.ventilation.mechanical_85" type="2" efficiency="0.85"/>
+    </ventilation_types>
+
+    <!--Tightness configuration-->
+    <tightness_configuration selected_index="2">
+        <tightness_item id="hm.tightness.very_loose" label_key="hm.dropdown.tightness.very_poor" value="10"/>
+        <tightness_item id="hm.tightness.loose" label_key="hm.dropdown.tightness.poor" value="7"/>
+        <tightness_item id="hm.tightness.standard_new" label_key="hm.dropdown.tightness.new_typical" value="5"/>
+        <tightness_item id="hm.tightness.tight_no_recup" label_key="hm.dropdown.tightness.tight_no_recuperation" value="3"/>
+        <tightness_item id="hm.tightness.tight_recup" label_key="hm.dropdown.tightness.tight_recuperation" value="1.5"/>
+        <tightness_item id="hm.tightness.standard_passive" label_key="hm.dropdown.tightness.passive" value="0.6"/>
+    </tightness_configuration>
+
+    <!--Thermal bridges types configuration
+        There must be defined one item for which there is no insulation by setting attribute max="true"
+    -->
+    <thermal_bridges_types selected_index="0">
+        <thermal_bridges_type id="hm.thermal-bridge.max" max="true" label_key="hm.dropdown.windows.thermal_brdiges_max" u_value="0.45"/>
+        <thermal_bridges_type id="hm.thermal-bridge.avg" label_key="hm.dropdown.windows.thermal_brdiges_avg" u_value="0.2"/>
+        <thermal_bridges_type id="hm.thermal-bridge.min" label_key="hm.dropdown.windows.thermal_brdiges_min" u_value="0.08"/>
+    </thermal_bridges_types>
+
+    <!--Window types configuration-->
+    <window_types selected_index="2">
+        <window_type id="hm.windows.type.one_pane" label_key="hm.dropdown.windows.one_pane" u_value="5.2" win_gain="0.85"/>
+        <window_type id="hm.windows.type.two_pane_old" label_key="hm.dropdown.windows.two_panes.old" u_value="2.6" win_gain="0.75"/>
+        <window_type id="hm.windows.type.two_pane_new" label_key="hm.dropdown.windows.two_panes.new" u_value="1.4" win_gain="0.6"/>
+        <window_type id="hm.windows.type.three_pane" label_key="hm.dropdown.windows.three_panes" u_value="0.9" win_gain="0.55"/>
+        <window_type id="hm.windows.type.three_pane_special" label_key="hm.dropdow.windows.three_panes.special" u_value="0.7" win_gain="0.62"/>
+    </window_types>
+
+    <!--Foundation configuration
+      type: 1=>TRADITIONAL, 2=>SLAB
+    -->
+    <foundation_types selected_index="0">
+        <foundation_type id="hm.foundations.traditional" label_key="hm.dropdown.foundations.traditional" type="1" u_value="0.75"/>
+        <foundation_type id="hm.foundations.traditional_insulated" label_key="hm.dropdown.foundations.traditional_insulated" type="1" u_value="0.5"/>
+        <foundation_type id="hm.foundations.slab" label_key="hm.dropdown.foundations.slab" type="2" u_value="0.0"/>
+    </foundation_types>
+
+
+    <!--Heating source types configuration
+      type = pellets|wood|coal|gas|oil|combined_heat|electric
+      There must be one heating source type with attribute electricity because algorithms use this specific
+      heat source parameters for primary and final energy consumption calculation. Given no such heat source type
+      results in error during configuration reading.
+     -->
+    <heating_source_types>
+        <heating_source_type id="hm.heating-source.biomass-pellets" label_key="hm.dropdown.heating.source.biomass_pellets"
+                             type="pellets"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="500" calorific_value="17500"
+                             efficiency="75" emission_per_kwh="0.403" final_to_primary_coefficient="0.2"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.biomass-wood" label_key="hm.dropdown.heating.source.biomass_wood"
+                             type="wood"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="360" calorific_value="15600"
+                             efficiency="70" emission_per_kwh="0.403" final_to_primary_coefficient="0.2"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.combined_heat" label_key="hm.dropdown.heating.source.combined_heat"
+                             type="combined_heat"
+                             natural_unit="hm.natural_unit.gj" natural_unit_price="50" calorific_value="1000"
+                             efficiency="97" emission_per_kwh="0.449" final_to_primary_coefficient="1.3"
+                             show_natural_unit="false" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.combined_electric_heat" label_key="hm.dropdown.heating.source.combined_electric_heat"
+                             type="combined_heat"
+                             natural_unit="hm.natural_unit.gj" natural_unit_price="50" calorific_value="1000"
+                             efficiency="97" emission_per_kwh="0.247" final_to_primary_coefficient="0.8"
+                             show_natural_unit="false" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.coal-furnace" label_key="hm.dropdown.heating.source.coal.furnace"
+                             type="coal"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="750" calorific_value="26010"
+                             efficiency="40" emission_per_kwh="0.338" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="true"/>
+
+        <heating_source_type id="hm.heating-source.coal-old" label_key="hm.dropdown.heating.source.coal.old"
+                             type="coal"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="750" calorific_value="26010"
+                             efficiency="60" emission_per_kwh="0.338" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="true"/>
+
+        <heating_source_type id="hm.heating-source.coal-new" label_key="hm.dropdown.heating.source.coal.new"
+                             type="coal"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="750" calorific_value="26010"
+                             efficiency="80" emission_per_kwh="0.338" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="true"/>
+
+        <heating_source_type id="hm.heating-source.boiler_gas_old" label_key="hm.dropdown.heating.source.boiler_gas_old"
+                             type="gas"
+                             natural_unit="hm.natural_unit.m3" natural_unit_price="2" calorific_value="36.03"
+                             efficiency="65" emission_per_kwh="0.202" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_gas_new" label_key="hm.dropdown.heating.source.boiler_gas_new"
+                             type="gas"
+                             natural_unit="hm.natural_unit.m3" natural_unit_price="2" calorific_value="36.03"
+                             efficiency="85" emission_per_kwh="0.202" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_gas_condensing" label_key="hm.dropdown.heating.source.boiler_gas_condensing"
+                             type="gas"
+                             natural_unit="hm.natural_unit.m3" natural_unit_price="2" calorific_value="36.03"
+                             efficiency="95" emission_per_kwh="0.202" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_propan_standard" label_key="hm.dropdown.heating.source.boiler_propan_standard"
+                             type="gas"
+                             natural_unit="hm.natural_unit.kg" natural_unit_price="2" calorific_value="47.3"
+                             efficiency="85" emission_per_kwh="0.227" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_propan_condensing" label_key="hm.dropdown.heating.source.boiler_propan_condensing"
+                             type="gas"
+                             natural_unit="hm.natural_unit.kg" natural_unit_price="2" calorific_value="47.3"
+                             efficiency="95" emission_per_kwh="0.227" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.gas_electric_heater" label_key="hm.dropdown.heating.source.gas_electric_heater"
+                             type="gas"
+                             natural_unit="hm.natural_unit.m3" natural_unit_price="2" calorific_value="36.03"
+                             efficiency="90" emission_per_kwh="0.202" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.gas_heater" label_key="hm.dropdown.heating.source.gas_heater"
+                             type="gas"
+                             natural_unit="hm.natural_unit.m3" natural_unit_price="2" calorific_value="36.03"
+                             efficiency="70" emission_per_kwh="0.202" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_oil_light" label_key="hm.dropdown.heating.source.boiler_oil"
+                             type="oil"
+                             natural_unit="hm.natural_unit.kg" natural_unit_price="4.75" calorific_value="43"
+                             efficiency="85" emission_per_kwh="0.266" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.boiler_oil_heavy" label_key="hm.dropdown.heating.source.boiler_oil_heavy"
+                             type="oil"
+                             natural_unit="hm.natural_unit.tonne" natural_unit_price="4000" calorific_value="40400"
+                             efficiency="85" emission_per_kwh="0.278" final_to_primary_coefficient="1.1"
+                             show_natural_unit="true" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.electric" label_key="hm.dropdown.heating.source.electric"
+                             type="electric" electricity="true"
+                             natural_unit="hm.natural_unit.kwh" natural_unit_price="0.6" calorific_value="3.6"
+                             efficiency="100" emission_per_kwh="0.890" final_to_primary_coefficient="3.0"
+                             show_natural_unit="false" calorific_value_editable="false"/>
+
+        <heating_source_type id="hm.heating-source.heat_pump" label_key="hm.dropdown.heating.source.heat_pump"
+                             type="electric"
+                             natural_unit="hm.natural_unit.kwh" natural_unit_price="0.6" calorific_value="3.6"
+                             efficiency="350" emission_per_kwh="0.890" final_to_primary_coefficient="3.0"
+                             show_natural_unit="false" calorific_value_editable="false"/>
+
+    </heating_source_types>
+
+    <!--Heating source types configuration for detached house-->
+    <detached_heating_source_types selected_index="7">
+        <heating_source_type ref="hm.heating-source.biomass-pellets"/>
+        <heating_source_type ref="hm.heating-source.biomass-wood"/>
+        <heating_source_type ref="hm.heating-source.combined_heat"/>
+        <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.coal-furnace"/>
+        <heating_source_type ref="hm.heating-source.coal-old"/>
+        <heating_source_type ref="hm.heating-source.coal-new"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_standard"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_light"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_heavy"/>
+        <heating_source_type ref="hm.heating-source.electric"/>
+        <heating_source_type ref="hm.heating-source.heat_pump"/>
+    </detached_heating_source_types>
+
+    <!--Heating source types configuration for non-detached houses-->
+    <multi_family_heating_source_types selected_index="2">
+        <heating_source_type ref="hm.heating-source.combined_heat"/>
+        <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_standard"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_light"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_heavy"/>
+        <heating_source_type ref="hm.heating-source.electric"/>
+        <heating_source_type ref="hm.heating-source.heat_pump"/>
+    </multi_family_heating_source_types>
+
+    <!--Warm water heating source types for detached house-->
+    <warm_water_detached_heating_source_types selected_index="4">
+        <heating_source_type ref="hm.heating-source.biomass-pellets"/>
+        <heating_source_type ref="hm.heating-source.biomass-wood"/>
+        <heating_source_type ref="hm.heating-source.combined_heat"/>
+        <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_standard"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_condensing"/>
+        <heating_source_type ref="hm.heating-source.gas_electric_heater"/>
+        <heating_source_type ref="hm.heating-source.gas_heater"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_light"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_heavy"/>
+        <heating_source_type ref="hm.heating-source.electric"/>
+        <heating_source_type ref="hm.heating-source.heat_pump"/>
+    </warm_water_detached_heating_source_types>
+
+    <!--Warm water heating source types for non-detached houses-->
+    <warm_water_multi_family_heating_source_types selected_index="2">
+        <heating_source_type ref="hm.heating-source.combined_heat"/>
+        <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
+        <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_standard"/>
+        <heating_source_type ref="hm.heating-source.boiler_propan_condensing"/>
+        <heating_source_type ref="hm.heating-source.gas_electric_heater"/>
+        <heating_source_type ref="hm.heating-source.gas_heater"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_light"/>
+        <heating_source_type ref="hm.heating-source.boiler_oil_heavy"/>
+        <heating_source_type ref="hm.heating-source.electric"/>
+        <heating_source_type ref="hm.heating-source.heat_pump"/>
+    </warm_water_multi_family_heating_source_types>
+
+    <!--Warm water distribution configuration-->
+    <warm_water_distribution_types selected_index="0">
+        <warm_water_distribution_type id="hm.water-distribution.well_insulated_pipes" label_key="hm.dropdown.warmwater.distribution.pipes_well_insulated" efficiency="0.95"/>
+        <warm_water_distribution_type id="hm.water-distribution.not_insulated_pipes" label_key="hm.dropdown.warmwater.distribution.pipes_not_insulated" efficiency="0.5"/>
+    </warm_water_distribution_types>
+
+    <!--Warm water storage configuration-->
+    <warm_water_storage_types selected_index="0">
+        <warm_water_storage_type id="hm.water-storage.heat_node_without_storage" label_key="hm.dropdown.warmwater.storage.heat_node_without_storage" efficiency="1"/>
+        <warm_water_storage_type id="hm.water-storage.modern_storage" label_key="hm.dropdown.warmwater.storage.modern_storage" efficiency="0.85"/>
+        <warm_water_storage_type id="hm.water-storage.storage.standard_80_90_storage" label_key="hm.dropdown.warmwater.storage.standard_80_90_storage" efficiency="0.65"/>
+        <warm_water_storage_type id="hm.water-storage.old_storage" label_key="hm.dropdown.warmwater.storage.old_storage" efficiency="0.50"/>
+    </warm_water_storage_types>
+
+    <!--Warm water consumption intensity configuration-->
+    <warm_water_consumption_configuration selected_index="2">
+        <warm_water_consumption id="hm.warmwater.consuption.very_low" label_key="hm.dropdown.warmwater.consuption.very_low" intensity="0.5"/>
+        <warm_water_consumption id="hm.warmwater.consuption.low" label_key="hm.dropdown.warmwater.consuption.low" intensity="0.75"/>
+        <warm_water_consumption id="hm.warmwater.consuption.standard" label_key="hm.dropdown.warmwater.consuption.standard" intensity="1.0"/>
+        <warm_water_consumption id="hm.warmwater.consuption.big" label_key="hm.dropdown.warmwater.consuption.big" intensity="1.5"/>
+        <warm_water_consumption id="hm.warmwater.consuption.very_big" label_key="hm.dropdown.warmwater.consuption.very_big" intensity="2.0"/>
+    </warm_water_consumption_configuration>
+
+
+
+    <!--Configuration for standard types
+    attributes must point to valid xml element ids
+    -->
+    <standard_type_configuration>
+        <!--Standard  old non insulated-->
+        <standard_type id="hm.standard_type.old_non_insulated" label_key="hm.dropdown.house.standard.type.old_non_insulated"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural"
+                       foundation_type="hm.foundations.traditional"
+                       thermal_bridges_type="hm.thermal-bridge.max"
+                       door_type="hm.door.energy_intensive"
+                       window_type="hm.windows.type.two_pane_old"
+                       tightness_item="hm.tightness.loose"
+                       detached_heating_source_type="hm.heating-source.coal-old"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_old"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.not_insulated_pipes"
+                       roof_u_value="0.8" wall_u_value="1.2" floor_u_value="0.5"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--Standard  old insulated-->
+        <standard_type id="hm.standard_type.old_insulated" label_key="hm.dropdown.house.standard.type.old_insulated"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural"
+                       foundation_type="hm.foundations.traditional"
+                       thermal_bridges_type="hm.thermal-bridge.max"
+                       door_type="hm.door.standard"
+                       window_type="hm.windows.type.two_pane_old"
+                       tightness_item="hm.tightness.loose"
+                       detached_heating_source_type="hm.heating-source.coal-new"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_new"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.not_insulated_pipes"
+                       roof_u_value="0.35" wall_u_value="0.4" floor_u_value="0.5"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard norm WT2014-->
+        <standard_type id="hm.standard_type.typical" label_key="hm.dropdown.house.standard.type.typical"
+                       roof_insulation_material_type="hm.insulation.material.average"
+                       wall_insulation_material_type="hm.insulation.material.average"
+                       floor_insulation_material_type="hm.insulation.material.average"
+                       ventilation_type="hm.ventilation-type.natural_regulated"
+                       foundation_type="hm.foundations.traditional_insulated"
+                       thermal_bridges_type="hm.thermal-bridge.avg"
+                       door_type="hm.door.standard"
+                       window_type="hm.windows.type.two_pane_new"
+                       tightness_item="hm.tightness.tight_no_recup"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.15" wall_u_value="0.2" floor_u_value="0.2"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard energy saving-->
+        <standard_type id="hm.standard_type.energy_saving" label_key="hm.dropdown.house.standard.type.energy_saving"
+                       roof_insulation_material_type="hm.insulation.material.good"
+                       wall_insulation_material_type="hm.insulation.material.good"
+                       floor_insulation_material_type="hm.insulation.material.good"
+                       ventilation_type="hm.ventilation-type.mechanical_75"
+                       foundation_type="hm.foundations.traditional_insulated"
+                       thermal_bridges_type="hm.thermal-bridge.avg"
+                       door_type="hm.door.energy_saving"
+                       window_type="hm.windows.type.three_pane"
+                       tightness_item="hm.tightness.tight_recup"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.11" wall_u_value="0.13" floor_u_value="0.13"
+                       south_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none"/>
+        </standard_type>
+
+        <!--standard passive-->
+        <standard_type id="hm.standard_type.passive" label_key="hm.dropdown.house.standard.type.passive"
+                       roof_insulation_material_type="hm.insulation.material.very_good"
+                       wall_insulation_material_type="hm.insulation.material.very_good"
+                       floor_insulation_material_type="hm.insulation.material.very_good"
+                       ventilation_type="hm.ventilation-type.mechanical_85"
+                       foundation_type="hm.foundations.slab"
+                       thermal_bridges_type="hm.thermal-bridge.min"
+                       door_type="hm.door.super_energy_saving"
+                       window_type="hm.windows.type.three_pane_special"
+                       tightness_item="hm.tightness.standard_passive"
+                       detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_detached_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_multi_family_heating_source_type="hm.heating-source.boiler_gas_condensing"
+                       water_storage="hm.water-storage.heat_node_without_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.09" wall_u_value="0.09" floor_u_value="0.08"
+                       south_windows_surface_factor="1.5" north_windows_surface_factor="1.0"
+                       shutters_enabled="false" carbon_dioxide_sensor="false">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.none" />
+        </standard_type>
+
+        <!--standard ADD-->
+        <standard_type id="hm.standard_type.add" label_key="hm.dropdown.house.standard.type.add"
+                       roof_insulation_material_type="hm.insulation.material.very_good"
+                       wall_insulation_material_type="hm.insulation.material.very_good"
+                       floor_insulation_material_type="hm.insulation.material.very_good"
+                       ventilation_type="hm.ventilation-type.mechanical_85"
+                       foundation_type="hm.foundations.slab"
+                       thermal_bridges_type="hm.thermal-bridge.min"
+                       door_type="hm.door.super_energy_saving"
+                       window_type="hm.windows.type.three_pane_special"
+                       tightness_item="hm.tightness.standard_passive"
+                       detached_heating_source_type="hm.heating-source.heat_pump"
+                       multi_family_heating_source_type="hm.heating-source.heat_pump"
+                       water_detached_heating_source_type="hm.heating-source.heat_pump"
+                       water_multi_family_heating_source_type="hm.heating-source.heat_pump"
+                       water_storage="hm.water-storage.modern_storage" water_distribution="hm.water-distribution.well_insulated_pipes"
+                       roof_u_value="0.09" wall_u_value="0.09" floor_u_value="0.08"
+                       south_windows_surface_factor="1.5" north_windows_surface_factor="1.0"
+                       shutters_enabled="true" carbon_dioxide_sensor="true">
+
+            <solar_collector_data solar_collector_type="hm.solar-collector.vacuum" surface="4"/>
+        </standard_type>
+
+    </standard_type_configuration>
+
+
+
 
 </dictionaries>
 

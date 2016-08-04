@@ -5,9 +5,11 @@
  * Time: 18:14
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import mx.collections.ArrayList;
 import mx.controls.Alert;
+
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class InsulationQuality extends BaseComboObject{
 

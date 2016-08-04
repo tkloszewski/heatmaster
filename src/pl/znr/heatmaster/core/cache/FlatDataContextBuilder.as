@@ -6,35 +6,31 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.cache {
-import pl.znr.heatmaster.core.*;
-
 import mx.controls.Alert;
 
-import pl.znr.heatmaster.constants.combo.BuildingAge;
-import pl.znr.heatmaster.constants.combo.DoorType;
-
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.constants.combo.HouseStandardType;
-import pl.znr.heatmaster.constants.combo.InsulationQuality;
-import pl.znr.heatmaster.constants.combo.InsulationQuality;
-import pl.znr.heatmaster.constants.combo.InsulationQuality;
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
+import pl.znr.heatmaster.config.dictionary.model.SolarCollectorType;
+import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.model.WindowsType;
+import pl.znr.heatmaster.core.*;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.HouseData;
 import pl.znr.heatmaster.core.model.InsolationData;
 import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.model.RoofElement;
 import pl.znr.heatmaster.core.model.SolarCollectorData;
 import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.VentilationData;
-import pl.znr.heatmaster.core.model.WallElement;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 import pl.znr.heatmaster.core.model.WindowElement;
 
@@ -111,9 +107,8 @@ public class FlatDataContextBuilder {
             flatDataContext.buildingAgeId = houseData.buildingAge.getId();
             flatDataContext.doorTypeId = houseData.doorType.getId();
             flatDataContext.personNumber = houseData.personNumber;
-            flatDataContext.foundationsEnabled = houseData.foundationsEnabled;
+            flatDataContext.foundationsTypeId = houseData.foundationType.id;
             flatDataContext.tIn = houseData.tIn;
-            flatDataContext.foundationsUValue = houseData.foundationsUValue;
             flatDataContext.houseStandardTypeId = houseData.standardType.getId();
         } catch (e:Error) {
             Alert.show("Error writing generalHouseData: " + e.message);
@@ -128,7 +123,7 @@ public class FlatDataContextBuilder {
             //flatDataContext.warmWaterHeatingSourceTypeID = warmWaterData.heatingSourceType.getId();
             flatDataContext.distributorEfficiency = warmWaterData.distributorEfficiency;
             flatDataContext.storeEfficiency = warmWaterData.storeEfficiency;
-            flatDataContext.consumptionIntensity = warmWaterData.consumptionIntensity;
+            flatDataContext.consumptionIntensityId = warmWaterData.consumptionIntensityType.id;
         } catch (e:Error) {
             Alert.show("Error writing warmWaterData: " + e.message);
         }
@@ -139,10 +134,11 @@ public class FlatDataContextBuilder {
         try {
             flatDataContext.gwcSet = ventilationData.gwcSet;
             flatDataContext.ventilationMethod = ventilationData.ventilationMethodObject.type;
+            flatDataContext.ventilationTypeId = ventilationData.ventilationMethodObject.id;
             flatDataContext.ventilationFreq = ventilationData.ventilationFreq;
             flatDataContext.recuperateEfficiency = ventilationData.ventilationMethodObject.efficiency;
             flatDataContext.co2Sensor = ventilationData.co2Sensor;
-            flatDataContext.tightness = ventilationData.tightness;
+            flatDataContext.tightnessId = ventilationData.airTightness.id;
         } catch (e:Error) {
             Alert.show("Error wring ventilationData: " + e.message);
         }
@@ -187,9 +183,7 @@ public class FlatDataContextBuilder {
         var windowElement:WindowElement = houseData.windowElement;
 
         try {
-            flatDataContext.windowsUValue = windowElement.uValue;
-            flatDataContext.windowType = windowElement.windowType;
-            flatDataContext.winGain = windowElement.winGain;
+            flatDataContext.windowsTypeId = windowElement.windowsType.id;
             flatDataContext.shutters = windowElement.shutters;
             flatDataContext.thermalBridgesId = windowElement.thermalBridgesType.getId();
         } catch (e:Error) {
@@ -320,10 +314,9 @@ public class FlatDataContextBuilder {
             houseData.buildingAge = BuildingAge.getBuildingAgeById(flatDataContext.buildingAgeId);
             houseData.doorType = DoorType.getDoorTypeById(flatDataContext.doorTypeId);
             houseData.personNumber = flatDataContext.personNumber;
-            houseData.foundationsEnabled = flatDataContext.foundationsEnabled;
-            houseData.foundationsUValue = flatDataContext.foundationsUValue;
+            houseData.foundationType = FoundationsType.getFoundationById(flatDataContext.foundationsTypeId);
             houseData.tIn = flatDataContext.tIn;
-            houseData.standardType = HouseStandardType.getHouseStandardTypeById(flatDataContext.houseStandardTypeId);
+            houseData.standardType = HouseStandardTypeItem.getHouseStandardTypeItemById(flatDataContext.houseStandardTypeId);
         } catch (e:Error) {
             Alert.show("Error building generalHouseData: " + e.message)
         }
@@ -336,7 +329,7 @@ public class FlatDataContextBuilder {
             //warmWaterData.heatingSourceType = flatDataContext.warmWaterHeatingSourceTypeID.getId();
             warmWaterData.distributorEfficiency = flatDataContext.distributorEfficiency;
             warmWaterData.storeEfficiency = flatDataContext.storeEfficiency;
-            warmWaterData.consumptionIntensity = flatDataContext.consumptionIntensity;
+            warmWaterData.consumptionIntensityType = WarmWaterConsumptionType.getWarmWaterConsumptionById(flatDataContext.consumptionIntensityId);
         } catch (e:Error) {
             Alert.show("Error building warmWaterData: " + e.message);
         }
@@ -346,10 +339,10 @@ public class FlatDataContextBuilder {
 
         try {
             ventilationData.gwcSet = flatDataContext.gwcSet;
-            ventilationData.ventilationMethodObject = VentilationMethod.getVentilationMethodForEfficiency(flatDataContext.recuperateEfficiency);
+            ventilationData.ventilationMethodObject = VentilationMethod.getVentilationMethodById(flatDataContext.ventilationTypeId);
             ventilationData.ventilationFreq = flatDataContext.ventilationFreq;
             ventilationData.co2Sensor = flatDataContext.co2Sensor;
-            ventilationData.tightness = flatDataContext.tightness;
+            ventilationData.airTightness = AirTightness.getAirTightnessById(flatDataContext.tightnessId);
         } catch (e:Error) {
             Alert.show("Error building ventilationData: " + ventilationData);
         }
@@ -394,12 +387,9 @@ public class FlatDataContextBuilder {
         houseData.floorElement = floorElement;
 
 
-        var windowElement:WindowElement = new WindowElement(flatDataContext.windowsUValue);
+        var windowElement:WindowElement = new WindowElement(WindowsType.getWindowsTypeById(flatDataContext.windowsTypeId));
 
         try {
-            windowElement.uValue = flatDataContext.windowsUValue;
-            windowElement.windowType = flatDataContext.windowType;
-            windowElement.winGain = flatDataContext.winGain;
             windowElement.shutters = flatDataContext.shutters;
             windowElement.thermalBridgesType = ThermalBridgesType.getThermalBridgesTypeById(flatDataContext.thermalBridgesId);
         } catch (e:Error) {

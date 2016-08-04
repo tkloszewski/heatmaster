@@ -2,29 +2,18 @@
  * Created by Dom on 2016-06-15.
  */
 package pl.znr.heatmaster.config.dictionary {
-public class ThermalBridgesTypeConfig {
-    private var _id:String;
-    private var _uValue:Number;
+import mx.collections.ArrayCollection;
 
-    public function ThermalBridgesTypeConfig(id:String, uValue:Number) {
-        _id = id;
-        _uValue = uValue;
+public class ThermalBridgesTypeConfig extends BaseTypeConfig{
+
+    private var _thermalBridgesTypes:ArrayCollection;
+
+    public function get thermalBridgesTypes():ArrayCollection {
+        return _thermalBridgesTypes;
     }
 
-    public function get id():String {
-        return _id;
-    }
-
-    public function set id(value:String):void {
-        _id = value;
-    }
-
-    public function get uValue():Number {
-        return _uValue;
-    }
-
-    public function set uValue(value:Number):void {
-        _uValue = value;
+    public function set thermalBridgesTypes(value:ArrayCollection):void {
+        _thermalBridgesTypes = value;
     }
 }
 }

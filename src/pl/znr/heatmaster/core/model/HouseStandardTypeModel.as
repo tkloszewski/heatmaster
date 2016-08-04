@@ -6,18 +6,16 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.AirTightness;
-import pl.znr.heatmaster.constants.combo.DoorType;
-import pl.znr.heatmaster.constants.combo.FoundationsType;
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-import pl.znr.heatmaster.constants.combo.WindowsType;
-import pl.znr.heatmaster.core.model.SolarCollectorData;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.InsulationMaterialType;
+import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.model.WindowsType;
 
 public class HouseStandardTypeModel {
 
@@ -30,13 +28,13 @@ public class HouseStandardTypeModel {
 
     private var _floorInsulationMaterialType:InsulationMaterialType;
     private var _floorUValue:Number;
-    private var _foundationsType:int;
+    private var _foundationsType:FoundationsType;
 
     private var _ventilationMethod:VentilationMethod;
-    private var _airTightness:Number;
+    private var _airTightness:AirTightness;
 
     private var _thermalBridges:ThermalBridgesType;
-    private var _windowsType:int;
+    private var _windowsType:WindowsType;
     private var _shuttersEnabled:Boolean;
 
     private var _heatingSourceType:HeatingSourceType;
@@ -52,12 +50,14 @@ public class HouseStandardTypeModel {
 
     private var _carbonDioxideSensor:Boolean;
 
-    public function HouseStandardTypeModel(roofInsulationMaterialType:InsulationMaterialType, wallInsulationMaterialType:InsulationMaterialType, floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:int, thermalBridges:ThermalBridgesType, doorType:DoorType, windowsType:int,
+    public function HouseStandardTypeModel(roofInsulationMaterialType:InsulationMaterialType, wallInsulationMaterialType:InsulationMaterialType,
+                                           floorInsulationMaterialType:InsulationMaterialType, ventilationMethod:VentilationMethod, foundationsType:FoundationsType,
+                                           thermalBridges:ThermalBridgesType, doorType:DoorType, windowsType:WindowsType,
                                            heatingSourceType:HeatingSourceType,multiFamilyHeatingSourceType:HeatingSourceType,
                                            warmWaterHeatingSourceType:HeatingSourceType,multiFamilyWarmWaterHeatingSourceType:HeatingSourceType,
                                            solarCollectorData:SolarCollectorData, warmWaterDistribution:WarmWaterDistribution,
                                            warmWaterStorage:WarmWaterStorage, roofUValue:Number, wallUValue:Number, floorUValue:Number,
-                                           airTightness:Number, southWindowSurfaceFactor:Number, northWindowSurfaceFactor:Number, shuttersEnabled:Boolean,carbonDioxideSensor:Boolean) {
+                                           airTightness:AirTightness, southWindowSurfaceFactor:Number, northWindowSurfaceFactor:Number, shuttersEnabled:Boolean,carbonDioxideSensor:Boolean) {
 
 
         _roofInsulationMaterialType = roofInsulationMaterialType;
@@ -101,7 +101,7 @@ public class HouseStandardTypeModel {
         return _ventilationMethod;
     }
 
-    public function get foundationsType():int {
+    public function get foundationsType():FoundationsType {
         return _foundationsType;
     }
 
@@ -109,7 +109,7 @@ public class HouseStandardTypeModel {
         return _thermalBridges;
     }
 
-    public function get airTightness():Number {
+    public function get airTightness():AirTightness {
         return _airTightness;
     }
 
@@ -117,7 +117,7 @@ public class HouseStandardTypeModel {
         return _doorType;
     }
 
-    public function get windowsType():int {
+    public function get windowsType():WindowsType {
         return _windowsType;
     }
 

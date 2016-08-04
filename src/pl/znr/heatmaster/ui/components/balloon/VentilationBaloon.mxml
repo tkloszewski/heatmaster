@@ -9,25 +9,16 @@
 
     <fx:Declarations>
 
-        <s:ArrayCollection id="tightnessList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE}"/>
-        </s:ArrayCollection>
-
     </fx:Declarations>
 
     <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
         import mx.controls.Alert;
 
         import pl.znr.heatmaster.HeatMaster;
-        import pl.znr.heatmaster.constants.combo.AirTightness;
-        import pl.znr.heatmaster.constants.combo.DropDownType;
-        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+        import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.HouseData;
@@ -36,6 +27,8 @@
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         use namespace mx_internal;
+
+        private var tightnessList:ArrayCollection;
 
         [Bindable]
         private var _headerLabelY:int = 11;
@@ -57,12 +50,30 @@
             _infoIconVisible = value;
         }
 
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            tightnessList = toComboObjectList(businessConfiguration.dictionaryConfig.tightnessConfiguration.tightnessItems);
+            tightnessDropDown.selectedIndex = businessConfiguration.dictionaryConfig.tightnessConfiguration.selectedIndex;
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
+            try {
+                var houseData:HouseData = dataContext.houseData;
+                houseData.ventilationData.ventilationMethodObject = ventilationDropDown.selectedItem.data;
+
+                houseData.ventilationData.airTightness = tightnessDropDown.selectedItem.data;
+                heatMasterListener.initVentilationMethod(ventilationDropDown.selectedItem.data);
+            } catch (e:Error) {
+
+            }
+            return dataContext;
+        }
+
         override public function setupView(dataContext:DataContext):void {
             try {
                 groundType = HouseTypeHelper.isGroundType(dataContext.houseData.houseType);
                 var ventilationData:VentilationData = dataContext.houseData.ventilationData;
-                var tightness:Number = ventilationData.tightness;
-                var ventilationMethod:VentilationMethod = ventilationData.ventilationMethodObject
+                var tightness:AirTightness = ventilationData.airTightness;
+                var ventilationMethod:VentilationMethod = ventilationData.ventilationMethodObject;
                 setVentilationDropDownList(ventilationMethod);
                 setTightnessDropDownList(tightness);
                 groundHeatExchangerCheckBox.selected = ventilationData.gwcSet;
@@ -94,7 +105,7 @@
 
             var ventilationData:VentilationData = dataContext.houseData.ventilationData;
             ventilationData.ventilationMethodObject = context.model.ventilationMethod;
-            ventilationData.tightness = context.model.airTightness;
+            ventilationData.airTightness = context.model.airTightness;
             ventilationData.co2Sensor = context.model.carbonDioxideSensor;
         }
 
@@ -115,17 +126,18 @@
         private function setVentilationDropDownList(ventilationMethod:VentilationMethod):void {
             for (var i:int = 0; i < ventilationDropDown.dataProvider.length; i++) {
                 var item:Object = ventilationDropDown.dataProvider.getItemAt(i);
-                if (item.data == ventilationMethod) {
+                if (item.data.id == ventilationMethod.id) {
                     ventilationDropDown.selectedIndex = i;
                     break;
                 }
             }
         }
 
-        private function setTightnessDropDownList(tightness:Number):void {
+        private function setTightnessDropDownList(tightness:AirTightness):void {
             for (var i:int = 0; i < tightnessDropDown.dataProvider.length; i++) {
                 var item:Object = tightnessDropDown.dataProvider.getItemAt(i);
-                if (item.data == tightness) {
+                var at:AirTightness = item.data as AirTightness;
+                if (at.id == tightness.id) {
                     tightnessDropDown.selectedIndex = i;
                     break;
                 }
@@ -156,20 +168,6 @@
 
         private function groundHeatExchangerChanged():void {
             heatMasterListener.groundHeatExchangerEnabled(groundHeatExchangerCheckBox.selected);
-        }
-
-
-        override public function initData(dataContext:DataContext):DataContext {
-            try {
-                var houseData:HouseData = dataContext.houseData;
-                houseData.ventilationData.ventilationMethodObject = ventilationDropDown.selectedItem.data;
-
-                houseData.ventilationData.tightness = 2;
-                heatMasterListener.initVentilationMethod(ventilationDropDown.selectedItem.data);
-            } catch (e:Error) {
-
-            }
-            return dataContext;
         }
 
         private function getDropDownListData():int {
@@ -203,7 +201,8 @@
 
         private function doLangChanged(lang:String):void {
             var oldIdx:int = tightnessDropDown.selectedIndex;
-            tightnessList.refresh();
+            tightnessList = translateComboItemsAndRefresh(tightnessList, lang);
+            tightnessDropDown.dataProvider = tightnessList;
             tightnessDropDown.selectedIndex = oldIdx;
         }
         ]]></fx:Script>

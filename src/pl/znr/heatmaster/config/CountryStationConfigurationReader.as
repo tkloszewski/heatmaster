@@ -15,7 +15,7 @@ import pl.znr.heatmaster.util.SortingUtil;
 import spark.collections.Sort;
 import spark.collections.SortField;
 
-public class HeatMasterConfigurationReader {
+public class CountryStationConfigurationReader {
 
     private var countryConfigReader:CountryConfigurationReader;
     private var stationConfigReader:StationConfigurationReader;
@@ -23,7 +23,7 @@ public class HeatMasterConfigurationReader {
 
     private var config:ArrayCollection;
 
-    public function HeatMasterConfigurationReader(countryXML:XML,stationsXML:XML,resManager:IResourceManager = null) {
+    public function CountryStationConfigurationReader(countryXML:XML,stationsXML:XML,resManager:IResourceManager = null) {
         this.countryConfigReader = new CountryConfigurationReader(countryXML,resManager);
         this.stationConfigReader = new StationConfigurationReader(stationsXML,resManager);
         this.resManager = resManager;

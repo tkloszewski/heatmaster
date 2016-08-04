@@ -102,7 +102,6 @@
 
         private var legendEnergyLossGroupY:int;
 
-        private var houseHeatingEfficiency:Number = GlobalValues.INITIAL_HOUSE_HEATING_SOURCE.efficiency;
         private var warmWaterHeatingEfficiency:Number;
 
         private var warmWaterIncluded:Boolean = false;

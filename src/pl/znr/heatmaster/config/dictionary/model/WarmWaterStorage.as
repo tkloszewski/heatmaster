@@ -5,19 +5,16 @@
  * Time: 13:56
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import mx.collections.ArrayList;
+
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class WarmWaterStorage extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
 
     private var _efficiency:Number;
-
-    public static var HEAT_NODE_WITHOUT_STORAGE:WarmWaterStorage = new WarmWaterStorage("1",1.0);
-    public static var MODERN_STORAGE:WarmWaterStorage = new WarmWaterStorage("2",0.85);
-    public static var STANDARD_80_90_STORAGE:WarmWaterStorage = new WarmWaterStorage("3",0.65);
-    public static var OLD_STORAGE:WarmWaterStorage = new WarmWaterStorage("4",0.50);
 
     public static function getWarmWaterStorageById(id:String):WarmWaterStorage {
         for(var i:int = 0;i < items.length;i++){

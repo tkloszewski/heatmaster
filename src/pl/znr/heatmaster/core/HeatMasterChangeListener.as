@@ -6,65 +6,43 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core {
-import avmplus.accessorXml;
-
 import mx.collections.ArrayList;
-
 import mx.controls.Alert;
 
 import pl.znr.heatmaster.HeatMaster;
-
+import pl.znr.heatmaster.config.BusinessConfiguration;
 import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.config.CountryItemHelper;
-import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
-import pl.znr.heatmaster.config.IEnvironmentalDataConfig;
 import pl.znr.heatmaster.config.RegionItem;
 import pl.znr.heatmaster.config.StationItem;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
 import pl.znr.heatmaster.constants.StateConstants;
-
-import pl.znr.heatmaster.constants.combo.BuildingAge;
-
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
-import pl.znr.heatmaster.constants.combo.DoorType;
-import pl.znr.heatmaster.constants.combo.FoundationsType;
-import pl.znr.heatmaster.constants.combo.HouseStandardType;
-
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
 import pl.znr.heatmaster.core.cache.CachedDataContextManager;
-import pl.znr.heatmaster.core.DataContext;
-import pl.znr.heatmaster.core.HeatMasterController;
-import pl.znr.heatmaster.core.HouseStandardTypeContext;
-import pl.znr.heatmaster.core.IBuildingAgeChangeListener;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.converter.ConverterHelper;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
-import pl.znr.heatmaster.core.model.FloorElement;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
-import pl.znr.heatmaster.core.model.InsolationData;
 import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.model.RoofElement;
 import pl.znr.heatmaster.core.model.SolarCollectorData;
 import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.model.WallElement;
 import pl.znr.heatmaster.core.model.WarmWaterData;
 import pl.znr.heatmaster.core.model.WindowElement;
 import pl.znr.heatmaster.core.state.CalculationStateController;
 import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
-import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
 import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
-import pl.znr.heatmaster.core.HouseStandardChangeListener;
-import pl.znr.heatmaster.core.IHeatMasterListenerAware;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
-import pl.znr.heatmaster.util.HouseStandardModelContainer;
 
 public class HeatMasterChangeListener {
 
@@ -75,12 +53,13 @@ public class HeatMasterChangeListener {
     private var heatingPopup:HeatingPopup;
     private var housePopup:HousePopup;
     private var energyMeter:EnergyMeter;
-    private var configurationReader:HeatMasterConfigurationReader;
 
     private var buildingAgeChangeListeners:ArrayList = new ArrayList();
     private var houseStandardChangeListeners:ArrayList = new ArrayList();
 
     private var cacheEnabled:Boolean = false;
+
+    private var businessConfiguration:BusinessConfiguration;
 
     public function HeatMasterChangeListener() {
     }
@@ -93,8 +72,8 @@ public class HeatMasterChangeListener {
         this.calculationStateController = calculationStateController;
     }
 
-    public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
-        this.configurationReader = confReader;
+    public function setBusinessConfiguration(businessConfiguration:BusinessConfiguration):void {
+        this.businessConfiguration = businessConfiguration;
     }
 
     public function setHousePanel(housePanel:HousePanel):void {
@@ -155,9 +134,9 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function warmWaterConsumptionChanged(intensity:Number):void {
+    public function warmWaterConsumptionChanged(warmWaterConsumptionIntensity:WarmWaterConsumptionType):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.warmWaterData.consumptionIntensity = intensity;
+        dataContext.houseData.warmWaterData.consumptionIntensityType = warmWaterConsumptionIntensity;
         heatMasterController.calculate();
         writeCache(dataContext);
     }
@@ -176,20 +155,19 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function houseStandardChanged(standardType:HouseStandardType):void {
+    public function houseStandardItemChanged(houseStandardTypeItem:HouseStandardTypeItem):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         var houseData:HouseData = dataContext.houseData;
-        houseData.standardType = standardType;
+        houseData.standardType = houseStandardTypeItem;
 
-        dataContext = applyHouseStandardChanged(dataContext,standardType);
+        dataContext = applyHouseStandardChanged(dataContext,houseStandardTypeItem);
 
         heatMasterController.calculate();
         writeCache(dataContext);
     }
 
-    public function applyHouseStandardChanged(dataContext:DataContext,standardType:HouseStandardType):DataContext {
-        var houseStandardTypeModel:HouseStandardTypeModel = HouseStandardModelContainer.getHouseStandardTypeModelForStandardType(standardType);
-        var houseStandardContext:HouseStandardTypeContext = new HouseStandardTypeContext(houseStandardTypeModel);
+    public function applyHouseStandardChanged(dataContext:DataContext,standardTypeItem:HouseStandardTypeItem):DataContext {
+        var houseStandardContext:HouseStandardTypeContext = new HouseStandardTypeContext(standardTypeItem.houseStandardTypeModel);
 
         for(var i:int = 0; i < houseStandardChangeListeners.length;i++){
             var standardChangeListener:HouseStandardChangeListener = houseStandardChangeListeners.getItemAt(i) as HouseStandardChangeListener;
@@ -264,7 +242,7 @@ public class HeatMasterChangeListener {
         conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
         conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
         conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,localCurrency);
-        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
         if(newDataContext != null){
             newDataContext.conversionData.pricePerKwh = conversionData.pricePerKwh;
@@ -445,12 +423,11 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function foundationsChanged(enabled:Boolean,uValue:Number,type:int,insulationElement:InsulationElement):void {
+    public function foundationsChanged(foundationsType:FoundationsType,insulationElement:InsulationElement):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.foundationsEnabled = enabled;
-        dataContext.houseData.foundationsUValue = uValue;
-        housePanel.foundationsChanged(enabled,enabled);
-        housePanel.insulationElementChanged(insulationElement,InsulationElementType.FLOOR,type);
+        dataContext.houseData.foundationType = foundationsType;
+        housePanel.foundationsChanged(foundationsType.isFoundationsEnabled(),foundationsType.isFoundationsEnabled());
+        housePanel.insulationElementChanged(insulationElement,InsulationElementType.FLOOR,foundationsType);
         heatMasterController.calculate();
         writeCache(dataContext);
     }
@@ -470,14 +447,14 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function tightnessChanged(tightness:Number):void {
+    public function tightnessChanged(tightness:AirTightness):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.ventilationData.tightness = tightness;
+        dataContext.houseData.ventilationData.airTightness = tightness;
         heatMasterController.calculate();
         writeCache(dataContext);
     }
 
-    public function insulationElementChanged(insulationElement:InsulationElement,type:int,calculationRequired:Boolean = true,writeCacheRequired:Boolean = true,foundationsType:int = FoundationsType.TRADITIONAL_INSULATED):void {
+    public function insulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:FoundationsType,calculationRequired:Boolean = true,writeCacheRequired:Boolean = true):void {
         var dataContext:DataContext =  heatMasterController.getDataContext();
         if(type == InsulationElementType.WALL){
             dataContext.houseData.wallElement = insulationElement;
@@ -487,6 +464,10 @@ public class HeatMasterChangeListener {
         }
         else if(type == InsulationElementType.ROOF){
             dataContext.houseData.roofElement = insulationElement;
+        }
+
+        if(foundationsType == null){
+           foundationsType = FoundationsType.TRADITIONAL_INSULATED;
         }
 
         housePanel.insulationElementChanged(insulationElement,type,foundationsType);
@@ -504,7 +485,7 @@ public class HeatMasterChangeListener {
         dataContext.houseData.windowElement = windowElement;
 
         housePanel.setShuttersVisible(windowElement.shutters);
-        housePanel.setBridgesDisabled(!(windowElement.thermalBridgesType == ThermalBridgesType.MAX));
+        housePanel.setBridgesDisabled(!(windowElement.thermalBridgesType.max));
 
         heatMasterController.calculate();
         writeCache(dataContext);
@@ -548,7 +529,7 @@ public class HeatMasterChangeListener {
         conversionData.selectedUnit = newUnit;
         conversionData.unitName = unitName;
         conversionData.shortUnitName = shortUnitName;
-        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
         heatMasterController.conversionDataChanged(!conversionNotRequired);
         writeCache(heatMasterController.getDataContext());
@@ -575,7 +556,7 @@ public class HeatMasterChangeListener {
         dataContextToChange.conversionData.selectedUnit = newUnit;
         dataContextToChange.conversionData.unitName = unitName;
         dataContextToChange.conversionData.shortUnitName = shortUnitName;
-        dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,configurationReader.getEuroToPLNExchangeRate(),countryItem.currencyExchangeRate);
+        dataContextToChange.conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(newUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
 
         cacheManager.writeToSelectedStateCache(dataContextToChange,previousCalcState);
@@ -620,7 +601,7 @@ public class HeatMasterChangeListener {
         housePanel.ventilationTypeChanged(ventMethod.type == VentilationMethod.MECHANICAL);
     }
 
-    public function initInsulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:int):void {
+    public function initInsulationElementChanged(insulationElement:InsulationElement,type:int,foundationsType:FoundationsType):void {
         housePanel.insulationElementChanged(insulationElement,type,foundationsType);
     }
 

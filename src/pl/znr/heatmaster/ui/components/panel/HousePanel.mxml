@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <hm:HeatMasterComponent implements="pl.znr.heatmaster.core.HouseStandardChangeListener"
                         xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-                        xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
                         xmlns:baloon="pl.znr.heatmaster.ui.components.balloon.*"
                         xmlns:arr="pl.znr.heatmaster.ui.components.arrows.*"
                         xmlns:hm="pl.znr.heatmaster.ui.components.*"
@@ -11,14 +11,6 @@
 
 
     <fx:Declarations>
-        <s:ArrayCollection id="ventilationMethodList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.natural')}" data="{VentilationMethod.NATURAL}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.natural.regulated')}" data="{VentilationMethod.NATURAL_REGULATED}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_60')}" data="{VentilationMethod.MECHANICAL_60_PER_CENT}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_75')}" data="{VentilationMethod.MECHANICAL_75_PER_CENT}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.ventilation.mechanical_85')}" data="{VentilationMethod.MECHANICAL_85_PER_CENT}"/>
-        </s:ArrayCollection>
-
         <s:ArrayCollection id="ventilationFreqList">
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.sporadic')}" data="{VentilationFrequency.SPORADICALLY}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.standard')}" data="{VentilationFrequency.STANDARD}"/>
@@ -27,47 +19,35 @@
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.airing.non_stop')}" data="{VentilationFrequency.NON_STOP}"/>
         </s:ArrayCollection>
 
-
-        <s:ArrayCollection id="warmWaterConsumptionList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.very_low')}" data="{WarmWaterConsumption.VERY_SMALL}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.low')}" data="{WarmWaterConsumption.SMALL}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.standard')}" data="{WarmWaterConsumption.AVERAGE}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.big')}" data="{WarmWaterConsumption.BIG}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.warmwater.consuption.very_big')}" data="{WarmWaterConsumption.VERY_BIG}"/>
-        </s:ArrayCollection>
-
         <s:BitmapImage id="dBitmapImage"/>
     </fx:Declarations>
 
 
     <fx:Script><![CDATA[
         import mx.collections.ArrayList;
-        import mx.controls.Alert;
         import mx.core.FlexGlobals;
 
         import pl.znr.heatmaster.HeatMaster;
-        import pl.znr.heatmaster.constants.combo.AirTightness;
-
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+        import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
         import pl.znr.heatmaster.constants.combo.DropDownType;
-        import pl.znr.heatmaster.constants.combo.FoundationsType;
         import pl.znr.heatmaster.constants.combo.HouseType;
         import pl.znr.heatmaster.constants.combo.InsulationElementType;
-        import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
         import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-        import pl.znr.heatmaster.constants.combo.VentilationMethod;
-        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.InsulationElement;
         import pl.znr.heatmaster.core.model.SolarCollectorData;
         import pl.znr.heatmaster.core.model.WindowElement;
-        import pl.znr.heatmaster.ui.components.*;
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         private var heatMaster:HeatMaster = FlexGlobals.topLevelApplication as HeatMaster;
 
         private var currentHouseType:int = HouseType.DETACHED;
+
+        private var ventilationMethodList:ArrayCollection;
+        private var warmWaterConsumptionList:ArrayCollection;
 
         private var recuperatorVisible:Boolean = false;
         private var foundationsEnabled:Boolean = true;
@@ -75,6 +55,7 @@
         private var groundHeatExchangerEnabled:Boolean = false;
         private var shuttersEnabled:Boolean = false;
         private var bridgesDisabled:Boolean = true;
+
 
         private var visibleCollectorImages:ArrayList = new ArrayList();
 
@@ -105,8 +86,17 @@
         private var WALL_HOLE_X:int = 158;
         private var FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION:int = 52;
 
-        override public function initData(dataContext:DataContext):DataContext {
 
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            ventilationMethodList = toComboObjectList(businessConfiguration.dictionaryConfig.ventilationTypeConfiguration.ventilationTypes);
+            ventilationBaloon.ventilationDropDown.selectedIndex = businessConfiguration.dictionaryConfig.ventilationTypeConfiguration.selectedIndex;
+
+            warmWaterConsumptionList = toComboObjectList(businessConfiguration.dictionaryConfig.waterConsumptionConfiguration.consumptionIntensities);
+            warmWaterBaloon.dropDownList.dataProvider = warmWaterConsumptionList;
+            warmWaterBaloon.dropDownList.selectedIndex = businessConfiguration.dictionaryConfig.waterConsumptionConfiguration.selectedIndex;
+        }
+
+        override public function initData(dataContext:DataContext):DataContext {
             return dataContext;
         }
 
@@ -129,13 +119,13 @@
             }
 
             this.groundHeatExchangerEnabled = gwcSet;
-            this.foundationsEnabled = dataContext.houseData.foundationsEnabled;
+            this.foundationsEnabled = dataContext.houseData.foundationType.isFoundationsEnabled();
 
             this.houseTypeChanged(houseType);
             this.collectorDataChanged(collectorData);
             this.setCollectorAndWarmWaterComponentsVisibility(dataContext.includeWarmWater);
             this.setShuttersVisible(windowElement.shutters);
-            this.setBridgesDisabled(!(windowElement.thermalBridgesType == ThermalBridgesType.MAX));
+            this.setBridgesDisabled(!(windowElement.thermalBridgesType.max));
             this.setOpenWindowVisible(openWindowVisible);
             this.ventilationTypeChanged(ventMechanical);
             this.setRecuperatorVisible(ventMechanical);
@@ -146,25 +136,25 @@
         }
 
         public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
-            var foundationsEnabled:Boolean = FoundationsType.isFoundationsEnabledForType(context.model.foundationsType);
+            var foundationsEnabled:Boolean = context.model.foundationsType.isFoundationsEnabled();
 
-            this.insulationElementChanged(context.wallInsulationElement,InsulationElementType.WALL,context.model.foundationsType);
-            this.insulationElementChanged(context.roofInsulationElement,InsulationElementType.ROOF,context.model.foundationsType);
-            this.insulationElementChanged(context.floorInsulationElement,InsulationElementType.FLOOR,context.model.foundationsType);
+            this.insulationElementChanged(context.wallInsulationElement, InsulationElementType.WALL, context.model.foundationsType);
+            this.insulationElementChanged(context.roofInsulationElement, InsulationElementType.ROOF, context.model.foundationsType);
+            this.insulationElementChanged(context.floorInsulationElement, InsulationElementType.FLOOR, context.model.foundationsType);
             this.collectorDataChanged(context.model.solarCollectorData);
-            this.foundationsChanged(HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && foundationsEnabled,foundationsEnabled);
+            this.foundationsChanged(HouseTypeHelper.isGroundType(dataContext.houseData.houseType) && foundationsEnabled, foundationsEnabled);
 
             this.shuttersEnabled = context.model.shuttersEnabled;
 
-            this.setBridgesDisabled(!(context.model.thermalBridges == ThermalBridgesType.MAX));
+            this.setBridgesDisabled(!(context.model.thermalBridges.max));
 
             var windowsOpen:Boolean = false;
             var ventGravitational:Boolean = context.model.ventilationMethod.type == VentilationMethod.GRAVITATIONAL;
-            if(ventGravitational){
-               var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
-               if(ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN || ventFreq == VentilationFrequency.NON_STOP){
-                  windowsOpen = true;
-               }
+            if (ventGravitational) {
+                var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
+                if (ventFreq == VentilationFrequency.OFTEN || ventFreq == VentilationFrequency.VERY_OFTEN || ventFreq == VentilationFrequency.NON_STOP) {
+                    windowsOpen = true;
+                }
             }
 
             this.setOpenWindowVisible(windowsOpen);
@@ -201,7 +191,7 @@
         }
 
 
-        public function insulationElementChanged(insulationElement:InsulationElement, type:int, foundationsType:int):void {
+        public function insulationElementChanged(insulationElement:InsulationElement, type:int, foundationsType:FoundationsType):void {
             var newWidth:int = 0.75 * insulationElement.width;
             if (type == InsulationElementType.WALL) {
                 var oldRightWidth:Number = wallRightInsulationImg.width;
@@ -256,7 +246,7 @@
             }
             else if (type == InsulationElementType.FLOOR) {
                 var oldFloorHeight:Number = floorInsulationImg.height;
-                var wallExtension:int = foundationsType != FoundationsType.TRADITIONAL_INSULATED ? newWidth : FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION;
+                var wallExtension:int = foundationsType.id != FoundationsType.TRADITIONAL_INSULATED.id ? newWidth : FOUNDATIONS_TRAD_INSULATED_WALL_EXTENSION;
                 wallDownLeftInsulationImg.height = originalInsulationLeftDownHeight + wallExtension;
                 if (!HouseTypeHelper.hasNeighboursUp(this.currentHouseType)) {
                     wallRightInsulationImg.height = originalInsulationRightHeight + wallExtension;
@@ -320,7 +310,7 @@
             collectorSolarGainArrow.visible = visible;
         }
 
-        public function foundationsChanged(visible:Boolean,enabled:Boolean):void {
+        public function foundationsChanged(visible:Boolean, enabled:Boolean):void {
             foundationsVisible = visible;
             foundationsEnabled = enabled;
         }
@@ -478,17 +468,18 @@
         }
 
         override public function langChanged(lang:String):void {
-            doLangChanged();
+            doLangChanged(lang);
         }
 
 
         override public function initialLangChanged(lang:String):void {
-            doLangChanged()
+            doLangChanged(lang)
         }
 
-        private function doLangChanged():void {
+        private function doLangChanged(lang:String):void {
             var oldIdx:int = ventilationBaloon.ventilationDropDown.selectedIndex;
-            ventilationMethodList.refresh();
+            ventilationMethodList = translateComboItemsAndRefresh(ventilationMethodList, lang);
+            ventilationBaloon.ventilationDropDown.dataProvider = ventilationMethodList;
             ventilationBaloon.ventilationDropDown.selectedIndex = oldIdx;
 
             oldIdx = airingBaloon.getDropDownList().selectedIndex;
@@ -496,7 +487,7 @@
             airingBaloon.getDropDownList().selectedIndex = oldIdx;
 
             oldIdx = warmWaterBaloon.dropDownList.selectedIndex;
-            warmWaterConsumptionList.refresh();
+            warmWaterConsumptionList = translateComboItemsAndRefresh(warmWaterConsumptionList, lang);
             warmWaterBaloon.dropDownList.selectedIndex = oldIdx;
         }
         ]]></fx:Script>

@@ -60,8 +60,8 @@ public class FlatDataContext {
     private var _buildingAgeId:String;
     private var _doorTypeId:String;
     private var _personNumber:int = 2;
-    private var _foundationsEnabled:Boolean;
-    private var _foundationsUValue:Number;
+    private var _foundationsTypeId:String;
+
     private var _tIn:Number;
     private var _houseStandardTypeId:String;
 
@@ -71,15 +71,16 @@ public class FlatDataContext {
     private var _warmWaterHeatingSourceTypeID:String;
     private var _distributorEfficiency:Number;
     private var _storeEfficiency:Number;
-    private var _consumptionIntensity:Number;
+    private var _consumptionIntensityId:String;
 
     //ventilationData
     private var _gwcSet:Boolean;
     private var _ventilationMethod:int;
+    private var _ventilationTypeId:String;
     private var _ventilationFreq:int;
     private var _recuperateEfficiency:Number;
     private var _co2Sensor:Boolean;
-    private var _tightness:Number;
+    private var _tightnessId:String;
 
     //wallElement
     private var _wallWidth:Number;
@@ -100,9 +101,7 @@ public class FlatDataContext {
     private var _floorHeatTransfer:Number;
 
     //windowElement
-    private var _windowsUValue:Number;
-    private var _windowType:int;
-    private var _winGain:Number;
+    private var _windowsTypeId:String;
     private var _shutters:Boolean;
     private var _thermalBridgesId:String;
 
@@ -377,12 +376,13 @@ public class FlatDataContext {
         _personNumber = value;
     }
 
-    public function get foundationsEnabled():Boolean {
-        return _foundationsEnabled;
+
+    public function get foundationsTypeId():String {
+        return _foundationsTypeId;
     }
 
-    public function set foundationsEnabled(value:Boolean):void {
-        _foundationsEnabled = value;
+    public function set foundationsTypeId(value:String):void {
+        _foundationsTypeId = value;
     }
 
     public function get tIn():Number {
@@ -433,12 +433,12 @@ public class FlatDataContext {
         _storeEfficiency = value;
     }
 
-    public function get consumptionIntensity():Number {
-        return _consumptionIntensity;
+    public function get consumptionIntensityId():String {
+        return _consumptionIntensityId;
     }
 
-    public function set consumptionIntensity(value:Number):void {
-        _consumptionIntensity = value;
+    public function set consumptionIntensityId(value:String):void {
+        _consumptionIntensityId = value;
     }
 
     public function get gwcSet():Boolean {
@@ -473,6 +473,8 @@ public class FlatDataContext {
         _recuperateEfficiency = value;
     }
 
+
+
     public function get co2Sensor():Boolean {
         return _co2Sensor;
     }
@@ -481,12 +483,20 @@ public class FlatDataContext {
         _co2Sensor = value;
     }
 
-    public function get tightness():Number {
-        return _tightness;
+    public function get tightnessId():String {
+        return _tightnessId;
     }
 
-    public function set tightness(value:Number):void {
-        _tightness = value;
+    public function set tightnessId(value:String):void {
+        _tightnessId = value;
+    }
+
+    public function get ventilationTypeId():String {
+        return _ventilationTypeId;
+    }
+
+    public function set ventilationTypeId(value:String):void {
+        _ventilationTypeId = value;
     }
 
     public function get wallWidth():Number {
@@ -561,28 +571,12 @@ public class FlatDataContext {
         _floorInsulationQualityId = value;
     }
 
-    public function get windowsUValue():Number {
-        return _windowsUValue;
+    public function get windowsTypeId():String {
+        return _windowsTypeId;
     }
 
-    public function set windowsUValue(value:Number):void {
-        _windowsUValue = value;
-    }
-
-    public function get windowType():int {
-        return _windowType;
-    }
-
-    public function set windowType(value:int):void {
-        _windowType = value;
-    }
-
-    public function get winGain():Number {
-        return _winGain;
-    }
-
-    public function set winGain(value:Number):void {
-        _winGain = value;
+    public function set windowsTypeId(value:String):void {
+        _windowsTypeId = value;
     }
 
     public function get shutters():Boolean {
@@ -592,7 +586,6 @@ public class FlatDataContext {
     public function set shutters(value:Boolean):void {
         _shutters = value;
     }
-
 
     public function get thermalBridgesId():String {
         return _thermalBridgesId;
@@ -888,15 +881,6 @@ public class FlatDataContext {
     public function set floorHeatTransfer(value:Number):void {
         _floorHeatTransfer = value;
     }
-
-    public function get foundationsUValue():Number {
-        return _foundationsUValue;
-    }
-
-    public function set foundationsUValue(value:Number):void {
-        _foundationsUValue = value;
-    }
-
 
     public function get houseStandardTypeId():String {
         return _houseStandardTypeId;

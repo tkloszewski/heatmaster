@@ -6,9 +6,10 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
 
 public class WarmWaterData {
 
@@ -18,7 +19,7 @@ public class WarmWaterData {
     private var _heatingSourceType:HeatingSourceType;
     private var _distributorEfficiency:Number;
     private var _storeEfficiency:Number;
-    private var _consumptionIntensity:Number;
+    private var _consumptionIntensityType:WarmWaterConsumptionType;
 
     public function WarmWaterData() {
     }
@@ -39,13 +40,12 @@ public class WarmWaterData {
         _storeEfficiency = value;
     }
 
-
-    public function get consumptionIntensity():Number {
-        return _consumptionIntensity;
+    public function get consumptionIntensityType():WarmWaterConsumptionType {
+        return _consumptionIntensityType;
     }
 
-    public function set consumptionIntensity(value:Number):void {
-        _consumptionIntensity = value;
+    public function set consumptionIntensityType(value:WarmWaterConsumptionType):void {
+        _consumptionIntensityType = value;
     }
 
     public function get heatingSourceType():HeatingSourceType {

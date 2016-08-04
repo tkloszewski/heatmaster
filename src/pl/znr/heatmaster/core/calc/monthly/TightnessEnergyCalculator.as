@@ -21,7 +21,7 @@ public class TightnessEnergyCalculator implements IMonthEnergyCalculator{
         var houseData:HouseData = contextData.houseData;
         var ventilationData:VentilationData = houseData.ventilationData;
         var surfaceData:SurfaceData = houseData.surfaceData;
-        var airVolume:Number = 0.05 * ventilationData.tightness * surfaceData.totalSurface * surfaceData.floorHeight/3600;
+        var airVolume:Number = 0.05 * ventilationData.airTightness.value * surfaceData.totalSurface * surfaceData.floorHeight/3600;
         var value:Number = EnergyCalcHelper.calcAirHeatEnergyTransfer(airVolume,houseData.tIn,monthInputData.tOut,1);
         energyData.enTightness =value;
 

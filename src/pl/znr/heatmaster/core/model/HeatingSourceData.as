@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
 
 public class HeatingSourceData {
 

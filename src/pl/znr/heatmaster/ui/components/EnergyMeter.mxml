@@ -14,33 +14,27 @@
         import mx.utils.StringUtil;
 
         import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.CountryItemHelper;
-        import pl.znr.heatmaster.config.HeatMasterConfigurationReader;
         import pl.znr.heatmaster.constants.GlobalValues;
-        import pl.znr.heatmaster.constants.StateConstants;
         import pl.znr.heatmaster.constants.combo.ConversionUnits;
         import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.core.HeatMasterController;
         import pl.znr.heatmaster.core.ProcessingResult;
         import pl.znr.heatmaster.core.StateDataContext;
         import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
-        import pl.znr.heatmaster.core.comparator.ComparatorResult;
-        import pl.znr.heatmaster.core.comparator.ProcessingResultComparator;
         import pl.znr.heatmaster.core.converter.ConversionData;
         import pl.znr.heatmaster.core.converter.ConvertedResult;
         import pl.znr.heatmaster.core.converter.ConverterHelper;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
         import pl.znr.heatmaster.core.state.ComparingProcessingResult;
-        import pl.znr.heatmaster.core.state.CalculationStateController;
-        import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.ui.builder.prepare.EnvironmentalDataPreparer;
         import pl.znr.heatmaster.ui.components.tooltip.EnergyMeterToolTip;
 
-        private var configuratioReader:HeatMasterConfigurationReader;
         private var heatMasterController:HeatMasterController;
         private var environmentalData:EnvironmentalData;
-
 
         [Bindable]
         private var selectedMonth:int = 0;
@@ -57,6 +51,8 @@
         private var value:Number = NaN;
         private var selectedCountry:CountryItem;
 
+        private var businessConfiguration:BusinessConfiguration;
+
         private var refProcessingResult:ProcessingResult;
         private var newProcessingResult:ProcessingResult;
 
@@ -68,6 +64,10 @@
             doLangChanged(true);
         }
 
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            this.businessConfiguration = businessConfiguration;
+        }
+
         override public function initData(dataContext:DataContext):DataContext {
             environmentalData = dataContext.environmentalData;
             tempSE.value = dataContext.environmentalData.temperatures[monthDropDownList.selectedIndex];
@@ -76,7 +76,7 @@
             conversionData.selectedUnit = unitDropDownList.selectedItem.data;
             conversionData.unitName = unitDropDownList.selectedItem.labelUnit;
             conversionData.shortUnitName = getShortUnitNameCode(unitDropDownList.selectedItem.data, unitDropDownList.selectedItem.shortUnit);
-            conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit, configuratioReader.getEuroToPLNExchangeRate(), dataContext.initialConfigItem.currencyExchangeRate);
+            conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit, businessConfiguration.polishExchangeRate, dataContext.initialConfigItem.currencyExchangeRate);
 
             dataContext.currencyLocaleCode = ConversionUnits.isLocalCurrencyCostUnit(unitDropDownList.selectedItem.data) ? dataContext.initialConfigItem.currencyLocaleCode : HeatMaster.CURRENCY_EURO_LOCALE_CODE;
             dataContext.localCurrency = CountryItemHelper.isInitialLocalCurrencySet();
@@ -128,13 +128,13 @@
         override public function comparingResultCalculated(comparingResult:ComparingProcessingResult, month:int):void {
             refProcessingResult = comparingResult.refProcessingResult;
             newProcessingResult = comparingResult.newProcessingResult;
-            formattedReferenceValue = createFormattedValue(getProperValue(refProcessingResult,month), refProcessingResult.conversionData.selectedUnit, refProcessingResult.dataContext.currencyLocaleCode);
-            formattedNewValue = createFormattedValue(getProperValue(newProcessingResult,month),newProcessingResult.conversionData.selectedUnit, newProcessingResult.dataContext.currencyLocaleCode);
+            formattedReferenceValue = createFormattedValue(getProperValue(refProcessingResult, month), refProcessingResult.conversionData.selectedUnit, refProcessingResult.dataContext.currencyLocaleCode);
+            formattedNewValue = createFormattedValue(getProperValue(newProcessingResult, month), newProcessingResult.conversionData.selectedUnit, newProcessingResult.dataContext.currencyLocaleCode);
         }
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {
             unit = resultData.conversionData.selectedUnit;
-            value = getProperValue(resultData,month);
+            value = getProperValue(resultData, month);
 
             if (calculationStateController.isInReferenceOrInitialState()) {
                 refProcessingResult = resultData;
@@ -180,10 +180,6 @@
             }
         }
 
-        public function setConfigurationReader(confReader:HeatMasterConfigurationReader):void {
-            this.configuratioReader = confReader;
-        }
-
         override public function setHeatMasterListener(heatMasterListener:HeatMasterChangeListener):void {
             super.setHeatMasterListener(heatMasterListener);
         }
@@ -192,7 +188,7 @@
             this.heatMasterController = heatMasterController;
         }
 
-        private function getProperValue(resultData:ProcessingResult,month:int):Number {
+        private function getProperValue(resultData:ProcessingResult, month:int):Number {
             if (ConversionUnits.isYearUnit(resultData.conversionData.selectedUnit)) {
                 return BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(resultData);
             }

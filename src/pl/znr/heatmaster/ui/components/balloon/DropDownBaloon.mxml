@@ -9,16 +9,11 @@
 
     <fx:Script><![CDATA[
         import mx.collections.ArrayCollection;
-        import mx.collections.ArrayList;
-        import mx.collections.IList;
         import mx.controls.Alert;
 
         import pl.znr.heatmaster.HeatMaster;
-
+        import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
         import pl.znr.heatmaster.constants.combo.DropDownType;
-        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-        import pl.znr.heatmaster.constants.combo.VentilationMethod;
-        import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.model.HouseData;
         import pl.znr.heatmaster.ui.components.tooltip.BaseToolTip;
@@ -57,17 +52,16 @@
             try {
                 if (_type == DropDownType.VENTILATION_FREQUENCY) {
                     var ventFreq:int = dataContext.houseData.ventilationData.ventilationFreq;
-                    var ventFreqIdx:int = getComboItemIndexForCollection(ventFreq,_dataProvider as ArrayCollection);
-                    if(ventFreqIdx != -1){
+                    var ventFreqIdx:int = getComboItemIndexForCollection(ventFreq, _dataProvider as ArrayCollection);
+                    if (ventFreqIdx != -1) {
                         dropDownList.selectedIndex = ventFreqIdx;
                     }
                 }
                 else if (_type == DropDownType.WARM_WATER) {
-                    var intensity:Number = dataContext.houseData.warmWaterData.consumptionIntensity;
-                    var warmWaterConsumption:WarmWaterConsumption = WarmWaterConsumption.getWarmWaterConsumptionForIntensity(intensity);
-                    var warmWaterIdx:int = getComboItemIndexForCollection(warmWaterConsumption,_dataProvider as ArrayCollection);
-                    if(warmWaterIdx != -1){
-                       dropDownList.selectedIndex = warmWaterIdx;
+                    var warmWaterConsumption:WarmWaterConsumptionType = dataContext.houseData.warmWaterData.consumptionIntensityType;
+                    var warmWaterIdx:int = getComboItemIndexForCollectionById(warmWaterConsumption.id, dropDownList.dataProvider as ArrayCollection);
+                    if (warmWaterIdx != -1) {
+                        dropDownList.selectedIndex = warmWaterIdx;
                     }
                 }
             } catch (e:Error) {
@@ -142,14 +136,13 @@
                 heatMasterListener.tightnessChanged(dropDownList.selectedItem.data);
             }
             else if (type == DropDownType.WARM_WATER) {
-                heatMasterListener.warmWaterConsumptionChanged(dropDownList.selectedItem.data.intensity);
+                heatMasterListener.warmWaterConsumptionChanged(dropDownList.selectedItem.data);
             }
         }
 
         override public function initData(dataContext:DataContext):DataContext {
             try {
                 var houseData:HouseData = dataContext.houseData;
-                var data:int = getDropDownListData();
                 if (type == DropDownType.VENTILATION_METHOD) {
                     houseData.ventilationData.ventilationMethodObject = dropDownList.selectedItem.data;
                 }
@@ -157,11 +150,11 @@
                     houseData.ventilationData.ventilationFreq = dropDownList.selectedItem.data;
                 }
                 else if (type == DropDownType.TIGHTNESS) {
-                    houseData.ventilationData.tightness = dropDownList.selectedItem.data;
+                    houseData.ventilationData.airTightness = dropDownList.selectedItem.data;
                 }
                 else if (type == DropDownType.WARM_WATER) {
-                    var intensity:Number = dropDownList.selectedItem.data.intensity;
-                    houseData.warmWaterData.consumptionIntensity = intensity;
+                    var waterConsumptionIntensity:WarmWaterConsumptionType = dropDownList.selectedItem.data;
+                    houseData.warmWaterData.consumptionIntensityType = waterConsumptionIntensity;
                 }
             } catch (e:Error) {
 

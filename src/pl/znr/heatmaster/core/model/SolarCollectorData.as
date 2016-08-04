@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
+import pl.znr.heatmaster.config.dictionary.model.SolarCollectorType;
 
 public class SolarCollectorData {
 
@@ -22,7 +22,7 @@ public class SolarCollectorData {
         return result;
     }
 
-    public static function createSolarCollectorDataWithCount(collectorType:SolarCollectorType,surface:Number):SolarCollectorData{
+    public static function createSolarCollectorDataWithCountCalculated(collectorType:SolarCollectorType,surface:Number):SolarCollectorData{
         var result:SolarCollectorData = new SolarCollectorData();
         result.collectorType = collectorType;
         result.surface = surface;

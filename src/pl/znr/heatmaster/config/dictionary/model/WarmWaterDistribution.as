@@ -5,20 +5,16 @@
  * Time: 13:55
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import mx.collections.ArrayList;
+
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class WarmWaterDistribution extends BaseComboObject{
 
     private static var items:ArrayList = new ArrayList();
 
     private var _efficiency:Number;
-
-    public static var WELL_ISOLATED_PIPES:WarmWaterDistribution = new WarmWaterDistribution("1",0.95);
-    public static var PLASTIC_PIPES:WarmWaterDistribution = new WarmWaterDistribution("2",0.85);
-    public static var POOR_ISOLATED_PIPES:WarmWaterDistribution = new WarmWaterDistribution("3",0.60);
-    public static var WELL_ISOLATED_AUTOMATIC_PIPES:WarmWaterDistribution = new WarmWaterDistribution("4",0.70);
-    public static var NOT_ISOLATED_PIPES:WarmWaterDistribution = new WarmWaterDistribution("5",0.50);
 
     public static function getWarmWaterDistributionById(id:String):WarmWaterDistribution {
         for(var i:int = 0;i < items.length;i++){
@@ -29,7 +25,6 @@ public class WarmWaterDistribution extends BaseComboObject{
         }
         return null;
     }
-
 
     public function WarmWaterDistribution(id:String,efficiency:Number) {
         super(id);

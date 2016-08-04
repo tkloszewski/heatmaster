@@ -24,7 +24,7 @@ public class WarmWaterEnergyCalculator implements IMonthEnergyCalculator{
             enWarmWater = enWarmWater / (warmWaterData.distributorEfficiency * warmWaterData.storeEfficiency);
         }
         energyData.enWarmWaterNormalized = enWarmWater;
-        energyData.enWarmWater = enWarmWater * warmWaterData.consumptionIntensity;
+        energyData.enWarmWater = enWarmWater * warmWaterData.consumptionIntensityType.intensity;
         return energyData;
     }
 }

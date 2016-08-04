@@ -6,23 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import mx.controls.Alert;
-
-import pl.znr.heatmaster.constants.combo.BuildingAge;
-
-import pl.znr.heatmaster.constants.combo.DoorType;
-
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
-import pl.znr.heatmaster.constants.combo.HouseStandardType;
-import pl.znr.heatmaster.core.model.FloorElement;
-import pl.znr.heatmaster.core.model.RoofElement;
-import pl.znr.heatmaster.core.model.SurfaceData;
-import pl.znr.heatmaster.core.model.VentilationData;
-import pl.znr.heatmaster.core.model.WallElement;
 
 public class HouseData {
     private var _houseType:int;
-    private var _standardType:HouseStandardType;
+    private var _standardType:HouseStandardTypeItem;
     private var _buildingAge:BuildingAge;
 
     private var _surfaceData:SurfaceData;
@@ -36,25 +28,9 @@ public class HouseData {
     private var _electricityConsumption:int = ElectricityConsumption.AVERAGE;
     private var _personNumber:int = 2;
 
-    private var _foundationsEnabled:Boolean;
-    private var _foundationsUValue:Number;
+    private var _foundationType:FoundationsType;
 
     private var _tIn:Number;
-
-    public function toString():String{
-        var s:String = "SurfaceData= " + _surfaceData.toString() + "\n";
-
-        s += "wallElement: " + _wallElement.toString() + "\n";
-        s += "houseType: " + _houseType + "tIN: " + _tIn + "\n";
-        s += "ventilationData: " + _ventilationData.toString() + "\n";
-        /*
-                "floorElement: " + _floorElement.toString() + "\n" +
-                "windowElement: " + _windowElement.toString() + "\n" +
-                "houseType: " + _houseType + "tIN: " + _tIn;*/
-
-        return s;
-
-    }
 
     public function HouseData() {
     }
@@ -116,14 +92,6 @@ public class HouseData {
         _floorElement = value;
     }
 
-    public function get foundationsEnabled():Boolean {
-        return _foundationsEnabled;
-    }
-
-    public function set foundationsEnabled(value:Boolean):void {
-        _foundationsEnabled = value;
-    }
-
     public function get warmWaterData():WarmWaterData {
         return _warmWaterData;
     }
@@ -173,19 +141,19 @@ public class HouseData {
         _buildingAge = value;
     }
 
-    public function get foundationsUValue():Number {
-        return _foundationsUValue;
+    public function get foundationType():FoundationsType {
+        return _foundationType;
     }
 
-    public function set foundationsUValue(value:Number):void {
-        _foundationsUValue = value;
+    public function set foundationType(value:FoundationsType):void {
+        _foundationType = value;
     }
 
-    public function get standardType():HouseStandardType {
+    public function get standardType():HouseStandardTypeItem {
         return _standardType;
     }
 
-    public function set standardType(value:HouseStandardType):void {
+    public function set standardType(value:HouseStandardTypeItem):void {
         _standardType = value;
     }
 }
