@@ -6,9 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
+import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
+import pl.znr.heatmaster.config.dictionary.model.WindowsType;
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-import pl.znr.heatmaster.constants.combo.WindowsType;
 
 public class WindowElement extends InsulationElement{
     private var _windowType:int = -1;

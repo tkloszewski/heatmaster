@@ -9,7 +9,7 @@ package pl.znr.heatmaster.constants {
 import mx.formatters.NumberBaseRoundType;
 import mx.formatters.NumberFormatter;
 
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
 
 public class GlobalValues {
     public function GlobalValues() {

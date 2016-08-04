@@ -7,8 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.WarmWaterConsumptionConfig;
-
-import pl.znr.heatmaster.constants.combo.WarmWaterConsumption;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
 
 public class WarmWaterConsumptionConfigReader extends AbstractDictionaryReader{
 
@@ -19,6 +18,7 @@ public class WarmWaterConsumptionConfigReader extends AbstractDictionaryReader{
     override public function readXMLConfig(dictionaryConfig:DictionaryConfig, dictionaryXML:XML):DictionaryConfig {
         var waterConsumptionItems:ArrayCollection = readWarmWaterConsumptionConfiguration(dictionaryXML.warm_water_consumption_configuration);
         var warmWaterConsumptionConfiguration:WarmWaterConsumptionConfig = new WarmWaterConsumptionConfig(waterConsumptionItems);
+        warmWaterConsumptionConfiguration.selectedIndex = getSelectedIndex(dictionaryXML.warm_water_consumption_configuration);
 
         dictionaryConfig.waterConsumptionConfiguration = warmWaterConsumptionConfiguration;
         return dictionaryConfig;
@@ -32,11 +32,11 @@ public class WarmWaterConsumptionConfigReader extends AbstractDictionaryReader{
         return warmWaterConsumptionItems;
     }
 
-    private function readWarmWaterConsumptionItem(consumptionItemXML:XML):WarmWaterConsumption {
+    private function readWarmWaterConsumptionItem(consumptionItemXML:XML):WarmWaterConsumptionType {
         var id:String = consumptionItemXML.attribute("id");
         var intensity:Number = Number(consumptionItemXML.attribute("intensity"));
 
-        var warmWaterConsumption:WarmWaterConsumption = new WarmWaterConsumption(id,intensity);
+        var warmWaterConsumption:WarmWaterConsumptionType = new WarmWaterConsumptionType(id,intensity);
         fillBaseProperties(consumptionItemXML,warmWaterConsumption);
 
         return warmWaterConsumption;

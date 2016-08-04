@@ -12,7 +12,7 @@ import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.HeatingSourceTypeConfig;
 import pl.znr.heatmaster.constants.HeatingType;
 import pl.znr.heatmaster.constants.NaturalUnit;
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
 
 public class HeatingSourceTypeConfigReader extends AbstractDictionaryReader{
 

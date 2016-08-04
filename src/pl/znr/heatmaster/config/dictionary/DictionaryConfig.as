@@ -8,7 +8,7 @@ import flash.utils.Dictionary;
 
 import pl.znr.heatmaster.config.dictionary.SolarCollectorTypeConfig;
 
-import pl.znr.heatmaster.constants.combo.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
 
 public class DictionaryConfig {
 

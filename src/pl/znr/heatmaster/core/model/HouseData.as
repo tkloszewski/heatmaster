@@ -6,12 +6,11 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
 import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
-import pl.znr.heatmaster.constants.combo.BuildingAge;
-import pl.znr.heatmaster.constants.combo.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
-import pl.znr.heatmaster.constants.combo.FoundationsType;
-import pl.znr.heatmaster.constants.combo.HouseStandardType;
 
 public class HouseData {
     private var _houseType:int;

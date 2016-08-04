@@ -7,6 +7,7 @@ import mx.collections.ArrayCollection;
 public class TightnessConfig {
 
     private var _tightnessItems:ArrayCollection;
+    private var _selectedIndex:int;
 
     public function TightnessConfig(tightnessItems:ArrayCollection) {
         this._tightnessItems = tightnessItems;
@@ -18,6 +19,14 @@ public class TightnessConfig {
 
     public function set tightnessItems(value:ArrayCollection):void {
         _tightnessItems = value;
+    }
+
+    public function get selectedIndex():int {
+        return _selectedIndex;
+    }
+
+    public function set selectedIndex(value:int):void {
+        _selectedIndex = value;
     }
 }
 }

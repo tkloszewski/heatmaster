@@ -6,18 +6,16 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.AirTightness;
-import pl.znr.heatmaster.constants.combo.DoorType;
-import pl.znr.heatmaster.constants.combo.FoundationsType;
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
-import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
-import pl.znr.heatmaster.constants.combo.WindowsType;
-import pl.znr.heatmaster.core.model.SolarCollectorData;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.InsulationMaterialType;
+import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.model.WindowsType;
 
 public class HouseStandardTypeModel {
 

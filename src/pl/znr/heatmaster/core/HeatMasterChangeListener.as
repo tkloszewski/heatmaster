@@ -13,28 +13,25 @@ import pl.znr.heatmaster.HeatMaster;
 import pl.znr.heatmaster.config.BusinessConfiguration;
 import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.config.CountryItemHelper;
-import pl.znr.heatmaster.config.CountryStationConfigurationReader;
 import pl.znr.heatmaster.config.RegionItem;
 import pl.znr.heatmaster.config.StationItem;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
 import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
 import pl.znr.heatmaster.constants.StateConstants;
-import pl.znr.heatmaster.constants.combo.AirTightness;
-import pl.znr.heatmaster.constants.combo.BuildingAge;
+import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
-import pl.znr.heatmaster.constants.combo.DoorType;
-import pl.znr.heatmaster.constants.combo.FoundationsType;
-import pl.znr.heatmaster.constants.combo.HouseStandardType;
 import pl.znr.heatmaster.constants.combo.InsulationElementType;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterConsumptionType;
 import pl.znr.heatmaster.core.cache.CachedDataContextManager;
 import pl.znr.heatmaster.core.converter.ConversionData;
 import pl.znr.heatmaster.core.converter.ConverterHelper;
 import pl.znr.heatmaster.core.model.EnvironmentalData;
 import pl.znr.heatmaster.core.model.HeatingSourceData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
 import pl.znr.heatmaster.core.model.InsulationElement;
 import pl.znr.heatmaster.core.model.SolarCollectorData;
 import pl.znr.heatmaster.core.model.SurfaceData;
@@ -46,7 +43,6 @@ import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
-import pl.znr.heatmaster.util.HouseStandardModelHelper;
 
 public class HeatMasterChangeListener {
 
@@ -138,9 +134,9 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function warmWaterConsumptionChanged(intensity:Number):void {
+    public function warmWaterConsumptionChanged(warmWaterConsumptionIntensity:WarmWaterConsumptionType):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
-        dataContext.houseData.warmWaterData.consumptionIntensity = intensity;
+        dataContext.houseData.warmWaterData.consumptionIntensityType = warmWaterConsumptionIntensity;
         heatMasterController.calculate();
         writeCache(dataContext);
     }
@@ -489,7 +485,7 @@ public class HeatMasterChangeListener {
         dataContext.houseData.windowElement = windowElement;
 
         housePanel.setShuttersVisible(windowElement.shutters);
-        housePanel.setBridgesDisabled(!(windowElement.thermalBridgesType == ThermalBridgesType.MAX));
+        housePanel.setBridgesDisabled(!(windowElement.thermalBridgesType.max));
 
         heatMasterController.calculate();
         writeCache(dataContext);

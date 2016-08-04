@@ -27,7 +27,7 @@ public class EnergyClassHelper {
     }
 
     public static function getEnergyClass(value:Number):EnergyClass {
-        trace("Getting nergy class for value: " + value);
+        trace("Getting energy class for value: " + value);
         for(var i:int = 0;i < energyClasses.length;i++){
             var energyClass:EnergyClass = energyClasses.getItemAt(i) as EnergyClass;
             if(energyClass.contains(value)){

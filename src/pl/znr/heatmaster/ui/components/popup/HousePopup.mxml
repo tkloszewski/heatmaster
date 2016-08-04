@@ -17,44 +17,37 @@
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_2005_2010')}" data="{BuildingAge.BETWEEN_2004_2010}"/>
             <fx:Object name="{resourceManager.getString('hm','hm.dropdown.house.age.before_after_2010')}" data="{BuildingAge.BETWEEN_2010_2013}"/>
         </s:ArrayCollection>
-        <s:ArrayList id="doorTypeList">
-            <fx:Object name="Stare" data="{DoorType.NON_ENERGY_SAVING}"/>
-            <fx:Object name="Standardowe" data="{DoorType.STANDARD}"/>
-            <fx:Object name="Nowe" data="{DoorType.ENERGY_SAVING}"/>
-        </s:ArrayList>
+
     </fx:Declarations>
 
 
     <fx:Script><![CDATA[
-        import pl.znr.heatmaster.config.BusinessConfiguration;
-        import pl.znr.heatmaster.config.StationItem;
-        import pl.znr.heatmaster.config.StationsConfig;
-        import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
-        import pl.znr.heatmaster.constants.combo.HouseStandardType;
-        import pl.znr.heatmaster.core.HouseStandardTypeContext;
-        import pl.znr.heatmaster.util.CollectionHelper;
-        import pl.znr.heatmaster.util.SortingUtil;
-
-        import spark.utils.TextFlowUtil;
-
         import mx.controls.Alert;
         import mx.core.FlexGlobals;
 
         import pl.znr.heatmaster.HeatMaster;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.CountryItem;
         import pl.znr.heatmaster.config.CountryItemHelper;
         import pl.znr.heatmaster.config.RegionItem;
+        import pl.znr.heatmaster.config.StationItem;
+        import pl.znr.heatmaster.config.StationsConfig;
+        import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
         import pl.znr.heatmaster.constants.GlobalValues;
-        import pl.znr.heatmaster.constants.combo.BuildingAge;
-        import pl.znr.heatmaster.constants.combo.DoorType;
+        import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
         import pl.znr.heatmaster.constants.combo.HouseType;
         import pl.znr.heatmaster.core.DataContext;
+        import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.HouseData;
         import pl.znr.heatmaster.core.model.SurfaceData;
         import pl.znr.heatmaster.ui.builder.prepare.surface.SurfaceCalculator;
         import pl.znr.heatmaster.ui.components.HouseSurfaceDataChangeListener;
         import pl.znr.heatmaster.ui.form.HouseModel;
+        import pl.znr.heatmaster.util.CollectionHelper;
         import pl.znr.heatmaster.util.HouseTypeHelper;
+        import pl.znr.heatmaster.util.SortingUtil;
+
+        import spark.utils.TextFlowUtil;
 
         private var surfaceCalculator:SurfaceCalculator = new SurfaceCalculator();
         private var houseDataChangeListener:HouseSurfaceDataChangeListener = new HouseSurfaceDataChangeListener();
@@ -86,12 +79,12 @@
         private var stationName:String;
 
         override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
-           houseStandardTypeList = toComboObjectList(businessConfiguration.dictionaryConfig.houseStandardTypeConfiguration.houseStandardTypes);
-           houseStandardDropDownList.dataProvider = houseStandardTypeList;
-           houseStandardDropDownList.selectedIndex = 2;
+            houseStandardTypeList = toComboObjectList(businessConfiguration.dictionaryConfig.houseStandardTypeConfiguration.houseStandardTypes);
+            houseStandardDropDownList.dataProvider = houseStandardTypeList;
+            houseStandardDropDownList.selectedIndex = 2;
 
-           populateCountryRegionDropDownList(businessConfiguration.countryItems,businessConfiguration.regionItem,
-                   businessConfiguration.countryItem,businessConfiguration.countryRegionCode)
+            populateCountryRegionDropDownList(businessConfiguration.countryItems, businessConfiguration.regionItem,
+                    businessConfiguration.countryItem, businessConfiguration.countryRegionCode)
         }
 
         override public function initData(dataContext:DataContext):DataContext {
@@ -549,7 +542,7 @@
             stationName = selectedStation.name;
 
             oldIdx = houseStandardDropDownList.selectedIndex;
-            houseStandardTypeList = translateComboItemsAndRefresh(houseStandardTypeList,lang);
+            houseStandardTypeList = translateComboItemsAndRefresh(houseStandardTypeList, lang);
             houseStandardDropDownList.dataProvider = houseStandardTypeList;
             houseStandardDropDownList.selectedIndex = oldIdx;
         }

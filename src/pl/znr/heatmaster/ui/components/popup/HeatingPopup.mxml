@@ -21,14 +21,14 @@
         import pl.znr.heatmaster.HeatMaster;
         import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.CountryItem;
+        import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
         import pl.znr.heatmaster.config.dictionary.model.HouseStandardTypeItem;
+        import pl.znr.heatmaster.config.dictionary.model.SolarCollectorType;
+        import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+        import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
         import pl.znr.heatmaster.constants.GlobalValues;
         import pl.znr.heatmaster.constants.NaturalUnit;
-        import pl.znr.heatmaster.constants.combo.HeatingSourceType;
         import pl.znr.heatmaster.constants.combo.HouseType;
-        import pl.znr.heatmaster.constants.combo.SolarCollectorType;
-        import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-        import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.ProcessingResult;
@@ -52,14 +52,21 @@
         private var currentImg:mx.controls.Image;
         private var warmWaterIncluded:Boolean = false;
 
-        [Bindable] private var detachedHeatingSourceList:ArrayCollection;
-        [Bindable] private var multiFamilyHeatingSourceList:ArrayCollection;
-        [Bindable] private var warmWaterDetachedHeatingSourceList:ArrayCollection;
-        [Bindable] private var warmWaterMultiFamilyHeatingSourceList:ArrayCollection;
+        [Bindable]
+        private var detachedHeatingSourceList:ArrayCollection;
+        [Bindable]
+        private var multiFamilyHeatingSourceList:ArrayCollection;
+        [Bindable]
+        private var warmWaterDetachedHeatingSourceList:ArrayCollection;
+        [Bindable]
+        private var warmWaterMultiFamilyHeatingSourceList:ArrayCollection;
 
-        [Bindable] private var detachedWarmWaterDistributionList:ArrayCollection;
-        [Bindable] private var multiFamilyWarmWaterDistributionList:ArrayCollection;
-        [Bindable] private var warmWaterStorageList:ArrayCollection;
+        [Bindable]
+        private var detachedWarmWaterDistributionList:ArrayCollection;
+        [Bindable]
+        private var multiFamilyWarmWaterDistributionList:ArrayCollection;
+        [Bindable]
+        private var warmWaterStorageList:ArrayCollection;
 
         [Bindable]
         private var solarCollectorTypesList:ArrayCollection;
@@ -105,30 +112,30 @@
 
         override public function langChanged(lang:String):void {
             var oldIdx:int = heatingTypeDropDownList.selectedIndex;
-            detachedHeatingSourceList = translateComboItemsAndRefresh(detachedHeatingSourceList,lang);
-            multiFamilyHeatingSourceList = translateComboItemsAndRefresh(multiFamilyHeatingSourceList,lang);
+            detachedHeatingSourceList = translateComboItemsAndRefresh(detachedHeatingSourceList, lang);
+            multiFamilyHeatingSourceList = translateComboItemsAndRefresh(multiFamilyHeatingSourceList, lang);
             heatingTypeDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? detachedHeatingSourceList : multiFamilyHeatingSourceList;
             heatingTypeDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterHeatingTypeDropDownList.selectedIndex;
-            warmWaterDetachedHeatingSourceList = translateComboItemsAndRefresh(warmWaterDetachedHeatingSourceList,lang);
-            warmWaterMultiFamilyHeatingSourceList = translateComboItemsAndRefresh(warmWaterMultiFamilyHeatingSourceList,lang);
+            warmWaterDetachedHeatingSourceList = translateComboItemsAndRefresh(warmWaterDetachedHeatingSourceList, lang);
+            warmWaterMultiFamilyHeatingSourceList = translateComboItemsAndRefresh(warmWaterMultiFamilyHeatingSourceList, lang);
             warmWaterHeatingTypeDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? warmWaterDetachedHeatingSourceList : warmWaterMultiFamilyHeatingSourceList;
             warmWaterHeatingTypeDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterStorageDropDownList.selectedIndex;
-            warmWaterStorageList = translateComboItemsAndRefresh(warmWaterStorageList,lang);
+            warmWaterStorageList = translateComboItemsAndRefresh(warmWaterStorageList, lang);
             warmWaterStorageDropDownList.dataProvider = warmWaterStorageList;
             warmWaterStorageDropDownList.selectedIndex = oldIdx;
 
             oldIdx = warmWaterDistributionDropDownList.selectedIndex;
-            detachedWarmWaterDistributionList = translateComboItemsAndRefresh(detachedWarmWaterDistributionList,lang);
-            multiFamilyWarmWaterDistributionList = translateComboItemsAndRefresh(multiFamilyWarmWaterDistributionList,lang);
+            detachedWarmWaterDistributionList = translateComboItemsAndRefresh(detachedWarmWaterDistributionList, lang);
+            multiFamilyWarmWaterDistributionList = translateComboItemsAndRefresh(multiFamilyWarmWaterDistributionList, lang);
             warmWaterDistributionDropDownList.dataProvider = previousHouseType == HouseType.DETACHED ? detachedWarmWaterDistributionList : multiFamilyWarmWaterDistributionList;
             warmWaterDistributionDropDownList.selectedIndex = oldIdx;
 
             oldIdx = collectorTypeDropDownList.selectedIndex;
-            solarCollectorTypesList = translateComboItemsAndRefresh(solarCollectorTypesList,lang);
+            solarCollectorTypesList = translateComboItemsAndRefresh(solarCollectorTypesList, lang);
             collectorTypeDropDownList.dataProvider = solarCollectorTypesList;
             collectorTypeDropDownList.selectedIndex = oldIdx;
             trace("Lang changed heating popup...");
@@ -237,11 +244,12 @@
 
         private function toHeatingSourceObjectList(heatingSources:ArrayCollection):ArrayCollection {
             var result:ArrayCollection = new ArrayCollection();
-            for(var i:int =0; i< heatingSources.length;i++){
+            for (var i:int = 0; i < heatingSources.length; i++) {
                 var heatingSourceType:HeatingSourceType = heatingSources.getItemAt(i) as HeatingSourceType;
                 result.addItem({
-                          name:heatingSourceType.name,
-                          data: new HeatingSourceTypeItem(heatingSourceType)}
+                            name: heatingSourceType.name,
+                            data: new HeatingSourceTypeItem(heatingSourceType)
+                        }
                 );
             }
             return result;

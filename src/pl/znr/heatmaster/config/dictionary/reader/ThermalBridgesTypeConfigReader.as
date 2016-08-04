@@ -7,7 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.ThermalBridgesTypeConfig;
-import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
+import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
 
 public class ThermalBridgesTypeConfigReader extends AbstractDictionaryReader{
 
@@ -33,7 +33,8 @@ public class ThermalBridgesTypeConfigReader extends AbstractDictionaryReader{
     }
 
     private function readThermalBridgesType(thermalBridgesTypeXML:XML):ThermalBridgesType {
-        var thermalBridgesType:ThermalBridgesType = new ThermalBridgesType(thermalBridgesTypeXML.attribute("id"),Number(thermalBridgesTypeXML.attribute("u_value")));
+        var max:Boolean = readBoolean(thermalBridgesTypeXML,"max");
+        var thermalBridgesType:ThermalBridgesType = new ThermalBridgesType(thermalBridgesTypeXML.attribute("id"),Number(thermalBridgesTypeXML.attribute("u_value")),max);
         fillBaseProperties(thermalBridgesTypeXML,thermalBridgesType);
         return thermalBridgesType;
     }

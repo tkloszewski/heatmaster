@@ -8,7 +8,7 @@ import mx.collections.ArrayCollection;
 import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
-import pl.znr.heatmaster.constants.combo.BaseComboObject;
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 import pl.znr.heatmaster.locale.LangHelper;
 
 public class AbstractDictionaryReader implements DictionaryReader{

@@ -7,8 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.WindowTypeConfig;
-
-import pl.znr.heatmaster.constants.combo.WindowsType;
+import pl.znr.heatmaster.config.dictionary.model.WindowsType;
 
 public class WindowTypeConfigReader extends AbstractDictionaryReader{
 
@@ -17,7 +16,9 @@ public class WindowTypeConfigReader extends AbstractDictionaryReader{
     }
 
     override public function readXMLConfig(dictionaryConfig:DictionaryConfig, dictionaryXML:XML):DictionaryConfig {
-        dictionaryConfig.windowTypeConfiguration = new WindowTypeConfig(readWindowTypes(dictionaryXML.window_types));
+        var windowTypeConfiguration:WindowTypeConfig =  new WindowTypeConfig(readWindowTypes(dictionaryXML.window_types));
+        windowTypeConfiguration.selectedIndex = getSelectedIndex(dictionaryXML.window_types);
+        dictionaryConfig.windowTypeConfiguration = windowTypeConfiguration;
         return dictionaryConfig;
     }
 

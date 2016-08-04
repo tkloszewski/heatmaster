@@ -71,11 +71,12 @@ public class FlatDataContext {
     private var _warmWaterHeatingSourceTypeID:String;
     private var _distributorEfficiency:Number;
     private var _storeEfficiency:Number;
-    private var _consumptionIntensity:Number;
+    private var _consumptionIntensityId:String;
 
     //ventilationData
     private var _gwcSet:Boolean;
     private var _ventilationMethod:int;
+    private var _ventilationTypeId:String;
     private var _ventilationFreq:int;
     private var _recuperateEfficiency:Number;
     private var _co2Sensor:Boolean;
@@ -432,12 +433,12 @@ public class FlatDataContext {
         _storeEfficiency = value;
     }
 
-    public function get consumptionIntensity():Number {
-        return _consumptionIntensity;
+    public function get consumptionIntensityId():String {
+        return _consumptionIntensityId;
     }
 
-    public function set consumptionIntensity(value:Number):void {
-        _consumptionIntensity = value;
+    public function set consumptionIntensityId(value:String):void {
+        _consumptionIntensityId = value;
     }
 
     public function get gwcSet():Boolean {
@@ -472,6 +473,8 @@ public class FlatDataContext {
         _recuperateEfficiency = value;
     }
 
+
+
     public function get co2Sensor():Boolean {
         return _co2Sensor;
     }
@@ -486,6 +489,14 @@ public class FlatDataContext {
 
     public function set tightnessId(value:String):void {
         _tightnessId = value;
+    }
+
+    public function get ventilationTypeId():String {
+        return _ventilationTypeId;
+    }
+
+    public function set ventilationTypeId(value:String):void {
+        _ventilationTypeId = value;
     }
 
     public function get wallWidth():Number {

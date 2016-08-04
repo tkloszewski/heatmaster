@@ -23,7 +23,7 @@ import pl.znr.heatmaster.config.BusinessConfiguration;
 import pl.znr.heatmaster.config.BusinessConfigurationReaderListener;
 
 import pl.znr.heatmaster.constants.StateConstants;
-import pl.znr.heatmaster.constants.combo.BaseComboObject;
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.IHeatMasterListenerAware;

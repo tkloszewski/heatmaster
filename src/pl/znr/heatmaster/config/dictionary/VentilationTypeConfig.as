@@ -7,6 +7,7 @@ import mx.collections.ArrayCollection;
 public class VentilationTypeConfig {
 
     private var _ventilationTypes:ArrayCollection;
+    private var _selectedIndex:int;
 
     public function VentilationTypeConfig(ventilationTypes:ArrayCollection) {
         _ventilationTypes = ventilationTypes;
@@ -18,6 +19,14 @@ public class VentilationTypeConfig {
 
     public function set ventilationTypes(value:ArrayCollection):void {
         _ventilationTypes = value;
+    }
+
+    public function get selectedIndex():int {
+        return _selectedIndex;
+    }
+
+    public function set selectedIndex(value:int):void {
+        _selectedIndex = value;
     }
 }
 }

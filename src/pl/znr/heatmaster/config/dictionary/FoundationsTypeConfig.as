@@ -4,7 +4,7 @@
 package pl.znr.heatmaster.config.dictionary {
 import mx.collections.ArrayCollection;
 
-import pl.znr.heatmaster.constants.combo.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
 
 public class FoundationsTypeConfig {
 

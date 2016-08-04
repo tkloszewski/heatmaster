@@ -8,7 +8,7 @@
 package pl.znr.heatmaster.core.calc.monthly {
 import mx.controls.Alert;
 
-import pl.znr.heatmaster.constants.combo.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
 
 import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.calc.monthly.EnergyCalcHelper;

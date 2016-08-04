@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.ui.form {
-import pl.znr.heatmaster.constants.combo.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
 
 public class HouseModel {
 

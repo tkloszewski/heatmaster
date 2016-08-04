@@ -6,13 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.calc.monthly {
-import flash.net.registerClassAlias;
-
 import pl.znr.heatmaster.constants.combo.ElectricityConsumption;
-
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
-import pl.znr.heatmaster.core.model.InsulationElement;
-import pl.znr.heatmaster.core.model.VentilationData;
 
 public class EnergyCalcHelper {
 

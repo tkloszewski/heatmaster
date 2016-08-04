@@ -15,7 +15,7 @@ import mx.controls.Alert;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
 
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
 import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
 import pl.znr.heatmaster.core.calc.util.BalanceValueHelper;
 import pl.znr.heatmaster.core.converter.ConversionData;

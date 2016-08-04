@@ -5,7 +5,7 @@
  * Time: 18:11
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 
 public class BaseComboObject {

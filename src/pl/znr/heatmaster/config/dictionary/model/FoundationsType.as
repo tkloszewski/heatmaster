@@ -5,8 +5,10 @@
  * Time: 21:27
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import flash.utils.Dictionary;
+
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class FoundationsType extends BaseComboObject{
 
@@ -15,9 +17,7 @@ public class FoundationsType extends BaseComboObject{
 
     public static const valuesMap:Dictionary = new Dictionary();
 
-    public static const TRADITIONAL:FoundationsType = new FoundationsType("hm.foundations.traditional",TRADITIONAL_TYPE,0.75);
     public static const TRADITIONAL_INSULATED:FoundationsType = new FoundationsType("hm.foundations.traditional_insulated",TRADITIONAL_TYPE,0.5);
-    public static const SLAB:FoundationsType = new FoundationsType("hm.foundations.slab",SLAB_TYPE,0.0);
 
     private var _uValue:Number;
     private var _fType:int;

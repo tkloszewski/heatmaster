@@ -6,11 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.ui.builder.prepare.element {
-import flash.utils.Dictionary;
-
-import mx.controls.Alert;
-
-import pl.znr.heatmaster.constants.combo.WindowsType;
 import pl.znr.heatmaster.core.model.InsulationElement;
 import pl.znr.heatmaster.core.model.WindowElement;
 

@@ -6,7 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.ui.builder.prepare.element {
-import pl.znr.heatmaster.constants.combo.InsulationQuality;
 import pl.znr.heatmaster.core.model.InsulationElement;
 
 public class UValueBasedElementPreparer extends BaseElementPreparer{

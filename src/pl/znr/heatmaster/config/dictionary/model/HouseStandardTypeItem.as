@@ -4,7 +4,7 @@
 package pl.znr.heatmaster.config.dictionary.model {
 import flash.utils.Dictionary;
 
-import pl.znr.heatmaster.constants.combo.BaseComboObject;
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 import pl.znr.heatmaster.core.model.HouseStandardTypeModel;
 
 public class HouseStandardTypeItem extends BaseComboObject{

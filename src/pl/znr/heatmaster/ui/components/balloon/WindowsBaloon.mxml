@@ -1,41 +1,26 @@
 <?xml version="1.0"?>
-<ballonn:BaseBaloon implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
-                    xmlns:fx="http://ns.adobe.com/mxml/2009"
-                    xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:balloon="pl.znr.heatmaster.ui.components.balloon.*"
-                    xmlns:comp="pl.znr.heatmaster.ui.components.*"
-                    width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
-                    creationComplete="balloonCreated()">
+<ballonn:BaseBaloon
+        implements="pl.znr.heatmaster.core.IBuildingAgeChangeListener,pl.znr.heatmaster.core.HouseStandardChangeListener"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
+        creationComplete="balloonCreated()">
 
     <fx:Declarations>
-        <s:ArrayCollection id="windowsList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.one_pane')}" data="{WindowsType.ONE_PANE_WINDOWS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.old')}" data="{WindowsType.TWO_PANE_OLD_WINDOWS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.two_panes.new')}" data="{WindowsType.TWO_PANE_NEW_WINDOWS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.three_panes')}" data="{WindowsType.THREE_PANE_WINDOWS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdow.windows.three_panes.special')}" data="{WindowsType.THREE_PANE_SPECIAL_WINDOWS}"/>
-        </s:ArrayCollection>
-
-        <s:ArrayCollection id="thermalBridgesList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.thermal_brdiges_max')}" data="{ThermalBridgesType.MAX}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.thermal_brdiges_avg')}" data="{ThermalBridgesType.AVG}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.windows.thermal_brdiges_min')}" data="{ThermalBridgesType.MIN}"/>
-        </s:ArrayCollection>
 
     </fx:Declarations>
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
         import mx.controls.Alert;
-        import mx.core.UIComponent;
-        import mx.events.FlexMouseEvent;
 
         import pl.znr.heatmaster.HeatMaster;
-
-        import pl.znr.heatmaster.constants.combo.BuildingAge;
-        import pl.znr.heatmaster.constants.combo.ThermalBridgesType;
-
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
+        import pl.znr.heatmaster.config.dictionary.model.ThermalBridgesType;
+        import pl.znr.heatmaster.config.dictionary.model.WindowsType;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.WindowElement;
@@ -43,6 +28,9 @@
         import pl.znr.heatmaster.ui.components.tooltip.WindowsToolTip;
 
         private var windowElementPreparer:WindowElementPreparer = new WindowElementPreparer();
+
+        private var windowsList:ArrayCollection;
+        private var thermalBridgesList:ArrayCollection;
 
         [Bindable]
         private var _infoIconVisible:Boolean = true;
@@ -53,14 +41,58 @@
         [Bindable]
         private var _groupY:Number = 0;
 
-        private function openWinInfoPanel(evt:MouseEvent):void {
-            var toolTip:WindowsToolTip = new WindowsToolTip();
-            var heatMaster:HeatMaster = HeatMaster.getInstance();
-            heatMaster.addToolTip(evt.stageX, evt.stageY - 20, toolTip);
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            windowsList = toComboObjectList(businessConfiguration.dictionaryConfig.windowTypeConfiguration.windowTypes);
+            windowDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.windowTypeConfiguration.selectedIndex;
+
+            thermalBridgesList = toComboObjectList(businessConfiguration.dictionaryConfig.thermalBridgesTypeConfig.thermalBridgesTypes);
+            thermalBridgesDropDownList.selectedIndex = businessConfiguration.dictionaryConfig.thermalBridgesTypeConfig.selectedIndex;
         }
 
-        private function balloonCreated():void {
+        override public function initData(dataContext:DataContext):DataContext {
+            dataContext.houseData.windowElement = createWindowElement();
+            return dataContext;
+        }
 
+        override public function setupView(dataContext:DataContext):void {
+            try {
+                var windowElement:WindowElement = dataContext.houseData.windowElement;
+                setWindowElementType(windowElement.windowsType);
+                setThermalBridgesType(windowElement.thermalBridgesType);
+                blindsCheckBox.selected = windowElement.shutters;
+
+            } catch (e:Error) {
+                Alert.show("Error in setupView windowElement: " + e.message);
+            }
+        }
+
+        override public function langChanged(lang:String):void {
+            doLangChanged(lang);
+        }
+
+        override public function initialLangChanged(lang:String):void {
+            doLangChanged(lang)
+        }
+
+        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
+            this.setWindowElementType(context.model.windowsType);
+            this.setThermalBridgesType(context.model.thermalBridges);
+
+            blindsCheckBox.selected = context.model.shuttersEnabled;
+
+            dataContext.houseData.windowElement = createWindowElement();
+        }
+
+        public function getOrder():int {
+            return 1;
+        }
+
+        public function buildingAgeChanged(buildingAge:BuildingAge, calculationRequired:Boolean = true):void {
+            if (buildingAge == BuildingAge.UP_TO_1984) {
+                if (calculationRequired) {
+                    windowChanged();
+                }
+            }
         }
 
         public function get groupX():Number {
@@ -83,12 +115,14 @@
             _infoIconVisible = value;
         }
 
-        public function buildingAgeChanged(buildingAge:BuildingAge, calculationRequired:Boolean = true):void {
-            if (buildingAge == BuildingAge.UP_TO_1984) {
-                if (calculationRequired) {
-                    windowChanged();
-                }
-            }
+        private function openWinInfoPanel(evt:MouseEvent):void {
+            var toolTip:WindowsToolTip = new WindowsToolTip();
+            var heatMaster:HeatMaster = HeatMaster.getInstance();
+            heatMaster.addToolTip(evt.stageX, evt.stageY - 20, toolTip);
+        }
+
+        private function balloonCreated():void {
+
         }
 
         private function windowChanged():void {
@@ -104,36 +138,6 @@
         }
 
 
-        override public function initData(dataContext:DataContext):DataContext {
-            dataContext.houseData.windowElement = createWindowElement();
-            return dataContext;
-        }
-
-        override public function setupView(dataContext:DataContext):void {
-            try {
-                var windowElement:WindowElement = dataContext.houseData.windowElement;
-                setWindowElementType(windowElement.windowsType);
-                setThermalBridgesType(windowElement.thermalBridgesType);
-                blindsCheckBox.selected = windowElement.shutters;
-
-            } catch (e:Error) {
-                Alert.show("Error in setupView windowElement: " + e.message);
-            }
-        }
-
-        public function standardChanged(dataContext:DataContext, context:HouseStandardTypeContext):void {
-            this.setWindowElementType(context.model.windowsType);
-            this.setThermalBridgesType(context.model.thermalBridges);
-
-            blindsCheckBox.selected = context.model.shuttersEnabled;
-
-            dataContext.houseData.windowElement = createWindowElement();
-        }
-
-        public function getOrder():int {
-            return 1;
-        }
-
         private function setWindowElementType(windowsType:WindowsType):void {
             for (var i:int = 0; i < windowDropDownList.dataProvider.length; i++) {
                 var item:Object = windowDropDownList.dataProvider.getItemAt(i);
@@ -146,8 +150,8 @@
         }
 
         private function setThermalBridgesType(thermalBrdigesType:ThermalBridgesType):void {
-            if(thermalBrdigesType == null){
-               return;
+            if (thermalBrdigesType == null) {
+                return;
             }
 
             for (var i:int = 0; i < thermalBridgesDropDownList.dataProvider.length; i++) {
@@ -160,18 +164,16 @@
             }
         }
 
-        override public function langChanged(lang:String):void {
-            doLangChanged(lang);
-        }
-
-        override public function initialLangChanged(lang:String):void {
-            doLangChanged(lang)
-        }
-
         private function doLangChanged(lang:String):void {
             var oldIdx:int = windowDropDownList.selectedIndex;
-            windowsList.refresh();
+            windowsList = translateComboItemsAndRefresh(windowsList, lang);
+            windowDropDownList.dataProvider = windowsList;
             windowDropDownList.selectedIndex = oldIdx;
+
+            oldIdx = thermalBridgesDropDownList.selectedIndex;
+            thermalBridgesList = translateComboItemsAndRefresh(thermalBridgesList, lang);
+            thermalBridgesDropDownList.dataProvider = thermalBridgesList;
+            thermalBridgesDropDownList.selectedIndex = oldIdx;
         }
         ]]></fx:Script>
 
@@ -197,6 +199,5 @@
                visible="{_infoIconVisible}"/>
 
     <fx:Script><![CDATA[
-        import pl.znr.heatmaster.constants.combo.WindowsType;
         ]]></fx:Script>
 </ballonn:BaseBaloon>

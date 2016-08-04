@@ -8,7 +8,7 @@ import mx.resources.IResourceManager;
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.TightnessConfig;
 
-import pl.znr.heatmaster.constants.combo.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
 
 public class TightnessConfigReader extends AbstractDictionaryReader{
 
@@ -17,7 +17,9 @@ public class TightnessConfigReader extends AbstractDictionaryReader{
     }
 
     override public function readXMLConfig(dictionaryConfig:DictionaryConfig, dictionaryXML:XML):DictionaryConfig {
-        dictionaryConfig.tightnessConfiguration = new TightnessConfig(readTightnessItems(dictionaryXML.tightness_configuration));
+        var tightnessConfiguration:TightnessConfig = new TightnessConfig(readTightnessItems(dictionaryXML.tightness_configuration));
+        tightnessConfiguration.selectedIndex = getSelectedIndex(dictionaryXML.tightness_configuration);
+        dictionaryConfig.tightnessConfiguration = tightnessConfiguration;
         return dictionaryConfig;
     }
 

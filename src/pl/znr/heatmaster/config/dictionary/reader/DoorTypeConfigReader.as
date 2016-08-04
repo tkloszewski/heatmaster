@@ -7,7 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.DoorTypeConfig;
-import pl.znr.heatmaster.constants.combo.DoorType;
+import pl.znr.heatmaster.config.dictionary.model.DoorType;
 
 public class DoorTypeConfigReader extends AbstractDictionaryReader{
 

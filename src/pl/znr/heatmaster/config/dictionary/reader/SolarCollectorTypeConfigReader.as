@@ -7,8 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.SolarCollectorTypeConfig;
-import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
-import pl.znr.heatmaster.constants.combo.SolarCollectorType;
+import pl.znr.heatmaster.config.dictionary.model.SolarCollectorType;
 
 public class SolarCollectorTypeConfigReader extends AbstractDictionaryReader{
 

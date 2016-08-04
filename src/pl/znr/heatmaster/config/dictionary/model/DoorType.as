@@ -5,19 +5,16 @@
  * Time: 08:18
  * To change this template use File | Settings | File Templates.
  */
-package pl.znr.heatmaster.constants.combo {
+package pl.znr.heatmaster.config.dictionary.model {
 import flash.utils.Dictionary;
+
+import pl.znr.heatmaster.config.dictionary.model.BaseComboObject;
 
 public class DoorType extends BaseComboObject{
 
     private static const valuesMap:Dictionary = new Dictionary();
 
     private var _uValue:Number;
-
-    public static var NON_ENERGY_SAVING:DoorType = new DoorType("hm.door.energy_intensive",3.4);
-    public static var STANDARD:DoorType = new DoorType("hm.door.standard",2.6);
-    public static var ENERGY_SAVING:DoorType = new DoorType("hm.door.energy_saving",1.4);
-    public static var SUPER_ENERGY_SAVING:DoorType = new DoorType("hm.door.super_energy_saving",0.8);
 
     public static function getDoorTypeById(id:String):DoorType {
         return valuesMap[id] as DoorType;

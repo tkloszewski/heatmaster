@@ -25,17 +25,18 @@
 
     <!--Ventilation types configuration
     type: 1=>GRAVITATIONAL,2=>MECHANICAL
+    On natural regulated type there must set attribute: natural_regulated="true"
     -->
-    <ventilation_types>
+    <ventilation_types selected_index="1">
         <ventilation_type id="hm.ventilation-type.natural" label_key="hm.dropdown.ventilation.natural" type="1" efficiency="0"/>
-        <ventilation_type id="hm.ventilation-type.natural_regulated" label_key="hm.dropdown.ventilation.natural.regulated" type="1" efficiency="0.1"/>
+        <ventilation_type id="hm.ventilation-type.natural_regulated" label_key="hm.dropdown.ventilation.natural.regulated" type="1" natural_regulated="true" efficiency="0.1"/>
         <ventilation_type id="hm.ventilation-type.mechanical_60" label_key="hm.dropdown.ventilation.mechanical_60" type="2" efficiency="0.6"/>
         <ventilation_type id="hm.ventilation-type.mechanical_75" label_key="hm.dropdown.ventilation.mechanical_75" type="2" efficiency="0.75"/>
         <ventilation_type id="hm.ventilation-type.mechanical_85" label_key="hm.dropdown.ventilation.mechanical_85" type="2" efficiency="0.85"/>
     </ventilation_types>
 
     <!--Tightness configuration-->
-    <tightness_configuration>
+    <tightness_configuration selected_index="2">
         <tightness_item id="hm.tightness.very_loose" label_key="hm.dropdown.tightness.very_poor" value="10"/>
         <tightness_item id="hm.tightness.loose" label_key="hm.dropdown.tightness.poor" value="7"/>
         <tightness_item id="hm.tightness.standard_new" label_key="hm.dropdown.tightness.new_typical" value="5"/>
@@ -44,9 +45,11 @@
         <tightness_item id="hm.tightness.standard_passive" label_key="hm.dropdown.tightness.passive" value="0.6"/>
     </tightness_configuration>
 
-    <!--Thermal bridges types configuration-->
+    <!--Thermal bridges types configuration
+        There must be defined one item for which there is no insulation by setting attribute max="true"
+    -->
     <thermal_bridges_types selected_index="0">
-        <thermal_bridges_type id="hm.thermal-bridge.max" label_key="hm.dropdown.windows.thermal_brdiges_max" u_value="0.45"/>
+        <thermal_bridges_type id="hm.thermal-bridge.max" max="true" label_key="hm.dropdown.windows.thermal_brdiges_max" u_value="0.45"/>
         <thermal_bridges_type id="hm.thermal-bridge.avg" label_key="hm.dropdown.windows.thermal_brdiges_avg" u_value="0.2"/>
         <thermal_bridges_type id="hm.thermal-bridge.min" label_key="hm.dropdown.windows.thermal_brdiges_min" u_value="0.08"/>
     </thermal_bridges_types>
@@ -273,7 +276,7 @@
     </warm_water_storage_types>
 
     <!--Warm water consumption intensity configuration-->
-    <warm_water_consumption_configuration>
+    <warm_water_consumption_configuration selected_index="2">
         <warm_water_consumption id="hm.warmwater.consuption.very_low" label_key="hm.dropdown.warmwater.consuption.very_low" intensity="0.5"/>
         <warm_water_consumption id="hm.warmwater.consuption.low" label_key="hm.dropdown.warmwater.consuption.low" intensity="0.75"/>
         <warm_water_consumption id="hm.warmwater.consuption.standard" label_key="hm.dropdown.warmwater.consuption.standard" intensity="1.0"/>

@@ -7,8 +7,8 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.WaterStorageDistributionConfig;
-import pl.znr.heatmaster.constants.combo.WarmWaterDistribution;
-import pl.znr.heatmaster.constants.combo.WarmWaterStorage;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterDistribution;
+import pl.znr.heatmaster.config.dictionary.model.WarmWaterStorage;
 
 public class WaterStorageDistributionConfigReader extends AbstractDictionaryReader{
 

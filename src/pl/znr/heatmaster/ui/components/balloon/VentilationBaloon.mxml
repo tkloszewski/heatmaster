@@ -7,25 +7,16 @@
 
     <fx:Declarations>
 
-        <s:ArrayCollection id="tightnessList">
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.very_poor')}" data="{AirTightness.VERY_LOOSE_TIGHTNESS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.poor')}" data="{AirTightness.LOOSE_TIGHTNESS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.new_typical')}" data="{AirTightness.STANDARD_NEW_TIGHTNESS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_no_recuperation')}" data="{AirTightness.TIGHT_NO_RECUP_TIGHTNESS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.tight_recuperation')}" data="{AirTightness.TIGHT_RECUP_TIGHTNESS}"/>
-            <fx:Object name="{resourceManager.getString('hm','hm.dropdown.tightness.passive')}" data="{AirTightness.STANDARD_PASSIVE_TIGHTNESS}"/>
-        </s:ArrayCollection>
-
     </fx:Declarations>
 
     <fx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
         import mx.controls.Alert;
 
         import pl.znr.heatmaster.HeatMaster;
-        import pl.znr.heatmaster.constants.combo.AirTightness;
-        import pl.znr.heatmaster.constants.combo.DropDownType;
-        import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-        import pl.znr.heatmaster.constants.combo.VentilationMethod;
+        import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+        import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.HouseData;
@@ -34,6 +25,8 @@
         import pl.znr.heatmaster.util.HouseTypeHelper;
 
         use namespace mx_internal;
+
+        private var tightnessList:ArrayCollection;
 
         [Bindable]
         private var _headerLabelY:int = 11;
@@ -53,6 +46,11 @@
 
         public function set infoIconVisible(value:Boolean):void {
             _infoIconVisible = value;
+        }
+
+        override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
+            tightnessList = toComboObjectList(businessConfiguration.dictionaryConfig.tightnessConfiguration.tightnessItems);
+            tightnessDropDown.selectedIndex = businessConfiguration.dictionaryConfig.tightnessConfiguration.selectedIndex;
         }
 
         override public function initData(dataContext:DataContext):DataContext {
@@ -201,7 +199,8 @@
 
         private function doLangChanged(lang:String):void {
             var oldIdx:int = tightnessDropDown.selectedIndex;
-            tightnessList.refresh();
+            tightnessList = translateComboItemsAndRefresh(tightnessList, lang);
+            tightnessDropDown.dataProvider = tightnessList;
             tightnessDropDown.selectedIndex = oldIdx;
         }
         ]]></fx:Script>

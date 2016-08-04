@@ -6,8 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.model {
-import pl.znr.heatmaster.constants.combo.AirTightness;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.AirTightness;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
 
 public class VentilationData {
 

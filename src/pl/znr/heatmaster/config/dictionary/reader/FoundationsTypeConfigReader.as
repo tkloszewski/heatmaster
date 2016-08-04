@@ -8,7 +8,7 @@ import mx.resources.IResourceManager;
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.FoundationsTypeConfig;
 
-import pl.znr.heatmaster.constants.combo.FoundationsType;
+import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
 
 public class FoundationsTypeConfigReader extends AbstractDictionaryReader{
 

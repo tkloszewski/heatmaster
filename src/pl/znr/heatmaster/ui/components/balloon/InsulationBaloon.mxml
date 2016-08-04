@@ -19,13 +19,13 @@
 
         import pl.znr.heatmaster.HeatMaster;
         import pl.znr.heatmaster.config.BusinessConfiguration;
+        import pl.znr.heatmaster.config.dictionary.model.BuildingAge;
+        import pl.znr.heatmaster.config.dictionary.model.DoorType;
+        import pl.znr.heatmaster.config.dictionary.model.FoundationsType;
+        import pl.znr.heatmaster.config.dictionary.model.InsulationMaterialType;
+        import pl.znr.heatmaster.config.dictionary.model.InsulationQuality;
         import pl.znr.heatmaster.constants.GlobalValues;
-        import pl.znr.heatmaster.constants.combo.BuildingAge;
-        import pl.znr.heatmaster.constants.combo.DoorType;
-        import pl.znr.heatmaster.constants.combo.FoundationsType;
         import pl.znr.heatmaster.constants.combo.InsulationElementType;
-        import pl.znr.heatmaster.constants.combo.InsulationMaterialType;
-        import pl.znr.heatmaster.constants.combo.InsulationQuality;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HouseStandardTypeContext;
         import pl.znr.heatmaster.core.model.FloorElement;
@@ -298,17 +298,17 @@
 
         private function doLangChanged(lang:String):void {
             var oldIdx:int = dropDownList.selectedIndex;
-            insulationList = translateComboItemsAndRefresh(insulationList,lang);
+            insulationList = translateComboItemsAndRefresh(insulationList, lang);
             dropDownList.dataProvider = insulationList;
             dropDownList.selectedIndex = oldIdx;
 
             oldIdx = doorTypeDropDownList.selectedIndex;
-            doorTypeList = translateComboItemsAndRefresh(doorTypeList,lang);
+            doorTypeList = translateComboItemsAndRefresh(doorTypeList, lang);
             doorTypeDropDownList.dataProvider = doorTypeList;
             doorTypeDropDownList.selectedIndex = oldIdx;
 
             oldIdx = foundationsTypeDropDownList.selectedIndex;
-            foundationsList = translateComboItemsAndRefresh(foundationsList,lang);
+            foundationsList = translateComboItemsAndRefresh(foundationsList, lang);
             foundationsTypeDropDownList.dataProvider = foundationsList;
             foundationsTypeDropDownList.selectedIndex = oldIdx;
         }

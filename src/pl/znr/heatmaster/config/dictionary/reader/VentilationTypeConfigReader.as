@@ -7,8 +7,7 @@ import mx.resources.IResourceManager;
 
 import pl.znr.heatmaster.config.dictionary.DictionaryConfig;
 import pl.znr.heatmaster.config.dictionary.VentilationTypeConfig;
-
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
 
 public class VentilationTypeConfigReader extends AbstractDictionaryReader{
 
@@ -20,6 +19,7 @@ public class VentilationTypeConfigReader extends AbstractDictionaryReader{
     override public function readXMLConfig(dictionaryConfig:DictionaryConfig, dictionaryXML:XML):DictionaryConfig {
         var ventilationTypes:ArrayCollection = readVentilationTypes(dictionaryXML.ventilation_types);
         var ventilationTypeConfig:VentilationTypeConfig = new VentilationTypeConfig(ventilationTypes);
+        ventilationTypeConfig.selectedIndex = getSelectedIndex(dictionaryXML.ventilation_types);
 
         dictionaryConfig.ventilationTypeConfiguration = ventilationTypeConfig;
         return dictionaryConfig;
@@ -37,8 +37,9 @@ public class VentilationTypeConfigReader extends AbstractDictionaryReader{
         var id:String = ventilationTypeXML.attribute("id");
         var ventType:int = ventilationTypeXML.attribute("type") == "1" ? VentilationMethod.GRAVITATIONAL : VentilationMethod.MECHANICAL;
         var efficiency:Number = Number(ventilationTypeXML.attribute("efficiency"));
+        var naturalRegulated:Boolean = readBoolean(ventilationTypeXML,"natural_regulated");
 
-        var ventilationMethod:VentilationMethod = new VentilationMethod(id,ventType,efficiency);
+        var ventilationMethod:VentilationMethod = new VentilationMethod(id,ventType,efficiency,naturalRegulated);
         fillBaseProperties(ventilationTypeXML,ventilationMethod);
 
         return ventilationMethod;

@@ -6,7 +6,7 @@ import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 
-import pl.znr.heatmaster.constants.combo.HeatingSourceType;
+import pl.znr.heatmaster.config.dictionary.model.HeatingSourceType;
 
 public class HeatingSourceTypeConfig {
 

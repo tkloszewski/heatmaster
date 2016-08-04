@@ -6,17 +6,12 @@
  * To change this template use File | Settings | File Templates.
  */
 package pl.znr.heatmaster.core.calc.monthly {
-import pl.znr.heatmaster.core.calc.*;
-
-import mx.utils.NameUtil;
-
-import pl.znr.heatmaster.constants.combo.DropDownType;
+import pl.znr.heatmaster.config.dictionary.model.VentilationMethod;
 import pl.znr.heatmaster.constants.combo.VentilationFrequency;
-import pl.znr.heatmaster.constants.combo.VentilationMethod;
 import pl.znr.heatmaster.core.DataContext;
+import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.calc.model.MonthInputData;
 import pl.znr.heatmaster.core.model.HouseData;
-import pl.znr.heatmaster.core.calc.model.MonthEnergyData;
 import pl.znr.heatmaster.core.model.SurfaceData;
 import pl.znr.heatmaster.core.model.VentilationData;
 
