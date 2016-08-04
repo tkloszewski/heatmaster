@@ -32,11 +32,21 @@
                       source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_grass.png')"/>
         <s:BitmapFill id="bgSky" source="@Embed('/pl/znr/heatmaster/assets/images/backgrounds/background_sky.png')"/>
 
-        <s:HTTPService id="httpService"
+        <s:HTTPService id="httpServiceCountries"
                        resultFormat="e4x"
-                       url="pl/znr/heatmaster/assets/XML/countries.xml"
-                       fault="httpService_fault(event);"
-                       result="httpService_result(event)"/>
+                       url="pl/znr/heatmaster/assets/XML/config.xml"
+                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
+                       result="httpServiceResult(XMLType.COUNTRIES,event)"/>
+        <s:HTTPService id="httpServiceStations"
+                       resultFormat="e4x"
+                       url="pl/znr/heatmaster/assets/XML/stations.xml"
+                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
+                       result="httpServiceResult(XMLType.COUNTRIES,event)"/>
+        <s:HTTPService id="httpServiceDictionaries"
+                       resultFormat="e4x"
+                       url="pl/znr/heatmaster/assets/XML/dictionaries.xml"
+                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
+                       result="httpServiceResult(XMLType.DICTIONARIES,event)"/>
 
     </fx:Declarations>
 
@@ -61,6 +71,8 @@
         import pl.znr.heatmaster.config.RegionItem;
         import pl.znr.heatmaster.config.StationItem;
         import pl.znr.heatmaster.config.StationsConfig;
+        import pl.znr.heatmaster.constants.XMLType;
+        import pl.znr.heatmaster.constants.XMLType;
         import pl.znr.heatmaster.core.DataContext;
         import pl.znr.heatmaster.core.HeatMasterChangeListener;
         import pl.znr.heatmaster.core.HeatMasterController;
@@ -117,6 +129,9 @@
         [Bindable]
         private var stationsPanelVisible:Boolean = false;
 
+        private var runtimeCountriesXML:XML;
+        private var runtimeStationsXML:XML;
+        private var runtimeDictionaryXML:XML;
         private var footerTip:IToolTip;
         private var myFooterText:RichText;
 
@@ -210,6 +225,7 @@
 
         private function initHeatMaster():void {
             trace("Initializing HeatMaster...");
+            businessConfigReader = new BusinessConfigurationReader(countriesXML, stationsXML, dictionaryXML, resourceManager);
 
             stationsPanel = new StationsPanel();
             stationsPanel.x = Math.max(0, (this.width - stationsPanel.width) / 2);
@@ -233,15 +249,26 @@
             configItems = businessConfig.countryItems;
         }
 
-        private function httpService_fault(evt:FaultEvent):void {
+        private function httpServiceFault(evt:FaultEvent):void {
             var title:String = evt.type + " (" + evt.fault.faultCode + ")";
             var text:String = evt.fault.faultString;
             trace("Error: " + title + text);
         }
 
-        private function httpService_result(evt:ResultEvent):void {
+        private function httpServiceResult(xmlType:int, evt:ResultEvent):void {
             var xmlList:XML = XML(evt.result);
-            trace("xmlList: " + xmlList.toString());
+            if (xmlType == XMLType.COUNTRIES) {
+                runtimeCountriesXML = xmlList;
+            }
+            else if (xmlType == XMLType.STATIONS) {
+                runtimeStationsXML = xmlList;
+            }
+            else if (xmlType == XMLType.DICTIONARIES) {
+                runtimeDictionaryXML = xmlList;
+            }
+            if(runtimeCountriesXML != null && runtimeStationsXML != null && runtimeDictionaryXML != null){
+                businessConfigReader = new BusinessConfigurationReader( runtimeCountriesXML, runtimeStationsXML, runtimeDictionaryXML, resourceManager);
+            }
         }
 
         private function setPolishComponentsVisibility(polishVisible:Boolean):void {
@@ -306,8 +333,8 @@
         }
 
         private function appInitialized():void {
-            BrowserManager.getInstance().setFragment("HeatMaster");
-            BrowserManager.getInstance().setTitle("HeatMaster");
+            businessConfig = businessConfigReader.readBusinessConfiguration();
+            configItems = businessConfig.countryItems;
 
             setUpHeatMasterListener();
             injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
