@@ -906,7 +906,7 @@
 
         private function format(n:Number):String {
             var format:NumberFormatter = new NumberFormatter();
-            format.precision = 2;
+            format.precision = n < 10 ? 2 : 0;
             format.rounding = NumberBaseRoundType.NEAREST;
             format.useThousandsSeparator = false;
             return format.format(n);

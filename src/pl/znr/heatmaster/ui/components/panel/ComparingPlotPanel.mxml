@@ -61,11 +61,17 @@
     private var refProcessingResult:ProcessingResult;
     private var newProcessingResult:ProcessingResult;
 
+    [Bindable] private var refHeatingSourceName:String;
+    [Bindable] private var newHeatingSourceName:String;
 
     override public function comparingResultCalculated(comparingResult:ComparingProcessingResult, month:int):void {
-       refProcessingResult = comparingResult.refProcessingResult;
-       newProcessingResult = comparingResult.newProcessingResult;
-       doDrawComparingPlot(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
+      refProcessingResult = comparingResult.refProcessingResult;
+      newProcessingResult = comparingResult.newProcessingResult;
+
+      refHeatingSourceName = refProcessingResult.dataContext.heatingData.heatingType.name;
+      newHeatingSourceName = newProcessingResult.dataContext.heatingData.heatingType.name;
+
+      doDrawComparingPlot(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
     }
 
     override public function resultCalculated(resultData:ProcessingResult, month:int):void {
@@ -76,6 +82,8 @@
         newProcessingResult = resultData;
       }
       if (refProcessingResult != null && newProcessingResult != null) {
+        refHeatingSourceName = refProcessingResult.dataContext.heatingData.heatingType.name;
+        newHeatingSourceName = newProcessingResult.dataContext.heatingData.heatingType.name;
         doDrawComparingPlot(new ComparingProcessingResult(refProcessingResult, newProcessingResult));
       }
     }
@@ -83,6 +91,8 @@
     public function drawComparingPlot(calculationState:ComparingProcessingResult):void {
       refProcessingResult = calculationState.refProcessingResult;
       newProcessingResult = calculationState.newProcessingResult;
+      refHeatingSourceName = refProcessingResult.dataContext.heatingData.heatingType.name;
+      newHeatingSourceName = newProcessingResult.dataContext.heatingData.heatingType.name;
       doDrawComparingPlot(calculationState);
     }
 
@@ -254,13 +264,16 @@
 
 
     <panel:ComparingVerticalPlotLegend y="{plotContainer.height * 0.15}" x="{chart.x + chart.width + 5}" width="12%"
-                                   id="comparingLegend"
-                                   styleName="reportLegendVerticalLabel"/>
+                                       id="comparingLegend"
+                                       styleName="reportLegendVerticalLabel"/>
 
 
     <s:Group x="{chart.x + gutterLeft}" y="{chart.y + chart.height - gutterBottom + 30}">
-      <mx:Grid>
+      <mx:Grid horizontalGap="8">
         <mx:GridRow>
+          <mx:GridItem>
+            <s:Label text="{refHeatingSourceName}" fontWeight="bold"/>
+          </mx:GridItem>
           <mx:GridItem>
             <s:Label text="{resourceManager.getString('hm','hm.label.heating.source.max-power') + ' (' + resourceManager.getString('hm', 'hm.state.reference') + ') '}" fontWeight="bold"/>
           </mx:GridItem>
@@ -272,6 +285,9 @@
           </mx:GridItem>
         </mx:GridRow>
         <mx:GridRow>
+          <mx:GridItem>
+            <s:Label text="{newHeatingSourceName}" fontWeight="bold"/>
+          </mx:GridItem>
           <mx:GridItem>
             <s:Label text="{resourceManager.getString('hm','hm.label.heating.source.max-power') + ' (' + resourceManager.getString('hm', 'hm.state.new') + ') '}" fontWeight="bold"/>
           </mx:GridItem>
