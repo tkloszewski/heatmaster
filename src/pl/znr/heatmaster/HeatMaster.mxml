@@ -133,8 +133,6 @@
         private var runtimeCountriesXML:XML;
         private var runtimeStationsXML:XML;
         private var runtimeDictionaryXML:XML;
-        private var footerTip:IToolTip;
-        private var myFooterText:RichText;
 
         private var localeToggled:Boolean = false;
         private var langChangeListeners:ArrayCollection = new ArrayCollection();
@@ -257,8 +255,7 @@
             businessConfigReader = new BusinessConfigurationReader(countriesXML, stationsXML, dictionaryXML, resourceManager);
 
             selectedLang = resourceManager.getLocales()[0];
-            businessConfig = businessConfigReader.readBusinessConfiguration();
-            configItems = businessConfig.countryItems;
+
         }
 
         private function httpServiceFault(evt:FaultEvent):void {
