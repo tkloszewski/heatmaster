@@ -488,6 +488,7 @@
         }
 
         private function setStartViewState():void {
+            logoTopGroup.visible = false;
             bottomBarImg.visible = true;
 
             menuButtonGroup.visible = true;
@@ -721,7 +722,7 @@
                 <panel:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715"
                                   visible="{!plotVisible &amp;&amp; !comparingPlotVisible}"/>
 
-                <mx:Image id="partnersLogo" x="{housePanel.x + housePanel.width - 220}" y="75" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/loga_partnerzy.png')"/>
+                <s:Image id="partnersLogo" x="{housePanel.x + housePanel.width - 220}" y="75" smoothingQuality="high" smooth="true" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/loga_partnerzy.png')"/>
 
                 <panel:PlotPanel x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90"
                                  height="560"
@@ -771,6 +772,27 @@
 
                 <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"
                           source="@Embed('/pl/znr/heatmaster/assets/images/start/przyciemniacz_start.png')"/>
+
+
+                <s:Group id="logoTopGroup" x="0" y="0" width="100%" visible="true">
+                    <mx:Image width="{Math.max(1024,this.width )}" height="80" maintainAspectRatio="false" x="0" y="0"
+                              id="houseTopBarWhiteImg"
+                              source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
+                    <s:Group id="iconLogoGroup" x="{Math.max(0,this.width - 1000)/2}" y="15" width="1000" >
+                        <s:Image x="15" y="-5"  id="polreffLogo"  smoothingQuality="high" smooth="true"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_start.png')"/>
+
+                        <s:Image x="{iconLogoGroup.width - 520}" y="-5"  id="europeanBankLogo"  smoothingQuality="high" smooth="true"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_start.png')"/>
+                        <s:Image visible="true" y="-5" id="taiwanBusinessLogo" x="{europeanBankLogo.x + europeanBankLogo.width + 20}"  smoothingQuality="high" smooth="true"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_start.png')"/>
+                        <s:Image visible="true" y="5" id="shareHoldersLogo" x="{taiwanBusinessLogo.x + taiwanBusinessLogo.width + 20}"  smoothingQuality="high" smooth="true"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_start.png')"/>
+
+                    </s:Group>
+                </s:Group>
+
+
                 <s:Group x="0" y="0" id="introGroup" width="100%" height="100%">
 
                     <s:Group y="150" x="{introGroup.width/2 - introContentGroup.width/2}" width="613" height="600"
