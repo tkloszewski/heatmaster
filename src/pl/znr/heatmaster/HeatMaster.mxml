@@ -35,18 +35,18 @@
 
         <s:HTTPService id="httpServiceCountries"
                        resultFormat="e4x"
-                       url="pl/znr/heatmaster/assets/XML/config.xml"
-                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
+                       url="config.xml"
+                       fault="httpServiceFault(event);"  requestTimeout="10"
                        result="httpServiceResult(XMLType.COUNTRIES,event)"/>
         <s:HTTPService id="httpServiceStations"
                        resultFormat="e4x"
-                       url="pl/znr/heatmaster/assets/XML/stations.xml"
-                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
-                       result="httpServiceResult(XMLType.COUNTRIES,event)"/>
+                       url="stations.xml"
+                       fault="httpServiceFault(event);"  requestTimeout="10"
+                       result="httpServiceResult(XMLType.STATIONS,event)"/>
         <s:HTTPService id="httpServiceDictionaries"
                        resultFormat="e4x"
-                       url="pl/znr/heatmaster/assets/XML/dictionaries.xml"
-                       fault="httpServiceFault(event);" showBusyCursor="true" requestTimeout="10"
+                       url="dictionaries.xml"
+                       fault="httpServiceFault(event);" requestTimeout="10"
                        result="httpServiceResult(XMLType.DICTIONARIES,event)"/>
 
     </fx:Declarations>
@@ -140,6 +140,7 @@
         private var businessConfig:BusinessConfiguration;
 
         private var selectedLang:String;
+        private var skipRuntimeCongiguration:Boolean = false;
 
         public static function getInstance():HeatMaster {
             return FlexGlobals.topLevelApplication as HeatMaster;
@@ -237,6 +238,15 @@
             trace("Initializing HeatMaster...");
             businessConfigReader = new BusinessConfigurationReader(countriesXML, stationsXML, dictionaryXML, resourceManager);
 
+            try {
+                httpServiceCountries.send();
+                httpServiceStations.send();
+                httpServiceDictionaries.send();
+            } catch (e:Error) {
+                skipRuntimeCongiguration = true;
+                trace("Error initializing httpService: " + e.message);
+            }
+
             stationsPanel = new StationsPanel();
             stationsPanel.x = Math.max(0, (this.width - stationsPanel.width) / 2);
             stationsPanel.y = 30;
@@ -261,10 +271,20 @@
         private function httpServiceFault(evt:FaultEvent):void {
             var title:String = evt.type + " (" + evt.fault.faultCode + ")";
             var text:String = evt.fault.faultString;
-            trace("Error: " + title + text);
+            trace("HTTP Error: " + title + text);
+
+
+            if(!skipRuntimeCongiguration){
+                skipRuntimeCongiguration = true;
+                doAppInitialized();
+            }
         }
 
         private function httpServiceResult(xmlType:int, evt:ResultEvent):void {
+            trace("Read runtime xml: " + xmlType);
+            if(skipRuntimeCongiguration){
+               return;
+            }
             var xmlList:XML = XML(evt.result);
             if (xmlType == XMLType.COUNTRIES) {
                 runtimeCountriesXML = xmlList;
@@ -275,8 +295,10 @@
             else if (xmlType == XMLType.DICTIONARIES) {
                 runtimeDictionaryXML = xmlList;
             }
-            if(runtimeCountriesXML != null && runtimeStationsXML != null && runtimeDictionaryXML != null){
-                businessConfigReader = new BusinessConfigurationReader( runtimeCountriesXML, runtimeStationsXML, runtimeDictionaryXML, resourceManager);
+            if (runtimeCountriesXML != null && runtimeStationsXML != null && runtimeDictionaryXML != null) {
+                trace("Reading runtime configuration...");
+                businessConfigReader = new BusinessConfigurationReader(runtimeCountriesXML, runtimeStationsXML, runtimeDictionaryXML, resourceManager);
+                doAppInitialized();
             }
         }
 
@@ -298,6 +320,13 @@
         }
 
         private function appInitialized():void {
+            if(skipRuntimeCongiguration){
+               doAppInitialized();
+            }
+        }
+
+        private function doAppInitialized():void {
+            trace("App initialized...");
             businessConfig = businessConfigReader.readBusinessConfiguration();
             configItems = businessConfig.countryItems;
 
@@ -310,11 +339,6 @@
 
             cachedData = cachedDataContextManager.readCache();
 
-            var countryRegionCode:String = CountryItemHelper.getInitialConfigItemCode();
-            var regionItem:RegionItem = CountryItemHelper.getRegionByCodeFromCountryList(configItems, countryRegionCode);
-            var countryItem:CountryItem = regionItem != null ? regionItem.country : CountryItemHelper.getCountryByCode(configItems, countryRegionCode);
-
-            housePanel.energyMeter.countryChanged(countryItem);
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
             comparingPlotPanel.setCalculationStateController(calculationStateController);

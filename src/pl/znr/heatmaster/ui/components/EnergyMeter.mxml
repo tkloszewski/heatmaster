@@ -66,6 +66,7 @@
 
         override public function configurationRead(businessConfiguration:BusinessConfiguration):void {
             this.businessConfiguration = businessConfiguration;
+            countryChanged(businessConfiguration.countryItem);
         }
 
         override public function initData(dataContext:DataContext):DataContext {
