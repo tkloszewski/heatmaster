@@ -53,6 +53,8 @@
 
 
     <fx:Script><![CDATA[
+        import flash.net.FileReference;
+
         import mx.collections.ArrayCollection;
         import mx.controls.Alert;
         import mx.core.FlexGlobals;
@@ -60,9 +62,12 @@
         import mx.core.IVisualElementContainer;
         import mx.core.UIComponent;
         import mx.managers.BrowserManager;
+        import mx.managers.CursorManager;
         import mx.managers.ToolTipManager;
         import mx.rpc.events.FaultEvent;
         import mx.rpc.events.ResultEvent;
+
+        import org.alivepdf.pdf.PDF;
 
         import pl.znr.heatmaster.config.BusinessConfiguration;
         import pl.znr.heatmaster.config.BusinessConfigurationReader;
@@ -82,6 +87,7 @@
         import pl.znr.heatmaster.core.LangChangeListener;
         import pl.znr.heatmaster.core.StateDataContext;
         import pl.znr.heatmaster.core.cache.CachedDataContextManager;
+        import pl.znr.heatmaster.core.cache.InitialDataContext;
         import pl.znr.heatmaster.core.model.EnvironmentalData;
         import pl.znr.heatmaster.core.model.InsolationData;
         import pl.znr.heatmaster.core.state.CalculationStateController;
@@ -140,7 +146,9 @@
         private var businessConfig:BusinessConfiguration;
 
         private var selectedLang:String;
-        private var skipRuntimeCongiguration:Boolean = false;
+        private var skipRuntimeConfiguration:Boolean = false;
+
+        private var pdf:PDF;
 
         public static function getInstance():HeatMaster {
             return FlexGlobals.topLevelApplication as HeatMaster;
@@ -238,15 +246,6 @@
             trace("Initializing HeatMaster...");
             businessConfigReader = new BusinessConfigurationReader(countriesXML, stationsXML, dictionaryXML, resourceManager);
 
-            try {
-                httpServiceCountries.send();
-                httpServiceStations.send();
-                httpServiceDictionaries.send();
-            } catch (e:Error) {
-                skipRuntimeCongiguration = true;
-                trace("Error initializing httpService: " + e.message);
-            }
-
             stationsPanel = new StationsPanel();
             stationsPanel.x = Math.max(0, (this.width - stationsPanel.width) / 2);
             stationsPanel.y = 30;
@@ -274,16 +273,16 @@
             trace("HTTP Error: " + title + text);
 
 
-            if(!skipRuntimeCongiguration){
-                skipRuntimeCongiguration = true;
-                doAppInitialized();
+            if (!skipRuntimeConfiguration) {
+                skipRuntimeConfiguration = true;
+                businessConfigurationReady();
             }
         }
 
         private function httpServiceResult(xmlType:int, evt:ResultEvent):void {
             trace("Read runtime xml: " + xmlType);
-            if(skipRuntimeCongiguration){
-               return;
+            if (skipRuntimeConfiguration) {
+                return;
             }
             var xmlList:XML = XML(evt.result);
             if (xmlType == XMLType.COUNTRIES) {
@@ -298,7 +297,7 @@
             if (runtimeCountriesXML != null && runtimeStationsXML != null && runtimeDictionaryXML != null) {
                 trace("Reading runtime configuration...");
                 businessConfigReader = new BusinessConfigurationReader(runtimeCountriesXML, runtimeStationsXML, runtimeDictionaryXML, resourceManager);
-                doAppInitialized();
+                businessConfigurationReady();
             }
         }
 
@@ -320,40 +319,55 @@
         }
 
         private function appInitialized():void {
-            if(skipRuntimeCongiguration){
-               doAppInitialized();
-            }
-        }
-
-        private function doAppInitialized():void {
-            trace("App initialized...");
-            businessConfig = businessConfigReader.readBusinessConfiguration();
-            configItems = businessConfig.countryItems;
-
             setUpHeatMasterListener();
             injectListenerAndStateController(heatMasterContainer, heatMasterListener, calculationStateController);
             setUpOtherListeners(heatMasterContainer, heatMasterListener);
 
-            //propagate business configuration
-            heatMasterController.propagateBusinessConfiguration(businessConfig);
-
-            cachedData = cachedDataContextManager.readCache();
+            var initialCachedData:InitialDataContext = cachedDataContextManager.readInitialCache();
 
             housePanel.energyMeter.setCalculationStateController(calculationStateController);
             housePanel.energyMeter.setHeatMasterController(heatMasterController);
             comparingPlotPanel.setCalculationStateController(calculationStateController);
 
-            startButtonVisible = cachedData == null;
-
-            var language:String = cachedData != null ? cachedData.getCurrentDataContext().lang : null;
+            var language:String = initialCachedData != null ? initialCachedData.lang : null;
             if (language == null) {
                 language = heatMasterLocaleManager.getLang();
             }
             selectedLang = language;
             setPolishComponentsVisibility(LangHelper.isPolishLang(language));
             resourceManager.localeChain = [language];
-            initialPhaseNotifyLangChangeListeners(language);
-            selectedLang = language;
+
+            startButtonVisible = initialCachedData == null;
+
+            try {
+                httpServiceCountries.send();
+                httpServiceStations.send();
+                httpServiceDictionaries.send();
+            } catch (e:Error) {
+                skipRuntimeConfiguration = true;
+                trace("Error initializing httpService: " + e.message);
+            }
+
+            if (skipRuntimeConfiguration) {
+                businessConfigurationReady();
+            }
+        }
+
+        private function businessConfigurationReady():void {
+            trace("App initialized...");
+            startBtn.enabled = true;
+            newCalcBtn.enabled = true;
+            continueBtn.enabled = true;
+
+            businessConfig = businessConfigReader.readBusinessConfiguration();
+            configItems = businessConfig.countryItems;
+
+            //transform cache data to DataContext only after business configuration is read
+            cachedData = cachedDataContextManager.readCache();
+
+            //propagate business configuration
+            heatMasterController.propagateBusinessConfiguration(businessConfig);
+            initialPhaseNotifyLangChangeListeners(selectedLang);
         }
 
         private function setUpHeatMasterListener():void {
@@ -847,7 +861,7 @@
                             </s:RichEditableText>
 
 
-                            <mx:Button id="startBtn" left="{startBtnContainer.width/2 - 95}"
+                            <mx:Button id="startBtn" left="{startBtnContainer.width/2 - 95}" enabled="false"
                                        visible="{startButtonVisible}" y="{startBtnContainer.height * 0.8}"
                                        skin="@Embed('/pl/znr/heatmaster/assets/images/start/blank_button.png')"
                                        buttonMode="true" label="START" color="white" fontSize="15" fontWeight="bold"
@@ -860,7 +874,7 @@
                             <s:HGroup horizontalAlign="center" verticalAlign="middle" y="{startBtn.y}" x="{introText.x}"
                                       width="{introContentGroup.width * 0.9}" visible="{!startButtonVisible}">
 
-                                <mx:Button id="continueBtn"
+                                <mx:Button id="continueBtn" enabled="false"
                                            skin="@Embed('/pl/znr/heatmaster/assets/images/start/blank_button.png')"
                                            buttonMode="true"
                                            label="{resourceManager.getString('hm','hm.button.continue')}" color="white"
@@ -871,7 +885,7 @@
                                         ]]></mx:click>
                                 </mx:Button>
 
-                                <mx:Button id="newCalcBtn"
+                                <mx:Button id="newCalcBtn" enabled="false"
                                            skin="@Embed('/pl/znr/heatmaster/assets/images/start/blank_button.png')"
                                            buttonMode="true"
                                            label="{resourceManager.getString('hm','hm.button.new_calc')}" color="white"

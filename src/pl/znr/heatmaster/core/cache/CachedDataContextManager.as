@@ -22,6 +22,9 @@ public class CachedDataContextManager {
     private var calculationStateController:CalculationStateController;
     private var dataContextValidator:DataContextValidator = new DataContextValidator();
 
+    private var flatDataContextRef:FlatDataContext = null;
+    var flatDataContextNew:FlatDataContext = null;
+
     public function CachedDataContextManager(calculationStateController:CalculationStateController) {
         this.calculationStateController = calculationStateController;
         registerClassAliases();
@@ -32,6 +35,27 @@ public class CachedDataContextManager {
         so.clear();
     }
 
+    public function readInitialCache():InitialDataContext {
+        var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
+
+        if(so.data.hasOwnProperty("hmData")){
+            var hmData:Object = so.data.hmData;
+            flatDataContextRef = hmData as FlatDataContext;
+        }
+        if(so.data.hasOwnProperty("hmDataNew")){
+            var hmDataNew:Object = so.data.hmDataNew;
+            flatDataContextNew = hmDataNew as FlatDataContext;
+        }
+
+        if(flatDataContextRef == null){
+            return null;
+        }
+
+        var initialContext:InitialDataContext = new InitialDataContext();
+        initialContext.lang = flatDataContextRef.lang;
+        return initialContext;
+    }
+
     public function readCache():StateDataContext {
         var so:SharedObject = SharedObject.getLocal(UNIQUE_NAME);
 
@@ -39,22 +63,18 @@ public class CachedDataContextManager {
         var newDataContext:DataContext = null;
         var state:int = StateConstants.INITIAL_STATE;
 
-        if(so.data.hasOwnProperty("hmData")){
-            var hmData:Object = so.data.hmData;
-            var flatDataContextRef:FlatDataContext = hmData as FlatDataContext;
+        if(flatDataContextRef != null){
             try {
                 refDataContext = validateAndGetDataContext(flatDataContextRef);
             } catch (e:Error) {
-                trace("Error building-validating ref flashDataContext: " + e.message);
+                trace("Error building-validating ref flashDataContext: " + e.getStackTrace());
             }
         }
-        if(so.data.hasOwnProperty("hmDataNew")){
-            var hmDataNew:Object = so.data.hmDataNew;
-            var flatDataContextNew:FlatDataContext = hmDataNew as FlatDataContext;
+        if(flatDataContextNew != null){
             try {
                 newDataContext = validateAndGetDataContext(flatDataContextNew);
             } catch (e:Error) {
-                trace("Error building-validating new flashDataContext: " + e.message);
+                trace("Error building-validating new flashDataContext: " + e.getStackTrace());
             }
         }
 
