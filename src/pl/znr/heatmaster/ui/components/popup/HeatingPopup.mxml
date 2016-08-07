@@ -326,17 +326,22 @@
             var heatingSourceType:HeatingSourceType = houseType == HouseTypeHelper.isDetachedType(houseType) ? context.model.heatingSourceType : context.model.multiFamilyHeatingSourceType;
             var warmWaterHeatingSourceType:HeatingSourceType = houseType == HouseTypeHelper.isDetachedType(houseType) ? context.model.warmWaterHeatingSourceType : context.model.multiFamilyWarmWaterHeatingSourceType;
 
+            applyConfigPrices(detachedHeatingSourceList, selectedCountry, heatingTypeDropDownList, this.localCurrency);
+            applyConfigPrices(multiFamilyHeatingSourceList, selectedCountry, heatingTypeDropDownList, this.localCurrency);
+            applyConfigPrices(warmWaterDetachedHeatingSourceList, selectedCountry, warmWaterHeatingTypeDropDownList, this.localCurrency);
+            applyConfigPrices(warmWaterMultiFamilyHeatingSourceList, selectedCountry, warmWaterHeatingTypeDropDownList, this.localCurrency);
+
             var heatIdx:int = getComboItemIndexForCollectionOfHeatingItems(heatingSourceType, heatingTypeDropDownList.dataProvider);
             var warmWaterIdx:int = getComboItemIndexForCollectionOfHeatingItems(warmWaterHeatingSourceType, warmWaterHeatingTypeDropDownList.dataProvider);
             heatingTypeDropDownList.selectedIndex = heatIdx;
 
             var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
-            applyHeatingValuesToControls(heatingSourceTypeItem.type, heatingSourceType.pricePerkWh, heatingSourceType.naturalUnitPrice);
+            applyHeatingValuesToControls(heatingSourceTypeItem.type, heatingSourceTypeItem.pricePerKwh, heatingSourceTypeItem.naturalUnitPrice);
 
             if (warmWaterIdx != -1) {
                 warmWaterHeatingTypeDropDownList.selectedIndex = warmWaterIdx;
                 var heatingWarmWaterSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
-                applyWarmWaterValuesToControls(warmWaterHeatingSourceType, warmWaterHeatingSourceType.pricePerkWh);
+                applyWarmWaterValuesToControls(warmWaterHeatingSourceType, heatingWarmWaterSourceTypeItem.pricePerKwh);
             }
 
             calorificValInput.enabled = heatingSourceType.heatingValueEditable;
@@ -847,25 +852,25 @@
         }
 
         private function createHeatingData():HeatingSourceData {
-            var heatingSourceType:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
-            var warmWaterHeatingSourceType:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var heatingSourceTypeItem:HeatingSourceTypeItem = heatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
+            var warmWaterHeatingSourceTypeItem:HeatingSourceTypeItem = warmWaterHeatingTypeDropDownList.selectedItem.data as HeatingSourceTypeItem;
 
             var heatingData:HeatingSourceData = new HeatingSourceData();
-            heatingData.heatingType = heatingSourceType.type;
+            heatingData.heatingType = heatingSourceTypeItem.type;
             heatingData.heatingEfficiency = efficiencyNS.value;
-            heatingData.pricePerkWh = heatingSourceType.pricePerKwh;
-            heatingData.naturalUnitPrice = heatingSourceType.naturalUnitPrice;
-            heatingData.calorificValue = heatingSourceType.heatingValueMJ;
+            heatingData.pricePerkWh = heatingSourceTypeItem.pricePerKwh;
+            heatingData.naturalUnitPrice = heatingSourceTypeItem.naturalUnitPrice;
+            heatingData.calorificValue = heatingSourceTypeItem.heatingValueMJ;
 
-            heatingData.waterHeatingType = warmWaterHeatingSourceType.type;
+            heatingData.waterHeatingType = warmWaterHeatingSourceTypeItem.type;
             heatingData.waterHeatingEfficiency = efficiencyWarmWaterNS.value;
-            heatingData.priceWaterPerkWh = warmWaterHeatingSourceType.pricePerKwh;
+            heatingData.priceWaterPerkWh = warmWaterHeatingSourceTypeItem.pricePerKwh;
 
-            heatingData.finalToPrimaryCoefficient = heatingSourceType.type.finalToPrimaryCoefficient;
-            heatingData.warmWaterFinalToPrimaryCoefficient = warmWaterHeatingSourceType.type.finalToPrimaryCoefficient;
+            heatingData.finalToPrimaryCoefficient = heatingSourceTypeItem.type.finalToPrimaryCoefficient;
+            heatingData.warmWaterFinalToPrimaryCoefficient = warmWaterHeatingSourceTypeItem.type.finalToPrimaryCoefficient;
 
-            heatingData.emissionCoefficient = heatingSourceType.type.emissionPerKWh;
-            heatingData.waterEmissionCoefficient = warmWaterHeatingSourceType.type.emissionPerKWh;
+            heatingData.emissionCoefficient = heatingSourceTypeItem.type.emissionPerKWh;
+            heatingData.waterEmissionCoefficient = warmWaterHeatingSourceTypeItem.type.emissionPerKWh;
 
             return heatingData;
         }
