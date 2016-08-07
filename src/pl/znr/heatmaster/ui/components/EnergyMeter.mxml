@@ -263,7 +263,7 @@
 
                 if (!calculationStateController.isInInitialState()) {
                     var dataContext:DataContext = calculationStateController.getPreviousDataContext();
-                    var previousState:int = calculationStateController.getPreviousState()
+                    var previousState:int = calculationStateController.getPreviousState();
                     dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
                     var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
                     processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
@@ -272,6 +272,7 @@
 
                 heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode);
             } catch (e:Error) {
+                trace("Unit changed error: " + e.getStackTrace());
                 Alert.show("Unit changed error " + e.message);
             }
         }

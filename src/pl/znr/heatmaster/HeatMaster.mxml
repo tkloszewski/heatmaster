@@ -362,6 +362,8 @@
             businessConfig = businessConfigReader.readBusinessConfiguration();
             configItems = businessConfig.countryItems;
 
+            heatMasterListener.setBusinessConfiguration(businessConfig);
+
             //transform cache data to DataContext only after business configuration is read
             cachedData = cachedDataContextManager.readCache();
 
@@ -373,7 +375,6 @@
         private function setUpHeatMasterListener():void {
             heatMasterListener.setHeatMasterController(heatMasterController);
             heatMasterListener.setCalculationStateController(calculationStateController);
-            heatMasterListener.setBusinessConfiguration(businessConfig);
             heatMasterListener.setCacheManager(cachedDataContextManager);
             heatMasterListener.setHousePanel(housePanel);
             heatMasterListener.setHeatingPopup(heatingPopup);
