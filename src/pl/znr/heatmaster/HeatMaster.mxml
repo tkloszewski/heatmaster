@@ -548,12 +548,12 @@
         }
 
         private function openManualPdf():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/HeatMaster-Manual-PL.pdf";
+            var url:String = " http://ziemianarozdrozu.pl/apps/docs/Kalk-Manual-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
         private function openTechPdf():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/HeatMaster-Tech-PL.pdf";
+            var url:String = " http://ziemianarozdrozu.pl/apps/docs/Kalk-Tech-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
