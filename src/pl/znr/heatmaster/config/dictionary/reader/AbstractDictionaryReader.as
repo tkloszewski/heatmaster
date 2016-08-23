@@ -25,11 +25,11 @@ public class AbstractDictionaryReader implements DictionaryReader{
 
     protected function fillBaseProperties(dictionaryTypeXML:XML, baseComboObject:BaseComboObject):BaseComboObject {
         baseComboObject.id = dictionaryTypeXML.attribute("id");
-        if(dictionaryTypeXML.attribute("label_key") != null){
+        if(attributeNotEmpty(dictionaryTypeXML,"label_key")){
             baseComboObject.labelKey = dictionaryTypeXML.attribute("label_key");
             baseComboObject.name = resourceManager.getString('hm',baseComboObject.labelKey);
         }
-        else if(dictionaryTypeXML.attribute("en_name") != null && dictionaryTypeXML.attribute("pl_name") != null){
+        else if(attributeNotEmpty(dictionaryTypeXML,"en_name") && attributeNotEmpty(dictionaryTypeXML,"pl_name")){
             baseComboObject.enName = dictionaryTypeXML.attribute("en_name");
             baseComboObject.plName = dictionaryTypeXML.attribute("pl_name");
             baseComboObject.name = LangHelper.isEnglishLang(resourceManager.localeChain[0]) ?
@@ -59,6 +59,11 @@ public class AbstractDictionaryReader implements DictionaryReader{
 
     protected function getSelectedIndex(xmlItem:XMLList):int {
         return Number(xmlItem.attribute("selected_index"));
+    }
+
+    protected function attributeNotEmpty(xml:XML,attrName:String):Boolean {
+        var attrValue:String = xml.attribute(attrName);
+        return attrValue != null && attrValue != "";
     }
 }
 }
