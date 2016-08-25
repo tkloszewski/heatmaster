@@ -3,7 +3,7 @@
 
     <!--Door types configuration-->
     <door_types selected_index="0">
-        <door_type id="hm.door.energy_intensive" en_name="Draughty bitch" pl_name="Nieenergooszczędne" u_value="3.4"/>
+        <door_type id="hm.door.energy_intensive" en_name="Draughty" pl_name="Nieenergooszczędne" u_value="3.4"/>
         <door_type id="hm.door.standard" label_key="hm.dropdown.door.standard" u_value="2.6" />
         <door_type id="hm.door.energy_saving" label_key="hm.dropdown.door.energy_saving" u_value="1.4" />
         <door_type id="hm.door.super_energy_saving" label_key="hm.dropdown.door.super_energy_saving" u_value="0.8" />
