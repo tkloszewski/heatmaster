@@ -48,7 +48,6 @@
                        url="dictionaries.xml"
                        fault="httpServiceFault(event);" requestTimeout="10"
                        result="httpServiceResult(XMLType.DICTIONARIES,event)"/>
-
     </fx:Declarations>
 
 
@@ -63,6 +62,7 @@
         import mx.core.UIComponent;
         import mx.managers.BrowserManager;
         import mx.managers.CursorManager;
+        import mx.managers.IBrowserManager;
         import mx.managers.ToolTipManager;
         import mx.rpc.events.FaultEvent;
         import mx.rpc.events.ResultEvent;
@@ -549,17 +549,17 @@
         }
 
         private function openManualPdf():void {
-            var url:String = " http://ziemianarozdrozu.pl/apps/docs/Kalk-Manual-PL.pdf";
+            var url:String = "docs/Kalk-Manual-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
         private function openTechPdf():void {
-            var url:String = " http://ziemianarozdrozu.pl/apps/docs/Kalk-Tech-PL.pdf";
+            var url:String = "docs/Kalk-Tech-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
         private function openAboutPdfFile():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/Kalk-Team-PL.pdf";
+            var url:String = "docs/Kalk-Team-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
@@ -822,12 +822,12 @@
                         <s:Image x="15" y="-5"  id="polreffLogo"  smoothingQuality="high" smooth="true"
                                    source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Polreff_start.png')"/>
 
-                        <s:Image x="{iconLogoGroup.width - 520}" y="-5"  id="europeanBankLogo"  smoothingQuality="high" smooth="true"
+                        <s:Image x="{iconLogoGroup.width - 430}" y="-5"  id="europeanBankLogo"  smoothingQuality="high" smooth="true"
                                    source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRD_start.png')"/>
                         <s:Image visible="true" y="-5" id="taiwanBusinessLogo" x="{europeanBankLogo.x + europeanBankLogo.width + 20}"  smoothingQuality="high" smooth="true"
                                    source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_Taiwan_start.png')"/>
-                        <s:Image visible="true" y="5" id="shareHoldersLogo" x="{taiwanBusinessLogo.x + taiwanBusinessLogo.width + 20}"  smoothingQuality="high" smooth="true"
-                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_start.png')"/>
+                       <!-- <s:Image visible="true" y="5" id="shareHoldersLogo" x="{taiwanBusinessLogo.x + taiwanBusinessLogo.width + 20}"  smoothingQuality="high" smooth="true"
+                                   source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/logo_EBRDShereholders_start.png')"/>-->
 
                     </s:Group>
                 </s:Group>
