@@ -368,7 +368,7 @@
             continueBtn.enabled = true;
 
             businessConfig = businessConfigReader.readBusinessConfiguration();
-            setTopBarLayout(this.height > businessConfig.verticalResThreshold);
+            setTopBarLayout(Capabilities.screenResolutionY > businessConfig.verticalResThreshold);
             configItems = businessConfig.countryItems;
 
             heatMasterListener.setBusinessConfiguration(businessConfig);
