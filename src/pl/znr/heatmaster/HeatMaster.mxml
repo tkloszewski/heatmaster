@@ -789,7 +789,7 @@
                 <panel:HousePanel x="{Math.max(0,this.width - 1000)/2}" id="housePanel" width="1000" height="715"
                                   visible="{!plotVisible &amp;&amp; !comparingPlotVisible}"/>
 
-                <s:Image id="partnersLogo" visible="false" x="{housePanel.x + housePanel.width - 220}" y="75" smoothingQuality="high" smooth="true" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/LogoSmall.png')"/>
+                <s:Image id="partnersLogo" visible="false" x="{housePanel.x + housePanel.width - 225}" y="75" smoothingQuality="high" smooth="true" source="pl/znr/heatmaster/assets/images/logo/polreff/LogoSmall.png"/>
 
                 <panel:PlotPanel x="{Math.max(0,(this.width - plotPanel.width)/2)}" maxWidth="1200" y="90"
                                  height="560"
@@ -836,16 +836,16 @@
                     </hmbtn:ImageSkinnableButton>
                 </s:Group>
 
+
+                <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"
+                          source="@Embed('/pl/znr/heatmaster/assets/images/start/przyciemniacz_start.png')"/>
+
                 <s:Group id="logoTopGroup" x="0" y="0" visible="false" >
                     <mx:Image width="{Math.max(1024,this.width )}" height="{logoTopImage.height}" maintainAspectRatio="false" x="0" y="0"
                               id="houseTopBarWhiteImg"
                               source="@Embed('/pl/znr/heatmaster/assets/images/bar_white.png')"/>
-                    <s:Image y="0" x="{housePanel.x}" id="logoTopImage" source="@Embed('/pl/znr/heatmaster/assets/images/logo/polreff/LogoTop.png')" smooth="true" smoothingQuality="high" />
+                    <s:Image y="0" x="{housePanel.x}" id="logoTopImage" source="pl/znr/heatmaster/assets/images/logo/polreff/LogoTop.png" smooth="true" smoothingQuality="high" />
                 </s:Group>
-
-
-                <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"
-                          source="@Embed('/pl/znr/heatmaster/assets/images/start/przyciemniacz_start.png')"/>
 
                 <s:Group x="0" y="0" id="introGroup" width="100%" height="100%">
 

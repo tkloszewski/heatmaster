@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <vertical_res_threshold>900</vertical_res_threshold>
+    <vertical_res_threshold>1080</vertical_res_threshold>
     <countries>
         <country>
             <name>hm.country.austria</name>
