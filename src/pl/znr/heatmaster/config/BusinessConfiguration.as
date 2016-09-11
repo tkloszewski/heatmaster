@@ -16,6 +16,8 @@ public class BusinessConfiguration {
     private var _regionItem:RegionItem;
     private var _countryItem:CountryItem;
 
+    private var _verticalResThreshold;
+
     public function BusinessConfiguration() {
     }
 
@@ -65,6 +67,15 @@ public class BusinessConfiguration {
 
     public function set countryItem(value:CountryItem):void {
         _countryItem = value;
+    }
+
+
+    public function get verticalResThreshold():* {
+        return _verticalResThreshold;
+    }
+
+    public function set verticalResThreshold(value):void {
+        _verticalResThreshold = value;
     }
 }
 }

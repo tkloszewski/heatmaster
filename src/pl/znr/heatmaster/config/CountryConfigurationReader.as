@@ -44,7 +44,7 @@ public class CountryConfigurationReader {
     private function doReadConfigHierarchical():ArrayCollection {
         var result:ArrayCollection = new ArrayCollection();
 
-        for each (var country:XML in countriesXML.country){
+        for each (var country:XML in countriesXML.countries.country){
 
             var countryCode:String = country.code;
 

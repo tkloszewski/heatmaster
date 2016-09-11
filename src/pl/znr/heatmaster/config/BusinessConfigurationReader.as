@@ -14,12 +14,17 @@ public class BusinessConfigurationReader {
     private var dictionaryConfigurationReader:DictionaryConfigReader;
     private var countryStationConfigurationReader:CountryStationConfigurationReader;
 
+    private var configXML:XML;
+
     public function BusinessConfigurationReader(countryXML:XML,stationsXML:XML,dictionaryXML:XML,resManager:IResourceManager) {
+        this.configXML = countryXML;
         countryStationConfigurationReader = new CountryStationConfigurationReader(countryXML,stationsXML,resManager);
         dictionaryConfigurationReader = new DictionaryConfigReader(dictionaryXML,resManager);
     }
 
     public function readBusinessConfiguration():BusinessConfiguration{
+        var verticalResThreshold:Number = Number(configXML.vertical_res_threshold);
+
         var countryItems:ArrayCollection = countryStationConfigurationReader.readConfig();
         var dictionaryConfig:DictionaryConfig = dictionaryConfigurationReader.readConfig();
 
@@ -35,8 +40,11 @@ public class BusinessConfigurationReader {
         businessConfiguration.countryRegionCode = countryRegionCode;
         businessConfiguration.regionItem = regionItem;
         businessConfiguration.countryItem = countryItem;
+        businessConfiguration.verticalResThreshold = verticalResThreshold;
 
         return businessConfiguration;
     }
+
+
 }
 }
