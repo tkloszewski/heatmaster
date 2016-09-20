@@ -571,17 +571,17 @@
         }
 
         private function openManualPdf():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/HeatMaster-Manual-PL.pdf";
+            var url:String = "docs/Kalk-Manual-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
         private function openTechPdf():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/HeatMaster-Tech-PL.pdf";
+            var url:String = "docs/Kalk-Tech-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
         private function openAboutPdfFile():void {
-            var url:String = "http://ziemianarozdrozu.pl/dl/heatmaster/HeatMaster-Team-PL.pdf";
+            var url:String = "docs/Kalk-Team-PL.pdf";
             navigateToURL(new URLRequest(url), "_blank");
         }
 
