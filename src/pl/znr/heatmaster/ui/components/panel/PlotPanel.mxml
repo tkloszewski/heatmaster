@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <panel:BasePlotPanel xmlns:fx="http://ns.adobe.com/mxml/2009"
-                                      xmlns:components="pl.znr.heatmaster.ui.components.*"
-                                      xmlns:mx="library://ns.adobe.com/flex/mx"
-                                      xmlns:s="library://ns.adobe.com/flex/spark"
-                                      xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
-                                      initialize="popupInitialized()"
-                                      creationComplete="plotCreated()"
+                     xmlns:components="pl.znr.heatmaster.ui.components.*"
+                     xmlns:mx="library://ns.adobe.com/flex/mx"
+                     xmlns:s="library://ns.adobe.com/flex/spark"
+                     xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
+                     xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
+                     initialize="popupInitialized()"
+                     creationComplete="plotCreated()"
         >
     <!-- To change this template use File | Settings | File Templates. -->
 
@@ -398,13 +399,12 @@
     <!--backgroundColor="0xd3d3d3"-->
     <s:BorderContainer id="plotContainer" height="100%" width="100%" backgroundAlpha="0.0" borderVisible="false">
         <mx:Image x="0" y="0" id="plotBkgImg" maintainAspectRatio="false" width="{this.width}" height="{this.height}"
-                  source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')"/>
-        <mx:Button x="{40 * getOffsetRatio()}" y="5" id="primaryFinalInfoIcon" buttonMode="true"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-                   click="openPrimaryFinalEnergyToolTip(event)"/>
+                  source="@Embed('/pl/znr/heatmaster/assets/images/report/raport_bkg.png')" />
 
-
+        <hmbtn:ImageSkinnableButton x="{40 * getOffsetRatio()}" y="5" id="primaryFinalInfoIcon" click="openPrimaryFinalEnergyToolTip(event)"
+                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                                    overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')">
+        </hmbtn:ImageSkinnableButton>
 
 
         <!--USER ENERGY -->
@@ -519,13 +519,12 @@
         <mx:VRule id="vRule2" x="{yearlyCostLabel.x + yearlyCostLabel.width + 50 * getOffsetRatio()}" y="{vRule1.y}"
                   height="40" width="1"/>
 
-        <mx:Button x="{vRule2.x + vRule2.width + 50 * getOffsetRatio()}" y="{5}" id="energyClassInfoIcon"
-                   buttonMode="true"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-                   click="openClassEnergyToolTip(event)"/>
+        <hmbtn:ImageSkinnableButton x="{vRule2.x + vRule2.width + 50 * getOffsetRatio()}" y="{5}" id="energyClassInfoIcon"  click="openClassEnergyToolTip(event)"
+                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                                    overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')">
+        </hmbtn:ImageSkinnableButton>
 
-        <s:Label x="{energyClassInfoIcon.x + 30 * getFirstOffsetRatio()}" y="{vRule1.y}" id="energyClassLabel"
+        <s:Label x="{energyClassInfoIcon.x + 33 * getFirstOffsetRatio()}" y="{vRule1.y}" id="energyClassLabel"
                  text="{resourceManager.getString('hm','hm.label.energy_class')}"
                  styleName="reportBlackLabel" fontSize="{12 * getFontRatio()}"/>
         <s:Label x="{energyClassLabel.x + energyClassLabel.width + 60 * getOffsetRatio()}" y="{vRule1.y}"
@@ -660,11 +659,10 @@
         <panel:HorizontaAxisLabelPanel id="panelLabel" y="{chart.y + chart.height}" x="{chart.x + gutterLeft}"
                                             width="{7* (chart.width - gutterLeft)/6}" visible="true"/>
 
-
-        <mx:Button x="{plotBkgImg.width - 32}" top="2" buttonMode="true"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
-                   overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')"
-                   click="closePlot()"/>
+        <hmbtn:ImageSkinnableButton x="{plotBkgImg.width - 35}" top="-2" buttonMode="true" click="closePlot()"
+                                    upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon.png')"
+                                    overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/close_icon_over.png')">
+        </hmbtn:ImageSkinnableButton>
 
 
     </s:BorderContainer>

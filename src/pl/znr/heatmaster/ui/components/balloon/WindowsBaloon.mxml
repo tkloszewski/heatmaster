@@ -4,8 +4,10 @@
         xmlns:fx="http://ns.adobe.com/mxml/2009"
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:mx="library://ns.adobe.com/flex/mx"
-        width="220" height="106" xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
-        creationComplete="balloonCreated()">
+        width="220" height="106"
+        xmlns:ballonn="pl.znr.heatmaster.ui.components.balloon.*"
+        xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
+        creationComplete="balloonCreated()" >
 
     <fx:Declarations>
 
@@ -192,11 +194,11 @@
 
     </s:Group>
 
-    <mx:Button id="infoIcoButton" top="{_infoIconTop}" right="{_infoIconRight}" buttonMode="true"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-               click="openWinInfoPanel(event)"
-               visible="{_infoIconVisible}"/>
+    <hmbtn:ImageSkinnableButton top="{_infoIconTop -3}" right="{_infoIconRight -3}" buttonMode="true" click="openWinInfoPanel(event)"
+                                upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+                                overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
+                                visible="{_infoIconVisible}">
+    </hmbtn:ImageSkinnableButton>
 
     <fx:Script><![CDATA[
         ]]></fx:Script>

@@ -263,7 +263,7 @@
 
                 if (!calculationStateController.isInInitialState()) {
                     var dataContext:DataContext = calculationStateController.getPreviousDataContext();
-                    var previousState:int = calculationStateController.getPreviousState()
+                    var previousState:int = calculationStateController.getPreviousState();
                     dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
                     var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
                     processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
@@ -272,6 +272,7 @@
 
                 heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode);
             } catch (e:Error) {
+                trace("Unit changed error: " + e.getStackTrace());
                 Alert.show("Unit changed error " + e.message);
             }
         }
@@ -464,10 +465,10 @@
 
     <s:Button id="freezeStateButton" y="80" x="24" width="153" color="gray" fontSize="10" fontWeight="bold"  click="freezeReferenceState()" label="{resourceManager.getString('hm','hm.button.compare.houses')}" />
 
-    <mx:Button top="-4" right="-4" buttonMode="true"
-               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
-               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')"
-               click="openInfoPanel(event)"/>
+    <hmbtn:ImageSkinnableButton top="-17" right="-13" buttonMode="true" click="openInfoPanel(event)"
+            upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon.png')"
+            overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/info_icon_over.png')">
+    </hmbtn:ImageSkinnableButton>
 
     <fx:Script><![CDATA[
         ]]></fx:Script>
