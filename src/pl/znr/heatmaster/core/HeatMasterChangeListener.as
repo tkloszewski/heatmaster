@@ -547,11 +547,11 @@ public class HeatMasterChangeListener {
                 dataContextToChange.localCurrency = false;
             }
 
-            heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
+           /* heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
 
             dataContextToChange.conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
             dataContextToChange.conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
-            dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);
+            dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);*/
         }
         dataContextToChange.conversionData.selectedUnit = newUnit;
         dataContextToChange.conversionData.unitName = unitName;
