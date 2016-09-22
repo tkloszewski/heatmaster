@@ -551,7 +551,6 @@ public class HeatMasterChangeListener {
 
             heatingPopup.applyDataContextToNSControls(dataContextToChange);
             heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
-           /* heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
 
             dataContextToChange.conversionData.pricePerKwh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedHeatingPrice()));
             dataContextToChange.conversionData.waterPricePerkWh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedWarmWaterPrice()));
