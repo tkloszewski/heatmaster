@@ -262,15 +262,31 @@
                 var shortUnitNameCode:String = getShortUnitNameCode(newUnit, selectedItem.shortUnit);
 
                 if (!calculationStateController.isInInitialState()) {
-                    var dataContext:DataContext = calculationStateController.getPreviousDataContext();
+                    var prevDataContext:DataContext = calculationStateController.getPreviousDataContext();
                     var previousState:int = calculationStateController.getPreviousState();
-                    dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
-                    var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
-                    processingResult = heatMasterController.convertResultAndCalcReportValues(dataContext,processingResult, dataContext.conversionData);
-                    setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, dataContext.currencyLocaleCode, true);
-                }
+                    prevDataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, prevDataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
 
-                heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode,!calculationStateController.isInInitialState() && ConversionUnits.isCostUnit(newUnit));
+                    var currentDataContext:DataContext = calculationStateController.getCurrentDataContext();
+                    var currentState:int = calculationStateController.getCurrentState();
+                    currentDataContext = heatMasterListener.applyConversionChangesToDataContext(currentState, currentDataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
+
+                    if (calculationStateController.isInNewState()) {
+                        heatMasterController.calculateAndPropagateComparingResult(prevDataContext,currentDataContext);
+                    }
+                    else {
+                        heatMasterController.calculateAndPropagateComparingResult(currentDataContext,prevDataContext);
+                    }
+
+
+                    /*var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
+                     processingResult = heatMasterController.convertResultAndCalcReportValues(prevDataContext, processingResult, prevDataContext.conversionData);
+
+
+                     setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, prevDataContext.currencyLocaleCode, true);*/
+                }
+                else {
+                    heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode, !calculationStateController.isInInitialState() && ConversionUnits.isCostUnit(newUnit));
+                }
             } catch (e:Error) {
                 trace("Unit changed error: " + e.getStackTrace());
                 Alert.show("Unit changed error " + e.message);
