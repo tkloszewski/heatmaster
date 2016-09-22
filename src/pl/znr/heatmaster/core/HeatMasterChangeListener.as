@@ -522,8 +522,8 @@ public class HeatMasterChangeListener {
             }
             heatingPopup.configChanged(countryItem,dataContext.localCurrency);
 
-            conversionData.pricePerKwh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedHeatingPrice()));
-            conversionData.waterPricePerkWh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedWarmWaterPrice()));
+            conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
+            conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
             conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContext.localCurrency);
         }
 
@@ -552,8 +552,8 @@ public class HeatMasterChangeListener {
             heatingPopup.applyDataContextToNSControls(dataContextToChange);
             heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
 
-            dataContextToChange.conversionData.pricePerKwh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedHeatingPrice()));
-            dataContextToChange.conversionData.waterPricePerkWh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedWarmWaterPrice()));
+            dataContextToChange.conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
+            dataContextToChange.conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
             dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);
         }
         dataContextToChange.conversionData.selectedUnit = newUnit;
