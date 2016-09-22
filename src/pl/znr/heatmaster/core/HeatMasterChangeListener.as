@@ -43,6 +43,7 @@ import pl.znr.heatmaster.ui.components.EnergyMeter;
 import pl.znr.heatmaster.ui.components.panel.HousePanel;
 import pl.znr.heatmaster.ui.components.popup.HeatingPopup;
 import pl.znr.heatmaster.ui.components.popup.HousePopup;
+import pl.znr.heatmaster.util.HeatMasterFormatter;
 
 public class HeatMasterChangeListener {
 
@@ -245,11 +246,8 @@ public class HeatMasterChangeListener {
         conversionData.toPLNCurrencyExchangeRate = ConverterHelper.calcToPLNExchangeRate(conversionData.selectedUnit,businessConfiguration.polishExchangeRate,countryItem.currencyExchangeRate);
 
         if(newDataContext != null){
-            newDataContext.conversionData.pricePerKwh = conversionData.pricePerKwh;
-            newDataContext.conversionData.waterPricePerkWh = conversionData.waterPricePerkWh;
-            newDataContext.conversionData.electricityPricePerKwh = conversionData.electricityPricePerKwh;
-            newDataContext.conversionData.toPLNCurrencyExchangeRate = conversionData.toPLNCurrencyExchangeRate;
-            newDataContext.heatingData.naturalUnitPrice = dataContext.heatingData.naturalUnitPrice;
+            newDataContext.conversionData = conversionData.copy();
+            newDataContext.heatingData = dataContext.heatingData.copy();
         }
 
         if(newDataContext != null){
@@ -498,7 +496,7 @@ public class HeatMasterChangeListener {
         writeCache(dataContext);
     }
 
-    public function unitChanged(newUnit:int,unitName:String,shortUnitName:String):void {
+    public function unitChanged(newUnit:int,unitName:String,shortUnitName:String,setHeatingPopupView:Boolean):void {
         var dataContext:DataContext = heatMasterController.getDataContext();
         var conversionData:ConversionData = heatMasterController.getDataContext().conversionData;
         var oldUnit:int = conversionData.selectedUnit;
@@ -519,10 +517,13 @@ public class HeatMasterChangeListener {
                 dataContext.localCurrency = false;
             }
 
+            if(setHeatingPopupView){
+              heatingPopup.applyDataContextToNSControls(dataContext);
+            }
             heatingPopup.configChanged(countryItem,dataContext.localCurrency);
 
-            conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
-            conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
+            conversionData.pricePerKwh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedHeatingPrice()));
+            conversionData.waterPricePerkWh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedWarmWaterPrice()));
             conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContext.localCurrency);
         }
 
@@ -538,6 +539,7 @@ public class HeatMasterChangeListener {
     public function applyConversionChangesToDataContext(previousCalcState:int, dataContextToChange:DataContext, newUnit:int,unitName:String,shortUnitName:String):DataContext {
         var countryItem:CountryItem = housePopup.getSelectedCountry();
         if(ConversionUnits.isCostUnit(newUnit)){
+            var prevLocalCurrency:Boolean = dataContextToChange.localCurrency;
             if(ConversionUnits.isLocalCurrencyCostUnit(newUnit)){
                 dataContextToChange.currencyLocaleCode = countryItem.currencyLocaleCode;
                 dataContextToChange.localCurrency = true;
@@ -547,11 +549,13 @@ public class HeatMasterChangeListener {
                 dataContextToChange.localCurrency = false;
             }
 
+            heatingPopup.applyDataContextToNSControls(dataContextToChange);
+            heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
            /* heatingPopup.configChanged(countryItem,dataContextToChange.localCurrency);
 
-            dataContextToChange.conversionData.pricePerKwh = heatingPopup.getConfigAppliedHeatingPrice();
-            dataContextToChange.conversionData.waterPricePerkWh = heatingPopup.getConfigAppliedWarmWaterPrice();
-            dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);*/
+            dataContextToChange.conversionData.pricePerKwh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedHeatingPrice()));
+            dataContextToChange.conversionData.waterPricePerkWh = parseFloat(HeatMasterFormatter.format(heatingPopup.getConfigAppliedWarmWaterPrice()));
+            dataContextToChange.conversionData.electricityPricePerKwh = CountryItemHelper.getCountryElectricityPrice(countryItem,dataContextToChange.localCurrency);
         }
         dataContextToChange.conversionData.selectedUnit = newUnit;
         dataContextToChange.conversionData.unitName = unitName;
@@ -579,12 +583,15 @@ public class HeatMasterChangeListener {
         conversionData.warmWaterFinalToPrimaryCoefficient = heatingSourceData.warmWaterFinalToPrimaryCoefficient;
         conversionData.emissionCoefficient = heatingSourceData.emissionCoefficient;
         conversionData.waterEmissionCoefficient = heatingSourceData.waterEmissionCoefficient;
+
         heatMasterController.conversionDataChanged(true);
         writeCache(dataContext);
     }
 
     public function setConversionData(heatingSourceData:HeatingSourceData):void {
-        var conversionData:ConversionData = heatMasterController.getDataContext().conversionData;
+        var dataContext:DataContext = heatMasterController.getDataContext();
+
+        var conversionData:ConversionData = dataContext.conversionData;
         conversionData.pricePerKwh = heatingSourceData.pricePerkWh;
         conversionData.waterPricePerkWh = heatingSourceData.priceWaterPerkWh;
         conversionData.houseHeatingEfficiency = heatingSourceData.heatingEfficiency/100;
@@ -593,6 +600,7 @@ public class HeatMasterChangeListener {
         conversionData.warmWaterFinalToPrimaryCoefficient = heatingSourceData.warmWaterFinalToPrimaryCoefficient;
         conversionData.emissionCoefficient = heatingSourceData.emissionCoefficient;
         conversionData.waterEmissionCoefficient = heatingSourceData.waterEmissionCoefficient;
+
         writeCache(heatMasterController.getDataContext());
     }
 

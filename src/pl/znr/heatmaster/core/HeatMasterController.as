@@ -18,6 +18,7 @@ import pl.znr.heatmaster.config.CountryItem;
 import pl.znr.heatmaster.constants.GlobalValues;
 import pl.znr.heatmaster.constants.StateConstants;
 import pl.znr.heatmaster.constants.combo.ConversionUnits;
+import pl.znr.heatmaster.core.DataContext;
 import pl.znr.heatmaster.core.calc.HeatMasterWattsCalculator;
 import pl.znr.heatmaster.core.calc.ReportDataCalculator;
 import pl.znr.heatmaster.core.converter.ConversionData;
@@ -161,6 +162,11 @@ public class HeatMasterController {
             }
             propagateResult();
         }
+    }
+
+    public function convertResultAndCalcReportValues(dataCtx:DataContext,processResult:ProcessingResult,conversionData:ConversionData){
+        processResult = convertResult(processResult,conversionData);
+        return reportDataCalculator.calcReportValues(dataCtx,processResult,conversionData);
     }
 
     public function convertResult(processResult:ProcessingResult,conversionData:ConversionData):ProcessingResult {

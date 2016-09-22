@@ -25,6 +25,26 @@ public class ConversionData {
     public function ConversionData() {
     }
 
+    public function copy():ConversionData {
+        var result:ConversionData = new ConversionData();
+
+        result.selectedUnit = this.selectedUnit;
+        result.unitName = this.unitName;
+        result.shortUnitName = this.shortUnitName;
+        result.pricePerKwh = this.pricePerKwh;
+        result.electricityPricePerKwh = this.electricityPricePerKwh;
+        result.waterPricePerkWh = this.waterPricePerkWh;
+        result.houseHeatingEfficiency = this.houseHeatingEfficiency;
+        result.warmWaterHeatingEfficiency = this.warmWaterHeatingEfficiency;
+        result.finalToPrimaryCoefficient = this.finalToPrimaryCoefficient;
+        result.warmWaterFinalToPrimaryCoefficient = this.warmWaterFinalToPrimaryCoefficient;
+        result.emissionCoefficient = this.emissionCoefficient;
+        result.waterEmissionCoefficient = this.waterEmissionCoefficient;
+        result.toPLNCurrencyExchangeRate = this.toPLNCurrencyExchangeRate;
+
+        return result;
+    }
+
     public static function buildConversionDataFromConversionData(conversionData:ConversionData,unit:int){
         var result:ConversionData = buildConversionData(unit,conversionData.pricePerKwh);
         result.waterPricePerkWh = conversionData.waterPricePerkWh;
