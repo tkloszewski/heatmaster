@@ -197,18 +197,29 @@
                 warmWaterHeatingCostRichText.text = currencyName;
             }
 
-
             var heatingSourceType:HeatingSourceType = heatingTypeDropDownList.selectedItem.data.type as HeatingSourceType;
             naturalUnitCostLabel.text = getNaturalUnitPriceLabelText(heatingSourceType.naturalUnit);
             naturalUnitCalorificValueRichText.text = adjustNaturalUnitText(heatingSourceType.naturalUnit);
 
             showNaturalUnit = heatingSourceType.showNaturalUnit;
             previousControlsVisible = controlsVisible;
+
             setWarmWaterVisibility(false);
 
             calorificValInput.enabled = heatingSourceType.heatingValueEditable;
             calorificValInput.textDisplay.editable = heatingSourceType.heatingValueEditable;
             calorificValInput.textDisplay.enabled = heatingSourceType.heatingValueEditable;
+        }
+
+        public function applyDataContextToNSControls(dataContext:DataContext):void {
+            var houseType:int = dataContext.houseData.houseType;
+            var heatingData:HeatingSourceData = dataContext.heatingData;
+            var warmWaterData:WarmWaterData = dataContext.houseData.warmWaterData;
+            var collectorData:SolarCollectorData = dataContext.solarCollectorData;
+
+            applyHeatingDataToControls(houseType, heatingData, dataContext.conversionData);
+            applyWarmWaterDataToControls(houseType, heatingData, warmWaterData, dataContext.conversionData);
+            applySolarDataToControls(houseType, collectorData);
         }
 
         override public function resultCalculated(resultData:ProcessingResult, month:int):void {

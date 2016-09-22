@@ -266,11 +266,11 @@
                     var previousState:int = calculationStateController.getPreviousState();
                     dataContext = heatMasterListener.applyConversionChangesToDataContext(previousState, dataContext, newUnit, selectedItem.labelUnit, shortUnitNameCode);
                     var processingResult:ProcessingResult = calculationStateController.isInReferenceOrInitialState() ? newProcessingResult : refProcessingResult;
-                    processingResult = heatMasterController.convertResult(processingResult, dataContext.conversionData);
+                    processingResult = heatMasterController.convertResultAndCalcReportValues(dataContext,processingResult, dataContext.conversionData);
                     setCalculatedValue(BalanceValueHelper.calcEfficiencyAwareYearBalanceValue(processingResult), newUnit, dataContext.currencyLocaleCode, true);
                 }
 
-                heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode);
+                heatMasterListener.unitChanged(newUnit, selectedItem.labelUnit, shortUnitNameCode,!calculationStateController.isInInitialState() && ConversionUnits.isCostUnit(newUnit));
             } catch (e:Error) {
                 trace("Unit changed error: " + e.getStackTrace());
                 Alert.show("Unit changed error " + e.message);

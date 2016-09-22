@@ -9,6 +9,14 @@ public class HeatMasterFormatter {
     public function HeatMasterFormatter() {
     }
 
+    public static function format(n:Number):String {
+        var format:NumberFormatter = new NumberFormatter();
+        format.precision = n < 10 ? 2 : 0;
+        format.rounding = NumberBaseRoundType.NEAREST;
+        format.useThousandsSeparator = false;
+        return format.format(n);
+    }
+
     public static function formatHMValue(value:Number,precision:int = 0,useThousandSeparator:Boolean = false):String{
         var formatter:NumberFormatter = createNearestPrecisionFormatter(precision);
         formatter.useThousandsSeparator = false;
@@ -47,5 +55,7 @@ public class HeatMasterFormatter {
         format.rounding = rounding;
         return format;
     }
+
+
 }
 }

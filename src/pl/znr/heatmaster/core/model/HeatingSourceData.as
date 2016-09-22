@@ -29,6 +29,25 @@ public class HeatingSourceData {
     public function HeatingSourceData() {
     }
 
+    public function copy():HeatingSourceData{
+        var result:HeatingSourceData = new HeatingSourceData();
+        result.heatingType = this.heatingType;
+        result.heatingEfficiency = this.heatingEfficiency;
+        result.pricePerkWh = this.pricePerkWh;
+        result.naturalUnitPrice = this.naturalUnitPrice;
+        result.calorificValue = this.calorificValue;
+
+        result.waterHeatingType = this.waterHeatingType;
+        result.waterHeatingEfficiency = this.waterHeatingEfficiency;
+        result.priceWaterPerkWh = this.priceWaterPerkWh;
+
+        result.finalToPrimaryCoefficient = this.finalToPrimaryCoefficient;
+        result.warmWaterFinalToPrimaryCoefficient = this.warmWaterFinalToPrimaryCoefficient;
+        result.emissionCoefficient = this.emissionCoefficient;
+        result.waterEmissionCoefficient = this.waterEmissionCoefficient;
+
+        return result;
+    }
 
     public function get pricePerkWh():Number {
         return _pricePerkWh;
