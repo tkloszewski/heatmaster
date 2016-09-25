@@ -3,6 +3,7 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:popup="pl.znr.heatmaster.ui.components.popup.*"
                xmlns:panel="pl.znr.heatmaster.ui.components.panel.*"
+               xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*"
                width="100%"
                height="100%"
                xmlns:s="library://ns.adobe.com/flex/spark"
@@ -826,42 +827,32 @@
 
                 <s:Group id="menuButtonGroup" y="0" x="{heatingPopup.x + heatingPopup.width + getReportIconOffset()}"
                          visible="false">
-                    <mx:Button id="helpBtn" x="0" y="10"
+                    <hmbtn:ImageSkinnableButton id="helpBtn" x="0" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.manual')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openManualPdf()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/help_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openManualPdf()">
+                    </hmbtn:ImageSkinnableButton>
 
-                    <mx:Button id="techBtn" x="{helpBtn.x + helpBtn.width + getIconsOffset()}" y="10"
+                    <hmbtn:ImageSkinnableButton id="techBtn" x="{helpBtn.x + helpBtn.width + getIconsOffset()}" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.how_to')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openTechPdf()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/maths_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openTechPdf()">
+                    </hmbtn:ImageSkinnableButton>
 
-
-                    <mx:Button id="aboutBtn" x="{techBtn.x + techBtn.width + getIconsOffset()}" y="10"
+                    <hmbtn:ImageSkinnableButton id="aboutBtn" x="{techBtn.x + techBtn.width + getIconsOffset()}" y="10"
                                toolTip="{resourceManager.getString('hm','hm.tooltip.button.about')}"
                                width="{Math.min(27 * this.width/1280,27)}" maxWidth="27" minWidth="21"
                                height="{Math.min(28 * this.width/1280,28)}" maxHeight="28" minHeight="21"
-                               skin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')"
-                               overSkin="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon_over.png')"
-                               buttonMode="true" visible="true">
-                        <mx:click><![CDATA[
-                                this.openAboutPdfFile()
-                            ]]></mx:click>
-                    </mx:Button>
+                               upImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')" downImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon.png')"
+                               overImage="@Embed('/pl/znr/heatmaster/assets/images/icons/us_icon_over.png')"
+                               buttonMode="true" visible="true" click="this.openAboutPdfFile()">
+                    </hmbtn:ImageSkinnableButton>
                 </s:Group>
 
                 <mx:Image id="blurringImg" x="0" y="0" height="100%" width="100%" maintainAspectRatio="false"

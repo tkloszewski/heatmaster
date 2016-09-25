@@ -3,7 +3,7 @@
 
     <!--Door types configuration-->
     <door_types selected_index="0">
-        <door_type id="hm.door.energy_intensive" en_name="Draughty bitch" pl_name="Nieenergooszczędne" u_value="3.4"/>
+        <door_type id="hm.door.energy_intensive" en_name="Draughty" pl_name="Nieenergooszczędne" u_value="3.4"/>
         <door_type id="hm.door.standard" label_key="hm.dropdown.door.standard" u_value="2.6" />
         <door_type id="hm.door.energy_saving" label_key="hm.dropdown.door.energy_saving" u_value="1.4" />
         <door_type id="hm.door.super_energy_saving" label_key="hm.dropdown.door.super_energy_saving" u_value="0.8" />
@@ -211,9 +211,14 @@
     </detached_heating_source_types>
 
     <!--Heating source types configuration for non-detached houses-->
-    <multi_family_heating_source_types selected_index="2">
+    <multi_family_heating_source_types selected_index="7">
+        <heating_source_type ref="hm.heating-source.biomass-pellets"/>
+        <heating_source_type ref="hm.heating-source.biomass-wood"/>
         <heating_source_type ref="hm.heating-source.combined_heat"/>
         <heating_source_type ref="hm.heating-source.combined_electric_heat"/>
+        <heating_source_type ref="hm.heating-source.coal-furnace"/>
+        <heating_source_type ref="hm.heating-source.coal-old"/>
+        <heating_source_type ref="hm.heating-source.coal-new"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_old"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_new"/>
         <heating_source_type ref="hm.heating-source.boiler_gas_condensing"/>
