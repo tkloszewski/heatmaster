@@ -560,7 +560,7 @@
 
 
     <s:Image x="9"  y="6"   id="housePopupHeaderImg"                   source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
-    <s:Image x="23" y="8"  id="housePopupIconImg"                     source="@Embed('/pl/znr/heatmaster/assets/images/icons/house_icon.png')"/>
+    <s:Image x="23" y="15"  id="housePopupIconImg"                     source="@Embed('/pl/znr/heatmaster/assets/images/icons/house_icon.png')"/>
 
 
 

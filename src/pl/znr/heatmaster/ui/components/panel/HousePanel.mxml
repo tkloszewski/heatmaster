@@ -572,7 +572,7 @@
                                  undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_izol_dachu.png">
         </baloon:InsulationBaloon>
 
-        <baloon:InsulationBaloon id="wallsInsulationBaloon" x="752" y="460" groupX="10" groupY="10" controlsSubGroupY="33" infoIconTop="8" infoIconRight="0"
+        <baloon:InsulationBaloon id="wallsInsulationBaloon" x="752" y="460" groupX="10" groupY="10" controlsSubGroupY="33" infoIconTop="6" infoIconRight="-2"
                                  labelsSubgroupY="12"  comboLabelsY="11" headerLabelX="1"
                                  headerText="{resourceManager.getString('hm','hm.label.insulation.wall')}" insulationElementType="{InsulationElementType.WALL}"
                                  undercoutImgSource="pl/znr/heatmaster/assets/images/baloons/dymek_izol_scian.png">

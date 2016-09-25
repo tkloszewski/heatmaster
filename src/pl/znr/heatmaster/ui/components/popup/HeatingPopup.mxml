@@ -997,7 +997,7 @@
     <mx:Image x="9"  y="10"   id="heatPopupMainImg" scaleY="1.25"     visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_bkg.png')" />
     <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bar_panel_heat.png')"/>
 
-    <s:Image x="30" y="8" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
+    <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
 
 
     <s:Label x="75" y="18" width="177" height="20" styleName="popupPanelHeader" text="{resourceManager.getString('hm','hm.label.title.heating_source')}" fontSize="14" />
