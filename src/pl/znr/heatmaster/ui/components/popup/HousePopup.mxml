@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<hm:HeatMasterComponent implements="pl.znr.heatmaster.core.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
-                        xmlns:fx="http://ns.adobe.com/mxml/2009"
-                        xmlns:mx="library://ns.adobe.com/flex/mx"
-                        xmlns:s="library://ns.adobe.com/flex/spark"
-                        xmlns:hm="pl.znr.heatmaster.ui.components.*"
-                        creationComplete="housePopupCreated()"
-        >
+<hm:HeatMasterComponent
+        implements="pl.znr.heatmaster.core.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:hm="pl.znr.heatmaster.ui.components.*"
+        creationComplete="housePopupCreated()"
+        xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*">
     <!-- To change this template use File | Settings | File Templates. -->
 
 
@@ -559,7 +560,7 @@
 
 
     <s:Image x="9"  y="6"   id="housePopupHeaderImg"                   source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bkg_button.png')"/>
-    <s:Image x="23" y="15"  id="housePopupIconImg"                     source="@Embed('/pl/znr/heatmaster/assets/images/icons/house_icon.png')"/>
+    <s:Image x="23" y="8"  id="housePopupIconImg"                     source="@Embed('/pl/znr/heatmaster/assets/images/icons/house_icon.png')"/>
 
 
 
@@ -570,25 +571,28 @@
     <s:Group id="tabClickGroup" visible="false" x="10" y="10" height="35" width="280"
              click="hideOrShowComponents()"
              mouseOver="clickGroupMouseOver()" mouseOut="clickGroupMouseOut()">
-        <mx:Button x="254" y="12" id="housePopupRollUpImg"    visible="false"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up.png')"
-                   click="hideOrShowComponents1()"
-                >
-        </mx:Button>
 
-        <mx:Button x="253" y="9" id="housePopupRollUpOverImg"    visible="false"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rollup_over.png')"
-                   click="hideOrShowComponents1()"
-                >
-        </mx:Button>
 
-        <mx:Button x="254" y="12" id="housePopupRollDownImg"  visible="false" click="hideOrShowComponents1()"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down.png')"
-                />
+        <s:Image x="235" y="-2" id="housePopupRollUpImg" visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"
+                                    click="hideOrShowComponents1()">
+        </s:Image>
 
-        <mx:Button x="253" y="11" id="housePopupRollDownOverImg"  visible="false" click="hideOrShowComponents1()"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rolldown_over.png')"
-                />
+        <s:Image x="235" y="-2" id="housePopupRollUpOverImg"    visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')"
+                                    click="hideOrShowComponents1()">
+        </s:Image>
+
+        <s:Image x="235" y="-2" id="housePopupRollDownImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"
+                                    click="hideOrShowComponents1()">
+        </s:Image>
+
+        <s:Image x="235" y="-2" id="housePopupRollDownOverImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"
+                                    click="hideOrShowComponents1()">
+        </s:Image>
+
 
     </s:Group>
 

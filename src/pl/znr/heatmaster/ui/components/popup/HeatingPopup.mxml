@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<hm:HeatMasterResultComponent implements="pl.znr.heatmaster.core.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
-                              xmlns:fx="http://ns.adobe.com/mxml/2009"
-                              xmlns:mx="library://ns.adobe.com/flex/mx"
-                              xmlns:s="library://ns.adobe.com/flex/spark"
-                              xmlns:hm="pl.znr.heatmaster.ui.components.*"
-        >
+<hm:HeatMasterResultComponent
+        implements="pl.znr.heatmaster.core.HouseStandardChangeListener,pl.znr.heatmaster.core.state.ICalculationStateListener"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:hm="pl.znr.heatmaster.ui.components.*"
+        xmlns:hmbtn="pl.znr.heatmaster.ui.components.button.*">
     <!-- To change this template use File | Settings | File Templates. -->
 
     <fx:Declarations>
@@ -996,23 +997,40 @@
     <mx:Image x="9"  y="10"   id="heatPopupMainImg" scaleY="1.25"     visible="false" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/panel_heat_bkg.png')" />
     <s:Image x="12"  y="10"  id="heatPopupTabImg" visible="true" source="@Embed('/pl/znr/heatmaster/assets/images/house_heat_tabs/bar_panel_heat.png')"/>
 
-    <s:Image x="30" y="15" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
+    <s:Image x="30" y="8" id="heatPopupIconImg" source="@Embed('/pl/znr/heatmaster/assets/images/icons/heat_icon.png')"/>
 
 
     <s:Label x="75" y="18" width="177" height="20" styleName="popupPanelHeader" text="{resourceManager.getString('hm','hm.label.title.heating_source')}" fontSize="14" />
     <s:Group id="tabClickGroup" visible="false" x="15" y="10" height="35" width="280"
              click="hideOrShowControls()" mouseOver="clickGroupMouseOver()" mouseOut="clickGroupMouseOut()">
-        <mx:Button x="278" y="12" click="hideOrShowControls1()" visible="false" id="heatPopupRollUpImg"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up.png')"/>
+        <!--<mx:Button x="278" y="12" click="hideOrShowControls1()" visible="false" id="heatPopupRollUpImg"
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')"/>
 
         <mx:Button x="278" y="12" click="hideOrShowControls1()" visible="false" id="heatPopupRollDownImg"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down.png')"/>
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')"/>
 
         <mx:Button x="277" y="9" click="hideOrShowControls1()" visible="false" id="heatPopupRollUpOverImg"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rollup_over.png')" />
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')" />
 
         <mx:Button x="277" y="11" click="hideOrShowControls1()" visible="false" id="heatPopupRollDownOverImg"
-                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/rolldown_over.png')"/>
+                   skin="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')"/>-->
+
+        <s:Image x="245" y="-2" id="heatPopupRollUpImg" visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon.png')">
+        </s:Image>
+
+        <s:Image x="245" y="-2" id="heatPopupRollDownImg"  visible="false"  smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon.png')">
+        </s:Image>
+
+        <s:Image x="245" y="-2" id="heatPopupRollUpOverImg"    visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_up_icon_over.png')">
+        </s:Image>
+
+        <s:Image x="245" y="-2" id="heatPopupRollDownOverImg"  visible="false" smoothingQuality="high" smooth="true"
+                                    source="@Embed('/pl/znr/heatmaster/assets/images/icons/roll_down_icon_over.png')">
+        </s:Image>
+
 
     </s:Group>
 
