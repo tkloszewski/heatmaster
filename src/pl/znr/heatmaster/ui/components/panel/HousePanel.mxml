@@ -160,6 +160,10 @@
             this.setOpenWindowVisible(windowsOpen);
             this.setRecuperatorVisible(!ventGravitational);
             this.ventilationTypeChanged(!ventGravitational);
+
+            var isGroundType:Boolean = HouseTypeHelper.isGroundType(dataContext.houseData.houseType);
+            var upFloor:Boolean = HouseTypeHelper.hasNeighboursUp(dataContext.houseData.houseType);
+            this.setInsulationVisibility(isGroundType,upFloor);
         }
 
         public function getOrder():int {
